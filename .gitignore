@@ -76,3 +76,5 @@ DerivedDataCache/*
 
 # 第三方资产文件
 Content/Cod/*
+
+Plugins/Developer/
