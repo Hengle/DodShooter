@@ -186,6 +186,10 @@ bool ULoadingScreenManager::CheckForAnyNeedToShowLoadingScreen()
 	}
 
 	UGameViewportClient* GameViewportClient = LocalGameInstance->GetGameViewportClient();
+	if (!GameViewportClient)
+	{
+		return false;
+	}
 	const bool bIsInSplitscreen = GameViewportClient->GetCurrentSplitscreenConfiguration() != ESplitScreenType::None;
 
 	// In splitscreen we need all player controllers to be present

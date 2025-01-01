@@ -27,6 +27,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "ModularGameplay",
+			"Enabled": true
+		},
+		{
 			"Name": "CommonUI",
 			"Enabled": true
 		},
@@ -40,6 +44,10 @@
 		},
 		{
 			"Name": "CommonGame",
+			"Enabled": true
+		},
+		{
+			"Name": "GameplayAbilities",
 			"Enabled": true
 		}
 	]
