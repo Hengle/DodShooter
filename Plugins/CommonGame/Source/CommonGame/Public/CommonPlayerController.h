@@ -15,5 +15,8 @@ public:
 
 	//~ Begin AModularPlayerController
 	virtual void ReceivedPlayer() override;
+	virtual void SetPawn(APawn* InPawn) override;
+	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
 	//~ End of AModularPlayerController
 };

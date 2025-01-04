@@ -1,5 +1,6 @@
 ﻿#include "Character/DodCharacter.h"
 
+#include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Camera/DodCameraComponent.h"
 #include "Character/DodCharacterMovementComp.h"
@@ -24,11 +25,8 @@ ADodCharacter::ADodCharacter(const FObjectInitializer& ObjectInitializer)
 	SpringArmComponent->SetRelativeLocation(FVector(0.f, 0.f, 60.f));
 	SpringArmComponent->bUsePawnControlRotation = true;
 
-	ArmMesh = CreateDefaultSubobject<USkeletalMeshComponent>("ArmMesh");
-	ArmMesh->SetupAttachment(SpringArmComponent);
-
 	CameraComponent = CreateDefaultSubobject<UDodCameraComponent>(TEXT("CameraComponent"));
-	CameraComponent->SetupAttachment(ArmMesh, TEXT("tag_camera"));
+	CameraComponent->SetupAttachment(SpringArmComponent);
 
 	HeadMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Head");
 	HeadMesh->SetupAttachment(MeshComp, TEXT("j_spine4"));
@@ -44,40 +42,39 @@ ADodCharacter::ADodCharacter(const FObjectInitializer& ObjectInitializer)
 	bUseControllerRotationRoll = false;
 }
 
+UDodAbilitySystemComponent* ADodCharacter::GetDodAbilitySystemComponent() const
+{
+	return Cast<UDodAbilitySystemComponent>(GetAbilitySystemComponent());
+}
+
+UAbilitySystemComponent* ADodCharacter::GetAbilitySystemComponent() const
+{
+	if (PawnExtComponent == nullptr)
+	{
+		return nullptr;
+	}
+
+	return PawnExtComponent->GetDodAbilitySystemComponent();
+}
+
 void ADodCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	HeadMesh->SetCastShadow(true);
-	GetMesh()->SetCastShadow(true);
-	ArmMesh->SetCastShadow(false);
-
-	if (IsLocallyControlled())
-	{
-		ChangeToFirstPerson();
-	}
-	else
-	{
-		ChangeToThirdPerson();
-	}
 }
 
-void ADodCharacter::ChangeToFirstPerson()
+void ADodCharacter::OnAbilitySystemInitialized()
 {
-	if (!IsLocallyControlled())
-	{
-		return;
-	}
-	HeadMesh->SetVisibility(false);
-	GetMesh()->SetVisibility(false);
-	ArmMesh->SetVisibility(true);
+	UDodAbilitySystemComponent* ASC = GetDodAbilitySystemComponent();
+	check(ASC);
+
+	HealthComponent->InitializeWithAbilitySystem(ASC);
+
+	InitializeGameplayTags();
 }
 
-void ADodCharacter::ChangeToThirdPerson()
+void ADodCharacter::OnAbilitySystemUninitialized()
 {
-	HeadMesh->SetVisibility(true);
-	GetMesh()->SetVisibility(true);
-	ArmMesh->SetVisibility(false);
+	HealthComponent->UninitializeFromAbilitySystem();
 }
 
 void ADodCharacter::PossessedBy(AController* NewController)
@@ -90,7 +87,7 @@ void ADodCharacter::PossessedBy(AController* NewController)
 void ADodCharacter::UnPossessed()
 {
 	Super::UnPossessed();
-	
+
 	PawnExtComponent->HandleControllerChanged();
 }
 
@@ -112,4 +109,11 @@ void ADodCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	PawnExtComponent->SetupPlayerInputComponent();
+}
+
+void ADodCharacter::InitializeGameplayTags()
+{
+	if (UDodAbilitySystemComponent* ASC = GetDodAbilitySystemComponent())
+	{
+	}
 }

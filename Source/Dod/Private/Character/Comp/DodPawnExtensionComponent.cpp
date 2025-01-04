@@ -1,6 +1,7 @@
 ﻿#include "Character/Comp/DodPawnExtensionComponent.h"
 
 #include "DodGameplayTags.h"
+#include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 
 const FName UDodPawnExtensionComponent::NAME_ActorFeatureName("PawnExtension");
@@ -96,6 +97,48 @@ void UDodPawnExtensionComponent::HandlePlayerStateReplicated()
 void UDodPawnExtensionComponent::SetupPlayerInputComponent()
 {
 	CheckDefaultInitialization();
+}
+
+void UDodPawnExtensionComponent::InitializeAbilitySystem(UDodAbilitySystemComponent* InAsc, AActor* InOwner)
+{
+	check(InAsc);
+	check(InOwner);
+
+	if (AbilitySystemComponent == InAsc)
+	{
+		return;
+	}
+
+	if (AbilitySystemComponent)
+	{
+		UninitializeAbilitySystem();
+	}
+
+	APawn* Pawn = GetPawnChecked<APawn>();
+	AActor* ExistingAvatar = InAsc->GetAvatarActor();
+
+	if (ExistingAvatar && ExistingAvatar != Pawn)
+	{
+		ensure(!ExistingAvatar->HasAuthority());
+
+		if (UDodPawnExtensionComponent* OtherExtensionComponent = FindPawnExtensionComponent(ExistingAvatar))
+		{
+			OtherExtensionComponent->UninitializeAbilitySystem();
+		}
+	}
+
+	AbilitySystemComponent = InAsc;
+	AbilitySystemComponent->InitAbilityActorInfo(InOwner, Pawn);
+}
+
+void UDodPawnExtensionComponent::UninitializeAbilitySystem()
+{
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+
+	AbilitySystemComponent = nullptr;
 }
 
 void UDodPawnExtensionComponent::BeginPlay()

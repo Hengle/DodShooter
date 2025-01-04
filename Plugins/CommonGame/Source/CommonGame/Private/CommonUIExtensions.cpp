@@ -1,7 +1,36 @@
 ﻿#include "CommonUIExtensions.h"
 #include "CommonInputSubsystem.h"
+#include "CommonLocalPlayer.h"
+#include "GameplayTagContainer.h"
+#include "GameUIManagerSubsystem.h"
+#include "GameUIPolicy.h"
+#include "PrimaryGameLayout.h"
 
 int32 UCommonUIExtensions::InputSuspensions = 0;
+
+UCommonActivatableWidget* UCommonUIExtensions::PushContentToLayer_ForPlayer(const ULocalPlayer* LocalPlayer,
+                                                                            FGameplayTag LayerName,
+                                                                            TSubclassOf<UCommonActivatableWidget>
+                                                                            WidgetClass)
+{
+	if (!ensure(LocalPlayer) || !ensure(WidgetClass != nullptr))
+	{
+		return nullptr;
+	}
+
+	if (UGameUIManagerSubsystem* UIManager = LocalPlayer->GetGameInstance()->GetSubsystem<UGameUIManagerSubsystem>())
+	{
+		if (UGameUIPolicy* Policy = UIManager->GetCurrentUIPolicy())
+		{
+			if (UPrimaryGameLayout* RootLayout = Policy->GetRootLayout(CastChecked<UCommonLocalPlayer>(LocalPlayer)))
+			{
+				return RootLayout->PushWidgetToLayerStack(LayerName, WidgetClass);
+			}
+		}
+	}
+
+	return nullptr;
+}
 
 FName UCommonUIExtensions::SuspendInputForPlayer(APlayerController* PlayerController, FName SuspendReason)
 {

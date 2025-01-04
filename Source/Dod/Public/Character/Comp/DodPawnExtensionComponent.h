@@ -5,6 +5,7 @@
 #include "Components/PawnComponent.h"
 #include "DodPawnExtensionComponent.generated.h"
 
+class UDodAbilitySystemComponent;
 class UDodCameraMode;
 class UDodInputConfig;
 
@@ -55,9 +56,18 @@ public:
 
 	FORCEINLINE const FDodPawnData& GetPawnData() const { return PawnData; }
 
+	UFUNCTION(BlueprintPure, Category = "Dod|Pawn")
+	UDodAbilitySystemComponent* GetDodAbilitySystemComponent() const { return AbilitySystemComponent; }
+
+	void InitializeAbilitySystem(UDodAbilitySystemComponent* InAsc, AActor* InOwner);
+	void UninitializeAbilitySystem();
+
 protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Pawn")
 	FDodPawnData PawnData;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UDodAbilitySystemComponent> AbilitySystemComponent{nullptr};
 };

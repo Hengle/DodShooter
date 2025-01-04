@@ -104,7 +104,7 @@ void UDodOperatorComponent::HandleChangeInitState(UGameFrameworkComponentManager
 
 		if (UDodPawnExtensionComponent* PawnExtComp = UDodPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 		{
-			// PawnExtComp->InitializeAbilitySystem(LyraPS->GetLyraAbilitySystemComponent(), LyraPS);
+			PawnExtComp->InitializeAbilitySystem(PS->GetDodAbilitySystemComponent(), PS);
 		}
 
 		if (GetController<ADodPlayerController>())
