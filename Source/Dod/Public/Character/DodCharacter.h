@@ -45,7 +45,7 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Character")
-	USkeletalMeshComponent* HeadMesh;
+	TObjectPtr<USkeletalMeshComponent> HeadMesh;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dod|Character")

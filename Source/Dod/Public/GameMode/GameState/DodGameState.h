@@ -29,7 +29,7 @@ public:
 	TArray<TObjectPtr<UDodActionSet>> ActionSets;
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Lyra|GameState")
+	UPROPERTY(VisibleAnywhere, Category = "Dod|GameState")
 	TObjectPtr<UDodAbilitySystemComponent> AbilitySystemComponent;
 };
 

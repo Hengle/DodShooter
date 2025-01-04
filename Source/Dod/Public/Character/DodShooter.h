@@ -4,6 +4,8 @@
 #include "DodOperator.h"
 #include "DodShooter.generated.h"
 
+class UDodEquipmentManagerComponent;
+class UDodInventoryItemDefinition;
 class UDodOperatorComponent;
 
 UCLASS()
@@ -29,5 +31,11 @@ protected:
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Character")
-	USkeletalMeshComponent* ArmMesh;
+	TObjectPtr<USkeletalMeshComponent> ArmMesh;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Inventory")
+	TArray<TSoftClassPtr<UDodInventoryItemDefinition>> InitialInventoryItems;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Inventory")
+	TObjectPtr<UDodEquipmentManagerComponent> EquipmentManager;
 };

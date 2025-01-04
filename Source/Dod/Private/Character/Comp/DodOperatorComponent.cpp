@@ -222,9 +222,9 @@ void UDodOperatorComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
 		if (const UDodPawnExtensionComponent* PawnExtComp =
 			UDodPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 		{
-			/*if (UDodAbilitySystemComponent* LyraASC = PawnExtComp->GetDodAbilitySystemComponent())
+			/*if (UDodAbilitySystemComponent* ASC = PawnExtComp->GetDodAbilitySystemComponent())
 			{
-				LyraASC->AbilityInputTagPressed(InputTag);
+				ASC->AbilityInputTagPressed(InputTag);
 			}*/
 		}
 	}
@@ -252,9 +252,9 @@ void UDodOperatorComponent::Input_Move(const FInputActionValue& InputActionValue
 	APawn* Pawn = GetPawn<APawn>();
 	AController* Controller = Pawn ? Pawn->GetController() : nullptr;
 
-	/*if (ALyraPlayerController* LyraController = Cast<ALyraPlayerController>(Controller))
+	/*if (ADodPlayerController* DodController = Cast<ADodPlayerController>(Controller))
 	{
-		LyraController->SetIsAutoRunning(false);
+		DodController->SetIsAutoRunning(false);
 	}*/
 
 	if (Controller)
@@ -335,7 +335,7 @@ void UDodOperatorComponent::Input_AutoRun(const FInputActionValue& InputActionVa
 {
 	if (APawn* Pawn = GetPawn<APawn>())
 	{
-		/*if (ALyraPlayerController* Controller = Cast<ALyraPlayerController>(Pawn->GetController()))
+		/*if (ADodPlayerController* Controller = Cast<ADodPlayerController>(Pawn->GetController()))
 		{
 			Controller->SetIsAutoRunning(!Controller->GetIsAutoRunning());
 		}*/

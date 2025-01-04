@@ -34,10 +34,10 @@ void UDodAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AAct
 				TArray<UGameplayAbility*> Instances = AbilitySpec.GetAbilityInstances();
 				for (UGameplayAbility* AbilityInstance : Instances)
 				{
-					UDodGameplayAbility* LyraAbilityInstance = Cast<UDodGameplayAbility>(AbilityInstance);
-					if (LyraAbilityInstance)
+					UDodGameplayAbility* DodAbilityInstance = Cast<UDodGameplayAbility>(AbilityInstance);
+					if (DodAbilityInstance)
 					{
-						LyraAbilityInstance->OnPawnAvatarSet();
+						DodAbilityInstance->OnPawnAvatarSet();
 					}
 				}
 			}
@@ -52,9 +52,9 @@ void UDodAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AAct
 			GlobalAbilitySystem->RegisterASC(this);
 		}
 
-		if (UDodAnimInstance* LyraAnimInst = Cast<UDodAnimInstance>(ActorInfo->GetAnimInstance()))
+		if (UDodAnimInstance* DodAnimInst = Cast<UDodAnimInstance>(ActorInfo->GetAnimInstance()))
 		{
-			LyraAnimInst->InitializeWithAbilitySystem(this);
+			DodAnimInst->InitializeWithAbilitySystem(this);
 		}
 
 		TryActivateAbilitiesOnSpawn();
@@ -66,9 +66,9 @@ void UDodAbilitySystemComponent::TryActivateAbilitiesOnSpawn()
 	ABILITYLIST_SCOPE_LOCK();
 	for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
 	{
-		if (const UDodGameplayAbility* LyraAbilityCDO = Cast<UDodGameplayAbility>(AbilitySpec.Ability))
+		if (const UDodGameplayAbility* DodAbilityCDO = Cast<UDodGameplayAbility>(AbilitySpec.Ability))
 		{
-			LyraAbilityCDO->TryActivateAbilityOnSpawn(AbilityActorInfo.Get(), AbilitySpec);
+			DodAbilityCDO->TryActivateAbilityOnSpawn(AbilityActorInfo.Get(), AbilitySpec);
 		}
 	}
 }

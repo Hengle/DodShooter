@@ -1,4 +1,11 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿#include "Player/DodPlayerController.h"
 
+#include "Equipment/DodQuickBarComponent.h"
+#include "Inventory/DodInventoryManagerComponent.h"
 
-#include "Player/DodPlayerController.h"
+ADodPlayerController::ADodPlayerController(const FObjectInitializer& FObjectInitializer)
+	: Super(FObjectInitializer)
+{
+	InventoryComponent = CreateDefaultSubobject<UDodInventoryManagerComponent>(TEXT("InventoryComponent"));
+	QuickBarComponent = CreateDefaultSubobject<UDodQuickBarComponent>(TEXT("QuickBarComponent"));
+}

@@ -14,10 +14,10 @@ struct FDodPawnData
 {
 	GENERATED_BODY()
 	/*UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Abilities")
-	TArray<TObjectPtr<ULyraAbilitySet>> AbilitySets;
+	TArray<TObjectPtr<UDodAbilitySet>> AbilitySets;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Abilities")
-	TObjectPtr<ULyraAbilityTagRelationshipMapping> TagRelationshipMapping;*/
+	TObjectPtr<UDodAbilityTagRelationshipMapping> TagRelationshipMapping;*/
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Input")
 	TObjectPtr<UDodInputConfig> InputConfig;
