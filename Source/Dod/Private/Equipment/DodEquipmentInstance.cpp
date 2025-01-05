@@ -21,7 +21,7 @@ void UDodEquipmentInstance::OnUnequipped()
 	K2_OnUnequipped();
 }
 
-void UDodEquipmentInstance::SpawnEquipmentActors(const TArray<FDodEquipmentActorToSpawn>& ActorsToSpawn)
+void UDodEquipmentInstance::SpawnEquipmentActors(const FDodEquipmentActorToSpawn& ActorToSpawn)
 {
 	if (APawn* OwningPawn = GetPawn())
 	{
@@ -36,51 +36,46 @@ void UDodEquipmentInstance::SpawnEquipmentActors(const TArray<FDodEquipmentActor
 			ArmMesh = Char->ArmMesh;
 		}
 
-		for (const FDodEquipmentActorToSpawn& SpawnInfo : ActorsToSpawn)
+
+		AActor* NewActor = GetWorld()->SpawnActorDeferred<AActor>(ActorToSpawn.ActorToSpawn,
+		                                                          FTransform::Identity,
+		                                                          OwningPawn);
+		NewActor->FinishSpawning(FTransform::Identity, true);
+		NewActor->SetActorRelativeTransform(ActorToSpawn.AttachTransform);
+		if (AWeaponBase* NewWeapon = Cast<AWeaponBase>(NewActor))
 		{
-			AActor* NewActor = GetWorld()->SpawnActorDeferred<AActor>(SpawnInfo.ActorToSpawn,
-			                                                          FTransform::Identity,
-			                                                          OwningPawn);
-			NewActor->FinishSpawning(FTransform::Identity, true);
-			NewActor->SetActorRelativeTransform(SpawnInfo.AttachTransform);
-			if (AWeaponBase* NewWeapon = Cast<AWeaponBase>(NewActor))
+			FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::KeepRelative,
+			                                                   EAttachmentRule::KeepRelative,
+			                                                   EAttachmentRule::KeepRelative,
+			                                                   true);
+			if (ArmMesh)
 			{
-				FAttachmentTransformRules AttachmentTransformRules(EAttachmentRule::KeepRelative,
-				                                                   EAttachmentRule::KeepRelative,
-				                                                   EAttachmentRule::KeepRelative,
-				                                                   true);
-				if (ArmMesh)
-				{
-					NewWeapon->VM_Receiver->AttachToComponent(ArmMesh,
-					                                          AttachmentTransformRules,
-					                                          SpawnInfo.ArmAttachSocket);
-				}
-				if (BodyMesh)
-				{
-					NewWeapon->WM_Receiver->AttachToComponent(BodyMesh,
-					                                          AttachmentTransformRules,
-					                                          SpawnInfo.BodyAttachSocket);
-				}
+				NewWeapon->VM_Receiver->AttachToComponent(ArmMesh,
+				                                          AttachmentTransformRules,
+				                                          ActorToSpawn.ArmAttachSocket);
 			}
-			else
+			if (BodyMesh)
 			{
-				NewActor->AttachToComponent(BodyMesh,
-				                            FAttachmentTransformRules::KeepRelativeTransform,
-				                            SpawnInfo.BodyAttachSocket);
+				NewWeapon->WM_Receiver->AttachToComponent(BodyMesh,
+				                                          AttachmentTransformRules,
+				                                          ActorToSpawn.BodyAttachSocket);
 			}
-			SpawnedActors.Add(NewActor);
 		}
+		else
+		{
+			NewActor->AttachToComponent(BodyMesh,
+			                            FAttachmentTransformRules::KeepRelativeTransform,
+			                            ActorToSpawn.BodyAttachSocket);
+		}
+		SpawnedActor = NewActor;
 	}
 }
 
 void UDodEquipmentInstance::DestroyEquipmentActors()
 {
-	for (AActor* Actor : SpawnedActors)
+	if (SpawnedActor)
 	{
-		if (Actor)
-		{
-			Actor->Destroy();
-		}
+		SpawnedActor->Destroy();
 	}
 }
 

@@ -20,7 +20,7 @@ public:
 	virtual void OnEquipped();
 	virtual void OnUnequipped();
 
-	virtual void SpawnEquipmentActors(const TArray<FDodEquipmentActorToSpawn>& ActorsToSpawn);
+	virtual void SpawnEquipmentActors(const FDodEquipmentActorToSpawn& ActorToSpawn);
 	virtual void DestroyEquipmentActors();
 
 protected:
@@ -31,12 +31,12 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category=Equipment, meta=(DisplayName="OnUnequipped"))
 	void K2_OnUnequipped();
 
+	UPROPERTY(Replicated)
+	TObjectPtr<AActor> SpawnedActor;
+
 private:
 	UFUNCTION()
 	void OnRep_Instigator();
 	UPROPERTY(ReplicatedUsing=OnRep_Instigator)
 	TObjectPtr<UObject> Instigator;
-
-	UPROPERTY(Replicated)
-	TArray<TObjectPtr<AActor>> SpawnedActors;
 };

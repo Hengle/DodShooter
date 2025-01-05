@@ -9,22 +9,31 @@ class UDodEquipmentInstance;
 class UDodAbilitySet;
 
 USTRUCT()
-struct FDodAttachmentActorToSpawn
+struct FDodAttachmentMeshDetail
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category=Equipment)
-	TSubclassOf<AActor> ActorToSpawn;
-
+	TSoftObjectPtr<USkeletalMesh> ModelToSpawn;
 	// 为空则自动根据根骨骼设置
 	UPROPERTY(EditAnywhere, Category=Equipment)
-	FName VM_AttachSocket;
-	// 为空则自动根据根骨骼设置
+	FName AttachSocket;
+	// 一个武器一共0-9十个插槽，枪身的Idx为0
 	UPROPERTY(EditAnywhere, Category=Equipment)
-	FName WM_AttachSocket;
-
+	int32 SocketIndex;
 	UPROPERTY(EditAnywhere, Category=Equipment)
 	FTransform AttachTransform;
+};
+
+USTRUCT()
+struct FDodAttachmentMeshToSpawn
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category=Equipment)
+	FDodAttachmentMeshDetail ViewModel;
+	UPROPERTY(EditAnywhere, Category=Equipment)
+	FDodAttachmentMeshDetail WorldModel;
 };
 
 USTRUCT()
@@ -36,7 +45,7 @@ struct FDodAttachmentInfo
 	TSubclassOf<UDodAttachmentInstance> AttachmentInstance;
 	// 配件网格体
 	UPROPERTY(EditDefaultsOnly, Category=Attachment)
-	FDodAttachmentActorToSpawn AttachmentToSpawn;
+	FDodAttachmentMeshToSpawn AttachmentToSpawn;
 	// 添加配件后附加的Ability
 	UPROPERTY(EditDefaultsOnly, Category=Attachment)
 	TArray<TObjectPtr<const UDodAbilitySet>> AbilitySetsToGrant;
@@ -73,7 +82,7 @@ public:
 	TArray<TObjectPtr<const UDodAbilitySet>> AbilitySetsToGrant;
 
 	UPROPERTY(EditDefaultsOnly, Category=Equipment)
-	TArray<FDodEquipmentActorToSpawn> ActorsToSpawn;
+	FDodEquipmentActorToSpawn ActorToSpawn;
 
 	UPROPERTY(EditDefaultsOnly, Category=Weapon)
 	TArray<FDodAttachmentInfo> Attachments;

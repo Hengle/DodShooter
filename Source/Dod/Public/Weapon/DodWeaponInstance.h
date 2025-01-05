@@ -4,6 +4,8 @@
 #include "Equipment/DodEquipmentInstance.h"
 #include "DodWeaponInstance.generated.h"
 
+struct FDodAttachmentInfo;
+
 UCLASS()
 class DOD_API UDodWeaponInstance : public UDodEquipmentInstance
 {
@@ -11,6 +13,8 @@ class DOD_API UDodWeaponInstance : public UDodEquipmentInstance
 
 public:
 	virtual void OnEquipped() override;
+
+	void SetAttachment(const TArray<FDodAttachmentInfo>& AttachmentInfos);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon")
 	TSoftClassPtr<UAnimInstance> WeaponEquipArmAnimInstance;

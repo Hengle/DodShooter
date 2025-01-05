@@ -5,6 +5,7 @@
 #include "Equipment/DodEquipmentDefinition.h"
 #include "Equipment/DodEquipmentInstance.h"
 #include "Net/UnrealNetwork.h"
+#include "Weapon/DodWeaponInstance.h"
 
 UDodEquipmentInstance* FDodEquipmentList::AddEntry(TSubclassOf<UDodEquipmentDefinition> EquipmentDefinition)
 {
@@ -33,7 +34,12 @@ UDodEquipmentInstance* FDodEquipmentList::AddEntry(TSubclassOf<UDodEquipmentDefi
 		}
 	}
 
-	Result->SpawnEquipmentActors(EquipmentCDO->ActorsToSpawn);
+	Result->SpawnEquipmentActors(EquipmentCDO->ActorToSpawn);
+
+	if (UDodWeaponInstance* WeaponInstance = Cast<UDodWeaponInstance>(Result))
+	{
+		WeaponInstance->SetAttachment(EquipmentCDO->Attachments);
+	}
 
 	MarkItemDirty(NewEntry);
 
