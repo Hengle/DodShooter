@@ -33,6 +33,15 @@ bool UDodGameplayAbility_Jump::CanActivateAbility(const FGameplayAbilitySpecHand
 	return true;
 }
 
+void UDodGameplayAbility_Jump::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+                                               const FGameplayAbilityActorInfo* ActorInfo,
+                                               const FGameplayAbilityActivationInfo ActivationInfo,
+                                               const FGameplayEventData* TriggerEventData)
+{
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	CharacterJumpStart();
+}
+
 void UDodGameplayAbility_Jump::EndAbility(const FGameplayAbilitySpecHandle Handle,
                                           const FGameplayAbilityActorInfo* ActorInfo,
                                           const FGameplayAbilityActivationInfo ActivationInfo,
@@ -40,6 +49,18 @@ void UDodGameplayAbility_Jump::EndAbility(const FGameplayAbilitySpecHandle Handl
 {
 	CharacterJumpStop();
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+void UDodGameplayAbility_Jump::InputReleased(const FGameplayAbilitySpecHandle Handle,
+                                             const FGameplayAbilityActorInfo* ActorInfo,
+                                             const FGameplayAbilityActivationInfo ActivationInfo)
+{
+	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
+
+	if (ActorInfo && ActorInfo->AvatarActor != nullptr)
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+	}
 }
 
 void UDodGameplayAbility_Jump::CharacterJumpStart()
