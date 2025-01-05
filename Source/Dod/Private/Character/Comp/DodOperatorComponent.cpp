@@ -10,6 +10,7 @@
 #include "Input/Common/InputMappingContextAndPriority.h"
 #include "UserSettings/EnhancedInputUserSettings.h"
 #include "InputMappingContext.h"
+#include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/PlayerState.h"
 #include "Player/DodPlayerController.h"
@@ -198,7 +199,7 @@ void UDodOperatorComponent::InitializePlayerInput(UInputComponent* PlayerInputCo
 			{
 				TArray<uint32> BindHandles;
 				IC->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed,
-				                       &ThisClass::Input_AbilityInputTagReleased, /*out*/ BindHandles);
+				                       &ThisClass::Input_AbilityInputTagReleased, BindHandles);
 
 				IC->BindNativeAction(InputConfig, DodGameplayTags::InputTag_Move, ETriggerEvent::Triggered, this,
 				                     &ThisClass::Input_Move);
@@ -222,10 +223,10 @@ void UDodOperatorComponent::Input_AbilityInputTagPressed(FGameplayTag InputTag)
 		if (const UDodPawnExtensionComponent* PawnExtComp =
 			UDodPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 		{
-			/*if (UDodAbilitySystemComponent* ASC = PawnExtComp->GetDodAbilitySystemComponent())
+			if (UDodAbilitySystemComponent* ASC = PawnExtComp->GetDodAbilitySystemComponent())
 			{
 				ASC->AbilityInputTagPressed(InputTag);
-			}*/
+			}
 		}
 	}
 }
@@ -240,10 +241,10 @@ void UDodOperatorComponent::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 
 	if (const UDodPawnExtensionComponent* PawnExtComp = UDodPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 	{
-		/*if (UDodAbilitySystemComponent* ASC = PawnExtComp->GetDodAbilitySystemComponent())
+		if (UDodAbilitySystemComponent* ASC = PawnExtComp->GetDodAbilitySystemComponent())
 		{
 			ASC->AbilityInputTagReleased(InputTag);
-		}*/
+		}
 	}
 }
 

@@ -1,6 +1,7 @@
 ﻿#include "Character/Comp/DodPawnExtensionComponent.h"
 
 #include "DodGameplayTags.h"
+#include "AbilitySystem/DodAbilitySet.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 
@@ -129,6 +130,14 @@ void UDodPawnExtensionComponent::InitializeAbilitySystem(UDodAbilitySystemCompon
 
 	AbilitySystemComponent = InAsc;
 	AbilitySystemComponent->InitAbilityActorInfo(InOwner, Pawn);
+
+	for (const UDodAbilitySet* AbilitySet : PawnData.AbilitySets)
+	{
+		if (AbilitySet)
+		{
+			AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
+		}
+	}
 }
 
 void UDodPawnExtensionComponent::UninitializeAbilitySystem()

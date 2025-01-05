@@ -5,6 +5,7 @@
 #include "Components/PawnComponent.h"
 #include "DodPawnExtensionComponent.generated.h"
 
+class UDodAbilitySet;
 class UDodAbilitySystemComponent;
 class UDodCameraMode;
 class UDodInputConfig;
@@ -13,10 +14,10 @@ USTRUCT(BlueprintType, Meta = (DisplayName = "Dod Pawn Data", ShortTooltip = "De
 struct FDodPawnData
 {
 	GENERATED_BODY()
-	/*UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Abilities")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Abilities")
 	TArray<TObjectPtr<UDodAbilitySet>> AbilitySets;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Abilities")
+	/*UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Abilities")
 	TObjectPtr<UDodAbilityTagRelationshipMapping> TagRelationshipMapping;*/
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Input")

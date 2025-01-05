@@ -17,6 +17,12 @@ class DOD_API UDodOperatorComponent : public UPawnComponent, public IGameFramewo
 public:
 	UDodOperatorComponent(const FObjectInitializer& ObjectInitializer);
 
+	UFUNCTION(BlueprintPure, Category = "Lyra|Hero")
+	static UDodOperatorComponent* FindOperatorComponent(const AActor* Actor)
+	{
+		return Actor ? Actor->FindComponentByClass<UDodOperatorComponent>() : nullptr;
+	}
+
 	static const FName NAME_ActorFeatureName;
 
 	//~ Begin IGameFrameworkInitStateInterface interface
