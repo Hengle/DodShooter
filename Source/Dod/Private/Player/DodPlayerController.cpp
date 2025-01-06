@@ -14,7 +14,7 @@ ADodPlayerController::ADodPlayerController(const FObjectInitializer& FObjectInit
 
 ADodPlayerState* ADodPlayerController::GetDodPlayerState() const
 {
-	return CastChecked<ADodPlayerState>(PlayerState, ECastCheckedType::NullAllowed);
+	return Cast<ADodPlayerState>(PlayerState);
 }
 
 UDodAbilitySystemComponent* ADodPlayerController::GetDodAbilitySystemComponent() const
