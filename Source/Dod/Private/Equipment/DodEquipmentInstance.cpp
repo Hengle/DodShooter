@@ -3,8 +3,18 @@
 #include "Character/DodShooter.h"
 #include "Equipment/DodEquipmentDefinition.h"
 #include "GameFramework/Character.h"
+#include "Iris/ReplicationSystem/ReplicationFragmentUtil.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapon/WeaponBase.h"
+
+UWorld* UDodEquipmentInstance::GetWorld() const
+{
+	if (APawn* OwningPawn = GetPawn())
+	{
+		return OwningPawn->GetWorld();
+	}
+	return nullptr;
+}
 
 APawn* UDodEquipmentInstance::GetPawn() const
 {
@@ -84,8 +94,16 @@ void UDodEquipmentInstance::GetLifetimeReplicatedProps(TArray<class FLifetimePro
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, Instigator);
+	DOREPLIFETIME(ThisClass, SpawnedActor);
 }
-
+#if UE_WITH_IRIS
+void UDodEquipmentInstance::RegisterReplicationFragments(UE::Net::FFragmentRegistrationContext& Context,
+                                                         UE::Net::EFragmentRegistrationFlags RegistrationFlags)
+{
+	using namespace UE::Net;
+	FReplicationFragmentUtil::CreateAndRegisterFragmentsForObject(this, Context, RegistrationFlags);
+}
+#endif // UE_WITH_IRIS
 void UDodEquipmentInstance::OnRep_Instigator()
 {
 }

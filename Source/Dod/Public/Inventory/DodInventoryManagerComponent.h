@@ -44,12 +44,32 @@ struct FDodInventoryList : public FFastArraySerializer
 
 	UDodInventoryItemInstance* AddEntry(TSubclassOf<UDodInventoryItemDefinition> ItemClass, int32 StackCount);
 
+	//~FFastArraySerializer contract
+	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+	//~End of FFastArraySerializer contract
+
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
+	{
+		return FFastArraySerializer::FastArrayDeltaSerialize<FDodInventoryEntry, FDodInventoryList>(
+			Entries, DeltaParms, *this);
+	}
+
 protected:
+	friend UDodInventoryManagerComponent;
+
 	UPROPERTY()
 	TArray<FDodInventoryEntry> Entries;
 
 	UPROPERTY(NotReplicated)
 	TObjectPtr<UActorComponent> OwnerComponent;
+};
+
+template<>
+struct TStructOpsTypeTraits<FDodInventoryList> : public TStructOpsTypeTraitsBase2<FDodInventoryList>
+{
+	enum { WithNetDeltaSerializer = true };
 };
 
 UCLASS(BlueprintType)
@@ -67,6 +87,11 @@ public:
 	                                             int32 StackCount = 1);
 
 protected:
+	//~ Begin UObject interface
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
+	                                 FReplicationFlags* RepFlags) override;
+	virtual void ReadyForReplication() override;
+	//~ End of UObject interface
 	UPROPERTY(Replicated)
 	FDodInventoryList InventoryList;
 };

@@ -49,7 +49,21 @@ struct FDodEquipmentList : public FFastArraySerializer
 	UDodEquipmentInstance* AddEntry(TSubclassOf<UDodEquipmentDefinition> EquipmentDefinition);
 	void RemoveEntry(UDodEquipmentInstance* Instance);
 
+	//~ FFastArraySerializer
+	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
+	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
+	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
+
+	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
+	{
+		return FFastArraySerializer::FastArrayDeltaSerialize<FDodAppliedEquipmentEntry, FDodEquipmentList>(
+			Entries, DeltaParms, *this);
+	}
+	//~ End of FFastArraySerializer
+
 private:
+	friend class UDodEquipmentManagerComponent;
+
 	UDodAbilitySystemComponent* GetAbilitySystemComponent() const;
 
 	UPROPERTY()
@@ -57,6 +71,12 @@ private:
 
 	UPROPERTY(NotReplicated)
 	TObjectPtr<UActorComponent> OwnerComponent;
+};
+
+template <>
+struct TStructOpsTypeTraits<FDodEquipmentList> : public TStructOpsTypeTraitsBase2<FDodEquipmentList>
+{
+	enum { WithNetDeltaSerializer = true };
 };
 
 class UDodEquipmentInstance;
@@ -75,6 +95,17 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly)
 	void UnequipItem(UDodEquipmentInstance* ItemInstance);
+
+	//~ Begin UObject interface
+	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
+	                                 FReplicationFlags* RepFlags) override;
+	//~ End of UObject interface
+
+	//~ Begin ActorComponent
+	virtual void InitializeComponent() override;
+	virtual void UninitializeComponent() override;
+	virtual void ReadyForReplication() override;
+	//~ End of ActorComponent
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;

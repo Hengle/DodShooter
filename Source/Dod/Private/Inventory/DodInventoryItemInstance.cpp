@@ -1,6 +1,7 @@
 ﻿#include "Inventory/DodInventoryItemInstance.h"
 
 #include "Inventory/DodInventoryItemDefinition.h"
+#include "Iris/ReplicationSystem/ReplicationFragmentUtil.h"
 #include "Net/UnrealNetwork.h"
 
 void UDodInventoryItemInstance::SetItemDef(TSubclassOf<UDodInventoryItemDefinition> InDef)
@@ -24,4 +25,11 @@ void UDodInventoryItemInstance::GetLifetimeReplicatedProps(TArray<class FLifetim
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, ItemDef);
+}
+
+void UDodInventoryItemInstance::RegisterReplicationFragments(UE::Net::FFragmentRegistrationContext& Context,
+	UE::Net::EFragmentRegistrationFlags RegistrationFlags)
+{
+	using namespace UE::Net;
+	FReplicationFragmentUtil::CreateAndRegisterFragmentsForObject(this, Context, RegistrationFlags);
 }

@@ -12,6 +12,10 @@ class DOD_API UDodEquipmentInstance : public UObject
 	GENERATED_BODY()
 
 public:
+	//~ Begin UObject interface
+	virtual bool IsSupportedForNetworking() const override { return true; };
+	virtual UWorld* GetWorld() const override;
+	//~ End ofUObject interface
 	void SetInstigator(UObject* InInstigator) { Instigator = InInstigator; }
 
 	UFUNCTION(BlueprintPure, Category=Equipment)
@@ -25,6 +29,11 @@ public:
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+#if UE_WITH_IRIS
+	virtual void RegisterReplicationFragments(UE::Net::FFragmentRegistrationContext& Context,
+	                                          UE::Net::EFragmentRegistrationFlags RegistrationFlags) override;
+#endif
 	UFUNCTION(BlueprintImplementableEvent, Category=Equipment, meta=(DisplayName="OnEquipped"))
 	void K2_OnEquipped();
 

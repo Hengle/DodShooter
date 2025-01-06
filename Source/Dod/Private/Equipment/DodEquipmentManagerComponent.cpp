@@ -2,6 +2,7 @@
 
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
+#include "Engine/ActorChannel.h"
 #include "Equipment/DodEquipmentDefinition.h"
 #include "Equipment/DodEquipmentInstance.h"
 #include "Net/UnrealNetwork.h"
@@ -67,6 +68,34 @@ void FDodEquipmentList::RemoveEntry(UDodEquipmentInstance* Instance)
 	}
 }
 
+void FDodEquipmentList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
+{
+	for (int32 Index : RemovedIndices)
+	{
+		const FDodAppliedEquipmentEntry& Entry = Entries[Index];
+		if (Entry.Instance != nullptr)
+		{
+			Entry.Instance->OnUnequipped();
+		}
+	}
+}
+
+void FDodEquipmentList::PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize)
+{
+	for (int32 Index : AddedIndices)
+	{
+		const FDodAppliedEquipmentEntry& Entry = Entries[Index];
+		if (Entry.Instance != nullptr)
+		{
+			Entry.Instance->OnEquipped();
+		}
+	}
+}
+
+void FDodEquipmentList::PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize)
+{
+}
+
 UDodAbilitySystemComponent* FDodEquipmentList::GetAbilitySystemComponent() const
 {
 	check(OwnerComponent);
@@ -112,6 +141,63 @@ void UDodEquipmentManagerComponent::UnequipItem(UDodEquipmentInstance* ItemInsta
 
 		ItemInstance->OnUnequipped();
 		EquipmentList.RemoveEntry(ItemInstance);
+	}
+}
+
+bool UDodEquipmentManagerComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
+                                                        FReplicationFlags* RepFlags)
+{
+	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	for (FDodAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		UDodEquipmentInstance* Instance = Entry.Instance;
+
+		if (IsValid(Instance))
+		{
+			WroteSomething |= Channel->ReplicateSubobject(Instance, *Bunch, *RepFlags);
+		}
+	}
+
+	return WroteSomething;
+}
+
+void UDodEquipmentManagerComponent::InitializeComponent()
+{
+	Super::InitializeComponent();
+}
+
+void UDodEquipmentManagerComponent::UninitializeComponent()
+{
+	TArray<UDodEquipmentInstance*> AllEquipmentInstances;
+
+	for (const FDodAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		AllEquipmentInstances.Add(Entry.Instance);
+	}
+
+	for (UDodEquipmentInstance* EquipInstance : AllEquipmentInstances)
+	{
+		UnequipItem(EquipInstance);
+	}
+
+	Super::UninitializeComponent();
+}
+
+void UDodEquipmentManagerComponent::ReadyForReplication()
+{
+	Super::ReadyForReplication();
+	if (IsUsingRegisteredSubObjectList())
+	{
+		for (const FDodAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+		{
+			UDodEquipmentInstance* Instance = Entry.Instance;
+
+			if (IsValid(Instance))
+			{
+				AddReplicatedSubObject(Instance);
+			}
+		}
 	}
 }
 

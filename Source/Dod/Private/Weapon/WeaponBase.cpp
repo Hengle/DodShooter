@@ -6,7 +6,7 @@
 
 AWeaponBase::AWeaponBase()
 {
-	SetReplicates(true);
+	bReplicates = true;
 
 	VM_Attachment.Init(nullptr, 10);
 	WM_Attachment.Init(nullptr, 10);
