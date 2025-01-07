@@ -12,13 +12,7 @@ void UDodAnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
-	if (AActor* OwningActor = GetOwningActor())
-	{
-		if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwningActor))
-		{
-			InitializeWithAbilitySystem(ASC);
-		}
-	}
+	InitAnimInstance();
 }
 
 void UDodAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
@@ -28,6 +22,11 @@ void UDodAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	if (!TryGetPawnOwner())
 	{
 		return;
+	}
+
+	if (!bIsInitialized)
+	{
+		InitAnimInstance();
 	}
 
 	UpdateLocationData(DeltaSeconds);
@@ -42,6 +41,18 @@ void UDodAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	UpdateJumpFallData();
 
 	bIsFirstUpdate = false;
+}
+
+void UDodAnimInstance::InitAnimInstance()
+{
+	if (AActor* OwningActor = GetOwningActor())
+	{
+		if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwningActor))
+		{
+			InitializeWithAbilitySystem(ASC);
+			bIsInitialized = true;
+		}
+	}
 }
 
 void UDodAnimInstance::InitializeWithAbilitySystem(UAbilitySystemComponent* ASC)

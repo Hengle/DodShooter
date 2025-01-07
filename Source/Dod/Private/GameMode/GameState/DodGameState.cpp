@@ -5,6 +5,7 @@
 #include "GameFeaturesSubsystem.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "GameMode/DodActionSet.h"
+#include "Kismet/GameplayStatics.h"
 
 ADodGameState::ADodGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

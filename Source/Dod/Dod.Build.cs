@@ -14,7 +14,7 @@ public class Dod : ModuleRules
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "ModularGameplayActors", "LoadingScreen",
 			"ControlFlows", "CommonUI", "CommonGame", "GameplayTags", "UMG", "ModularGameplay", "EnhancedInput",
 			"GameplayAbilities", "AnimGraphRuntime", "GameplayTasks", "GameFeatures", "UIExtension", "NetCore",
-			"Networking", "PhysicsCore", "IrisCore", "AIModule"
+			"Networking", "PhysicsCore", "IrisCore", "AIModule", "CommonInput", "Slate", "SlateCore"
 		});
 	}
 }

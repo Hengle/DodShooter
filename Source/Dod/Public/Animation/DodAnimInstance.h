@@ -26,6 +26,7 @@ public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
 	//~ End of UAnimInstance interface
+	void InitAnimInstance();
 
 	virtual void InitializeWithAbilitySystem(UAbilitySystemComponent* ASC);
 
@@ -174,4 +175,5 @@ public:
 
 private:
 	uint8 bIsFirstUpdate : 1{true};
+	uint8 bIsInitialized : 1{false};
 };

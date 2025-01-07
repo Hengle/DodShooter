@@ -29,7 +29,6 @@ ADodCharacter::ADodCharacter(const FObjectInitializer& ObjectInitializer)
 	CameraComponent->SetupAttachment(SpringArmComponent);
 
 	HeadMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Head");
-	HeadMesh->SetupAttachment(MeshComp, TEXT("j_spine4"));
 
 	PawnExtComponent = CreateDefaultSubobject<UDodPawnExtensionComponent>(TEXT("PawnExt"));
 

@@ -21,14 +21,6 @@ void AMenuGameState::BeginPlay()
 	Flow.ExecuteFlow();
 
 	FrontEndFlow = Flow.AsShared();
-
-	if (APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0))
-	{
-		PlayerController->SetShowMouseCursor(true);
-
-		FInputModeUIOnly InputMode;
-		PlayerController->SetInputMode(InputMode);
-	}
 }
 
 bool AMenuGameState::ShouldShowLoadingScreen() const
