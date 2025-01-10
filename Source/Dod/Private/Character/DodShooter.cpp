@@ -47,6 +47,11 @@ void ADodShooter::BeginPlay()
 	GetMesh()->SetCastHiddenShadow(true);
 	ArmMesh->SetCastShadow(false);
 
+	if (HasAuthority())
+	{
+		AddInitialInventory();
+	}
+
 	if (IsLocallyControlled())
 	{
 		ChangeToFirstPerson();
@@ -60,12 +65,6 @@ void ADodShooter::BeginPlay()
 void ADodShooter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
-
-	if (!HasAuthority())
-	{
-		return;
-	}
-	AddInitialInventory();
 }
 
 void ADodShooter::AddInitialInventory()

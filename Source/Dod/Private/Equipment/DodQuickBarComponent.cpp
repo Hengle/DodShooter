@@ -16,6 +16,11 @@ UDodQuickBarComponent::UDodQuickBarComponent(const FObjectInitializer& ObjectIni
 	IsValidSlotIndex(0);
 }
 
+UDodInventoryItemInstance* UDodQuickBarComponent::GetActiveSlotItem() const
+{
+	return Slots.IsValidIndex(ActiveSlotIndex) ? Slots[ActiveSlotIndex] : nullptr;
+}
+
 void UDodQuickBarComponent::AddItemToSlot(int32 SlotIndex, UDodInventoryItemInstance* Item)
 {
 	if (IsValidSlotIndex(SlotIndex) && Item)

@@ -30,6 +30,14 @@ namespace DodGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death_Dying, "Status.Death.Dying", "Target has begun the death process.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death_Dead, "Status.Death.Dead", "Target has finished the death process.");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Weapon_NoFiring, "Ability.Weapon.NoFiring", "Ability_Weapon_NoFiring.");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Weapon_MagazineAmmo, "Weapon.MagazineAmmo", "Weapon Magazine Ammo.");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Weapon_MagazineSize, "ShooterGame.Weapon.MagazineSize", "弹匣可容纳的子弹数量");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Weapon_SpareAmmo, "ShooterGame.Weapon.SpareAmmo", "玩家剩余子弹数量");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Weapon_MagazineAmmo, "ShooterGame.Weapon.MagazineAmmo", "弹匣中剩余子弹数量");
+
 	FGameplayTag DodGameplayTags::FindTagByString(const FString& TagString, bool bMatchPartialString)
 	{
 		const UGameplayTagsManager& Manager = UGameplayTagsManager::Get();

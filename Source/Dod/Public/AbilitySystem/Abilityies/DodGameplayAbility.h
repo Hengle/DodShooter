@@ -4,6 +4,8 @@
 #include "Abilities/GameplayAbility.h"
 #include "DodGameplayAbility.generated.h"
 
+class UDodInventoryItemInstance;
+class UDodEquipmentInstance;
 class UDodOperatorComponent;
 class ADodPlayerController;
 class ADodCharacter;
@@ -48,6 +50,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dod|Ability")
 	UDodOperatorComponent* GetDodOperatorComponentFromActorInfo() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Dod|Ability")
+	UDodEquipmentInstance* GetAssociatedEquipment() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Dod|Ability")
+	UDodInventoryItemInstance* GetAssociatedItem() const;
+
 	EDodAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 
 	void TryActivateAbilityOnSpawn(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const;
@@ -90,8 +98,16 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "OnAbilityAdded")
 	void K2_OnAbilityAdded();
+
+	virtual void OnAbilityAdded()
+	{
+	};
 	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "OnAbilityRemoved")
 	void K2_OnAbilityRemoved();
+
+	virtual void OnAbilityRemoved()
+	{
+	};
 	UFUNCTION(BlueprintImplementableEvent, Category = Ability, DisplayName = "OnPawnAvatarSet")
 	void K2_OnPawnAvatarSet();
 

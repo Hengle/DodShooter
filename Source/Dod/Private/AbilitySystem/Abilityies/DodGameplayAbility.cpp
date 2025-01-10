@@ -11,6 +11,8 @@
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystem/DodAbilitySourceInterface.h"
 #include "AbilitySystem/DodGameplayEffectContext.h"
+#include "Equipment/DodEquipmentInstance.h"
+#include "Inventory/DodInventoryItemInstance.h"
 #include "Physics/PhysicalMaterialWithTags.h"
 
 UDodGameplayAbility::UDodGameplayAbility(const FObjectInitializer& ObjectInitializer)
@@ -69,6 +71,25 @@ UDodOperatorComponent* UDodGameplayAbility::GetDodOperatorComponentFromActorInfo
 		       : nullptr;
 }
 
+UDodEquipmentInstance* UDodGameplayAbility::GetAssociatedEquipment() const
+{
+	if (FGameplayAbilitySpec* Spec = UGameplayAbility::GetCurrentAbilitySpec())
+	{
+		return Cast<UDodEquipmentInstance>(Spec->SourceObject.Get());
+	}
+
+	return nullptr;
+}
+
+UDodInventoryItemInstance* UDodGameplayAbility::GetAssociatedItem() const
+{
+	if (UDodEquipmentInstance* Equipment = GetAssociatedEquipment())
+	{
+		return Cast<UDodInventoryItemInstance>(Equipment->GetInstigator());
+	}
+	return nullptr;
+}
+
 bool UDodGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                              const FGameplayAbilityActorInfo* ActorInfo,
                                              const FGameplayTagContainer* SourceTags,
@@ -112,6 +133,7 @@ void UDodGameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorIn
 {
 	Super::OnGiveAbility(ActorInfo, Spec);
 
+	OnAbilityAdded();
 	K2_OnAbilityAdded();
 
 	TryActivateAbilityOnSpawn(ActorInfo, Spec);
@@ -119,6 +141,7 @@ void UDodGameplayAbility::OnGiveAbility(const FGameplayAbilityActorInfo* ActorIn
 
 void UDodGameplayAbility::OnRemoveAbility(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
+	OnAbilityRemoved();
 	K2_OnAbilityRemoved();
 	Super::OnRemoveAbility(ActorInfo, Spec);
 }

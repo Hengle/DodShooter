@@ -16,6 +16,10 @@ public:
 	virtual bool IsSupportedForNetworking() const override { return true; };
 	virtual UWorld* GetWorld() const override;
 	//~ End ofUObject interface
+
+	UFUNCTION(BlueprintPure, Category=Equipment)
+	UObject* GetInstigator() { return Instigator; }
+
 	void SetInstigator(UObject* InInstigator) { Instigator = InInstigator; }
 
 	UFUNCTION(BlueprintPure, Category=Equipment)

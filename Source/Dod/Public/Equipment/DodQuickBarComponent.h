@@ -17,11 +17,17 @@ class DOD_API UDodQuickBarComponent : public UControllerComponent
 public:
 	UDodQuickBarComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
-	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly)
-	void AddItemToSlot(int32 SlotIndex, UDodInventoryItemInstance* Item);
-
 	UFUNCTION(Server, Reliable, BlueprintCallable, Category="Dod")
 	void SetActiveSlotIndex(int32 NewIndex);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure=false)
+	int32 GetActiveSlotIndex() const { return ActiveSlotIndex; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = false)
+	UDodInventoryItemInstance* GetActiveSlotItem() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly)
+	void AddItemToSlot(int32 SlotIndex, UDodInventoryItemInstance* Item);
 
 	bool IsValidSlotIndex(int32 SlotIndex);
 

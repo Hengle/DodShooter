@@ -123,7 +123,7 @@ void UGFA_AddWidget::Reset(FPerContextData& ActiveData)
 	ActiveData.ActorData.Empty();
 }
 
-inline void UGFA_AddWidget::HandleActorExtension(AActor* Actor, FName EventName,
+void UGFA_AddWidget::HandleActorExtension(AActor* Actor, FName EventName,
                                                  FGameFeatureStateChangeContext ChangeContext)
 {
 	FPerContextData& ActiveData = ContextData.FindOrAdd(ChangeContext);
@@ -132,8 +132,7 @@ inline void UGFA_AddWidget::HandleActorExtension(AActor* Actor, FName EventName,
 	{
 		RemoveWidgets(Actor, ActiveData);
 	}
-	else if (EventName == UGameFrameworkComponentManager::NAME_ExtensionAdded ||
-		EventName == UGameFrameworkComponentManager::NAME_GameActorReady)
+	else if (EventName == UGameFrameworkComponentManager::NAME_ExtensionAdded)
 	{
 		AddWidgets(Actor, ActiveData);
 	}
