@@ -16,8 +16,14 @@ public:
 
 	void SetAttachment(const TArray<FDodAttachmentInfo>& AttachmentInfos);
 
+	UFUNCTION(BlueprintCallable)
+	void UpdateFiringTime();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon")
 	TSoftClassPtr<UAnimInstance> WeaponEquipArmAnimInstance;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon")
 	TSoftClassPtr<UAnimInstance> WeaponEquipBodyAnimInstance;
+
+private:
+	double TimeLastFired{0.0};
 };

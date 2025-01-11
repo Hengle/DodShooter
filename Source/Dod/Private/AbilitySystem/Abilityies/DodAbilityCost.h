@@ -10,7 +10,7 @@ struct FGameplayTagContainer;
 struct FGameplayAbilityActorInfo;
 class UDodGameplayAbility;
 
-UCLASS()
+UCLASS(DefaultToInstanced, EditInlineNew, Abstract)
 class DOD_API UDodAbilityCost : public UObject
 {
 	GENERATED_BODY()

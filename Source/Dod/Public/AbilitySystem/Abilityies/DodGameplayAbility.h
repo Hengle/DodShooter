@@ -117,6 +117,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Ability Activation")
 	EDodAbilityActivationPolicy ActivationPolicy;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lyra|Ability Activation")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Ability Activation")
 	EDodAbilityActivationGroup ActivationGroup;
 };

@@ -297,16 +297,16 @@ bool UDodGameplayAbility::DoesAbilitySatisfyTagRequirements(const UAbilitySystem
 		bBlocked = true;
 	}
 
-	const UDodAbilitySystemComponent* LyraASC = Cast<UDodAbilitySystemComponent>(&AbilitySystemComponent);
+	const UDodAbilitySystemComponent* ASC = Cast<UDodAbilitySystemComponent>(&AbilitySystemComponent);
 	static FGameplayTagContainer AllRequiredTags;
 	static FGameplayTagContainer AllBlockedTags;
 
 	AllRequiredTags = ActivationRequiredTags;
 	AllBlockedTags = ActivationBlockedTags;
 
-	if (LyraASC)
+	if (ASC)
 	{
-		LyraASC->GetAdditionalActivationTagRequirements(AbilityTags, AllRequiredTags, AllBlockedTags);
+		ASC->GetAdditionalActivationTagRequirements(AbilityTags, AllRequiredTags, AllBlockedTags);
 	}
 
 	if (AllBlockedTags.Num() || AllRequiredTags.Num())

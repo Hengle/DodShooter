@@ -17,7 +17,7 @@ class DOD_API UDodOperatorComponent : public UPawnComponent, public IGameFramewo
 public:
 	UDodOperatorComponent(const FObjectInitializer& ObjectInitializer);
 
-	UFUNCTION(BlueprintPure, Category = "Lyra|Hero")
+	UFUNCTION(BlueprintPure, Category = "Dod|Hero")
 	static UDodOperatorComponent* FindOperatorComponent(const AActor* Actor)
 	{
 		return Actor ? Actor->FindComponentByClass<UDodOperatorComponent>() : nullptr;

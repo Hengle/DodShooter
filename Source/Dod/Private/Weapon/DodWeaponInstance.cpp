@@ -32,3 +32,10 @@ void UDodWeaponInstance::SetAttachment(const TArray<FDodAttachmentInfo>& Attachm
 		}
 	}
 }
+
+void UDodWeaponInstance::UpdateFiringTime()
+{
+	UWorld* World = GetWorld();
+	check(World);
+	TimeLastFired = World->GetTimeSeconds();
+}
