@@ -110,6 +110,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UDodEquipmentInstance* GetFirstInstanceOfType(TSubclassOf<UDodEquipmentInstance> InstanceType);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	TArray<UDodEquipmentInstance*> GetEquipmentInstancesOfType(TSubclassOf<UDodEquipmentInstance> InstanceType) const;
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 

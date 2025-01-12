@@ -25,6 +25,9 @@ public:
 	UFUNCTION(BlueprintPure, Category=Equipment)
 	APawn* GetPawn() const;
 
+	UFUNCTION(BlueprintPure, Category=Equipment)
+	AActor* GetSpawnedActor() const { return SpawnedActor; }
+
 	virtual void OnEquipped();
 	virtual void OnUnequipped();
 

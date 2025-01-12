@@ -11,7 +11,7 @@ class DOD_API UDodRangedWeaponInstance : public UDodWeaponInstance
 
 public:
 	void Tick(float DeltaSeconds);
-	
+
 	/* 射速(rpm)，每分钟最大连续发射子弹数 */
 	float FireRate{0.f};
 	/* 子弹初速，后续速度由重力加速度和子弹质量等因素决定，子弹速度会不断衰减 */
@@ -20,12 +20,16 @@ public:
 	/* 每次射击子弹数，大于1的值一般用于霰弹枪 */
 	int32 PelletCount{1};
 	/* 装弹时间(s)，之后可射击 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Dod|Weapon|Reload")
 	float ReloadTime{0.2f};
 	/* 装弹时间(s)，子弹添加时间，之后可以通过切换武器或道具再切换回来射击 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Dod|Weapon|Reload")
 	float ReloadAddTime{0.1f};
 	/* 空弹匣装弹动画时间(s)，之后可射击 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Dod|Weapon|Reload")
 	float EmptyReloadTime{0.f};
 	/* 空弹匣装弹时间(s)，之后可以通过切换武器或道具再切换回来射击 */
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Dod|Weapon|Reload")
 	float EmptyReloadAddTime{0.f};
 	/* 瞄准时间(s) */
 	float ADSTime{0.f};

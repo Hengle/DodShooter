@@ -218,6 +218,23 @@ UDodEquipmentInstance* UDodEquipmentManagerComponent::GetFirstInstanceOfType(
 	return nullptr;
 }
 
+TArray<UDodEquipmentInstance*> UDodEquipmentManagerComponent::GetEquipmentInstancesOfType(
+	TSubclassOf<UDodEquipmentInstance> InstanceType) const
+{
+	TArray<UDodEquipmentInstance*> Results;
+	for (const FDodAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		if (UDodEquipmentInstance* Instance = Entry.Instance)
+		{
+			if (Instance->IsA(InstanceType))
+			{
+				Results.Add(Instance);
+			}
+		}
+	}
+	return Results;
+}
+
 void UDodEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
