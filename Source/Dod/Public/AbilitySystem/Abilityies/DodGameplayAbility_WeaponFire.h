@@ -10,6 +10,8 @@ class DOD_API UDodGameplayAbility_WeaponFire : public UDodGameplayAbility_Ranged
 	GENERATED_BODY()
 
 public:
+	UDodGameplayAbility_WeaponFire(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
 	//~ Begin UDodGameplayAbility interface
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
@@ -17,14 +19,29 @@ public:
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                        const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility,
 	                        bool bWasCancelled) override;
+	virtual void OnAbilityAdded() override;
 	//~ End of UDodGameplayAbility interface
 
 protected:
+	virtual void RangedWeaponTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData) override;
+
 	void SpawnProjectile(FVector FireLocation);
 
 	UFUNCTION(Server, Reliable)
 	void Server_SpawnProjectile(FVector FireLocation);
 
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UAnimMontage> ArmFireMontage;
+	UPROPERTY(EditAnywhere)
+	FGameplayTag GameplayCueTagFiring;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> FieldActorToSpawnOnImpact;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> GE_Damage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float FireDelayTimeSecs{.12f};
+
 private:
-	FTimerHandle FireCompleteTimer;
+	FGameplayCueParameters GCNParameter;
+	FTimerHandle EndTimer;
 };

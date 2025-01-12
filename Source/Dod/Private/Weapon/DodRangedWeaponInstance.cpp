@@ -1,4 +1,16 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿#include "Weapon/DodRangedWeaponInstance.h"
 
+void UDodRangedWeaponInstance::Tick(float DeltaSeconds)
+{
+	APawn* Pawn = GetPawn();
+	check(Pawn != nullptr);
+	
+	/*const bool bMinSpread = UpdateSpread(DeltaSeconds);
+	const bool bMinMultipliers = UpdateMultipliers(DeltaSeconds);
 
-#include "Weapon/DodRangedWeaponInstance.h"
+	bHasFirstShotAccuracy = bAllowFirstShotAccuracy && bMinMultipliers && bMinSpread;
+
+#if WITH_EDITOR
+	UpdateDebugVisualization();
+#endif*/
+}

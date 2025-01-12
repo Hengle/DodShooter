@@ -107,6 +107,9 @@ public:
 	virtual void ReadyForReplication() override;
 	//~ End of ActorComponent
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UDodEquipmentInstance* GetFirstInstanceOfType(TSubclassOf<UDodEquipmentInstance> InstanceType);
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 

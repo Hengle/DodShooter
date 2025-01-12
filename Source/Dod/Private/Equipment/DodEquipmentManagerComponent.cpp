@@ -201,6 +201,23 @@ void UDodEquipmentManagerComponent::ReadyForReplication()
 	}
 }
 
+UDodEquipmentInstance* UDodEquipmentManagerComponent::GetFirstInstanceOfType(
+	TSubclassOf<UDodEquipmentInstance> InstanceType)
+{
+	for (FDodAppliedEquipmentEntry& Entry : EquipmentList.Entries)
+	{
+		if (UDodEquipmentInstance* Instance = Entry.Instance)
+		{
+			if (Instance->IsA(InstanceType))
+			{
+				return Instance;
+			}
+		}
+	}
+
+	return nullptr;
+}
+
 void UDodEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

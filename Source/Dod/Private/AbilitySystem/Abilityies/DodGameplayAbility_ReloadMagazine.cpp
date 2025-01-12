@@ -40,7 +40,7 @@ void UDodGameplayAbility_ReloadMagazine::ActivateAbility(const FGameplayAbilityS
 		}
 		GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, FTimerDelegate::CreateLambda([&]()
 		{
-			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 		}), Weapon->ReloadTime, false);
 	}
 }
@@ -51,7 +51,7 @@ void UDodGameplayAbility_ReloadMagazine::EndAbility(const FGameplayAbilitySpecHa
                                                     bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-	if (bDidBlockFiring)
+	if (bDidBlockFiring && ActorInfo)
 	{
 		ActorInfo->AbilitySystemComponent->RemoveLooseGameplayTag(DodGameplayTags::Ability_Weapon_NoFiring);
 	}
