@@ -7,6 +7,11 @@ namespace GameViewportTags
 	UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Platform_Trait_Input_HardwareCursor, "Platform.Trait.Input.HardwareCursor");
 }
 
+UDodGameViewportClient::UDodGameViewportClient(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+}
+
 void UDodGameViewportClient::Init(struct FWorldContext& WorldContext, UGameInstance* OwningGameInstance,
                                   bool bCreateNewAudioDevice)
 {

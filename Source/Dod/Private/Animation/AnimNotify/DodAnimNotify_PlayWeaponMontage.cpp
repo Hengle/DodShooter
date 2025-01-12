@@ -23,23 +23,29 @@ void UDodAnimNotify_PlayWeaponMontage::Notify(USkeletalMeshComponent* MeshComp, 
 				{
 					if (Weapon->VM_Receiver)
 					{
-						Weapon->VM_Receiver->PlayAnimation(VM_WeaponMontage, false);
+						if (UAnimInstance* VM_Anim = Weapon->VM_Receiver->GetAnimInstance())
+						{
+							VM_Anim->Montage_Play(VM_WeaponMontage);
+							VM_Anim->MontageSync_Follow(VM_WeaponMontage, MeshComp->GetAnimInstance(), MontageLeader);
+						}
+						else
+						{
+							Weapon->VM_Receiver->PlayAnimation(VM_WeaponMontage, false);
+						}
 					}
+					
 					if (Weapon->WM_Receiver)
 					{
-						Weapon->WM_Receiver->PlayAnimation(WM_WeaponMontage, false);
+						if (UAnimInstance* WM_Anim = Weapon->WM_Receiver->GetAnimInstance())
+						{
+							WM_Anim->Montage_Play(WM_WeaponMontage);
+							WM_Anim->MontageSync_Follow(WM_WeaponMontage, MeshComp->GetAnimInstance(), MontageLeader);
+						}
+						else
+						{
+							Weapon->WM_Receiver->PlayAnimation(WM_WeaponMontage, false);
+						}
 					}
-					/*if (UAnimInstance* VM_Anim = Weapon->VM_Receiver->GetAnimInstance())
-					{
-						VM_Anim->Montage_Play(VM_WeaponMontage);
-						VM_Anim->MontageSync_Follow(VM_WeaponMontage, MeshComp->GetAnimInstance(), MontageLeader);
-					}
-
-					if (UAnimInstance* WM_Anim = Weapon->WM_Receiver->GetAnimInstance())
-					{
-						WM_Anim->Montage_Play(WM_WeaponMontage);
-						WM_Anim->MontageSync_Follow(WM_WeaponMontage, MeshComp->GetAnimInstance(), MontageLeader);
-					}*/
 				}
 			}
 		}

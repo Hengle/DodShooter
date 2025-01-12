@@ -13,24 +13,36 @@ void UDodAnimMontage_PlayAttMontage::Notify(USkeletalMeshComponent* MeshComp, UA
 	{
 		if (AWeaponBase* Weapon = Cast<AWeaponBase>(WeaponActor))
 		{
-			if (Weapon->VM_Attachment.IsValidIndex(VM_Slot) && Weapon->VM_Attachment[VM_Slot])
+			for (const auto& [AttMontage, AttSlot] : VM_AttMontages)
 			{
-				Weapon->VM_Attachment[VM_Slot]->PlayAnimation(VM_AttMontage, false);
-				/*if (UAnimInstance* VM_Anim = Weapon->VM_Attachment[VM_Slot]->GetAnimInstance())
+				if (Weapon->VM_Attachment.IsValidIndex(AttSlot) && Weapon->VM_Attachment[AttSlot])
 				{
-					VM_Anim->Montage_Play(VM_AttMontage);
-					VM_Anim->MontageSync_Follow(VM_AttMontage, MeshComp->GetAnimInstance(), MontageLeader);
-				}*/
+					if (UAnimInstance* VM_Anim = Weapon->VM_Attachment[AttSlot]->GetAnimInstance())
+					{
+						VM_Anim->Montage_Play(AttMontage);
+						VM_Anim->MontageSync_Follow(AttMontage, MeshComp->GetAnimInstance(), MontageLeader);
+					}
+					else
+					{
+						Weapon->VM_Attachment[AttSlot]->PlayAnimation(AttMontage, false);
+					}
+				}
 			}
 
-			if (Weapon->WM_Attachment.IsValidIndex(WM_Slot) && Weapon->WM_Attachment[WM_Slot])
+			for (const auto& [AttMontage, AttSlot] : WM_AttMontages)
 			{
-				Weapon->WM_Attachment[WM_Slot]->PlayAnimation(WM_AttMontage, false);
-				/*if (UAnimInstance* WM_Anim = Weapon->WM_Attachment[WM_Slot]->GetAnimInstance())
+				if (Weapon->WM_Attachment.IsValidIndex(AttSlot) && Weapon->WM_Attachment[AttSlot])
 				{
-					WM_Anim->Montage_Play(WM_AttMontage);
-					WM_Anim->MontageSync_Follow(WM_AttMontage, MeshComp->GetAnimInstance(), MontageLeader);
-				}*/
+					if (UAnimInstance* WM_Anim = Weapon->WM_Attachment[AttSlot]->GetAnimInstance())
+					{
+						WM_Anim->Montage_Play(AttMontage);
+						WM_Anim->MontageSync_Follow(AttMontage, MeshComp->GetAnimInstance(), MontageLeader);
+					}
+					else
+					{
+						Weapon->WM_Attachment[AttSlot]->PlayAnimation(AttMontage, false);
+					}
+				}
 			}
 		}
 	}
