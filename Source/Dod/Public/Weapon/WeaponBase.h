@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
+struct FCamoInfo;
 struct FDodAttachmentMeshDetail;
 
 UCLASS()
@@ -17,6 +18,8 @@ public:
 
 	void SetViewModelAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDetail);
 	void SetWorldModelAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDetail);
+
+	void SetCamo(const FCamoInfo& CamoInfo);
 
 	void SetAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDetail,
 	                   TArray<TObjectPtr<USkeletalMeshComponent>>& AttachmentArray,

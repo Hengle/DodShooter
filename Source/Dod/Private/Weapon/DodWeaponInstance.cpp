@@ -33,6 +33,14 @@ void UDodWeaponInstance::SetAttachment(const TArray<FDodAttachmentInfo>& Attachm
 	}
 }
 
+void UDodWeaponInstance::SetCamo(const FCamoInfo& CamoInfo)
+{
+	if (AWeaponBase* SpawnedWeapon = Cast<AWeaponBase>(SpawnedActor))
+	{
+		SpawnedWeapon->SetCamo(CamoInfo);
+	}
+}
+
 void UDodWeaponInstance::UpdateFiringTime()
 {
 	UWorld* World = GetWorld();

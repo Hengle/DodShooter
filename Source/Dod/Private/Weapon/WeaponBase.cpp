@@ -2,6 +2,7 @@
 
 #include "Equipment/DodEquipmentDefinition.h"
 #include "GameFramework/Character.h"
+#include "Materials/MaterialInstanceConstant.h"
 
 
 AWeaponBase::AWeaponBase()
@@ -68,6 +69,38 @@ void AWeaponBase::SetWorldModelAttachment(const FDodAttachmentMeshDetail& Attach
 	}
 
 	SetAttachment(AttachmentMeshDetail, WM_Attachment, WM_Receiver, bIsVis, true);
+}
+
+void AWeaponBase::SetCamo(const FCamoInfo& CamoInfo)
+{
+	auto SetCamo = [](USkeletalMeshComponent* Skeletal, const FCamoInfo& CamoInfo)
+	{
+		if (Skeletal)
+		{
+			for (int32 MaterialIndex = 0; MaterialIndex < Skeletal->GetNumMaterials(); ++MaterialIndex)
+			{
+				if (UMaterialInstance* MaterialInstance = Cast<UMaterialInstanceConstant>(Skeletal->GetMaterial(MaterialIndex)))
+				{
+					if (UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(MaterialInstance, Skeletal))
+					{
+						MaterialInstanceDynamic->SetScalarParameterValue(TEXT("CamoSelector"), CamoInfo.CamoSlotIndex);
+						MaterialInstanceDynamic->SetTextureParameterValue(TEXT("CamoColor"), CamoInfo.CamoColor);
+						MaterialInstanceDynamic->SetTextureParameterValue(TEXT("CamoNormal"), CamoInfo.CamoNormal);
+						Skeletal->SetMaterial(MaterialIndex, MaterialInstanceDynamic);
+					}
+				}
+			}
+		}
+	};
+
+	for (USkeletalMeshComponent* VM_Skeletal : VM_Attachment)
+	{
+		SetCamo(VM_Skeletal, CamoInfo);
+	}
+	for (USkeletalMeshComponent* WM_Skeletal : VM_Attachment)
+	{
+		SetCamo(WM_Skeletal, CamoInfo);
+	}
 }
 
 void AWeaponBase::SetAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDetail,

@@ -69,6 +69,19 @@ struct FDodEquipmentActorToSpawn
 	FTransform AttachTransform;
 };
 
+USTRUCT()
+struct FCamoInfo
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, Category=Equipment)
+	UTexture2D* CamoColor;
+	UPROPERTY(EditAnywhere, Category=Equipment)
+	UTexture2D* CamoNormal;
+	UPROPERTY(EditAnywhere, Category=Equipment)
+	int32 CamoSlotIndex;
+};
+
 UCLASS(Blueprintable, Const, Abstract, BlueprintType)
 class DOD_API UDodEquipmentDefinition : public UObject
 {
@@ -83,6 +96,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category=Equipment)
 	FDodEquipmentActorToSpawn ActorToSpawn;
+
+	UPROPERTY(EditDefaultsOnly, Category=Equipment)
+	FCamoInfo CamoInfo;
 
 	UPROPERTY(EditDefaultsOnly, Category=Weapon)
 	TArray<FDodAttachmentInfo> Attachments;
