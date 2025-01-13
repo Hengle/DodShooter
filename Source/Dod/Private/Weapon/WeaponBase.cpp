@@ -1,8 +1,9 @@
 ﻿#include "Weapon/WeaponBase.h"
 
+#include "Character/DodCharacter.h"
 #include "Equipment/DodEquipmentDefinition.h"
-#include "GameFramework/Character.h"
 #include "Materials/MaterialInstanceConstant.h"
+#include "Net/UnrealNetwork.h"
 
 
 AWeaponBase::AWeaponBase()
@@ -19,95 +20,80 @@ AWeaponBase::AWeaponBase()
 	VM_Receiver->SetupAttachment(RootComponent);
 	VM_Receiver->SetCastShadow(false);
 	VM_Attachment[0] = VM_Receiver;
+	VM_Receiver->SetIsReplicated(true);
+
 	WM_Receiver = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WM_Receiver"));
 	WM_Receiver->SetupAttachment(RootComponent);
 	WM_Receiver->SetCastShadow(true);
 	WM_Receiver->SetCastHiddenShadow(true);
 	WM_Attachment[0] = WM_Receiver;
+	WM_Receiver->SetIsReplicated(true);
 }
 
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ACharacter* Player = Cast<ACharacter>(GetOwner()))
-	{
-		if (!Player->IsLocallyControlled() || Player->IsBotControlled())
-		{
-			VM_Receiver->SetVisibility(false);
-		}
-		else
-		{
-			WM_Receiver->SetVisibility(false);
-		}
-	}
+	SetFirstPersonVis();
 }
 
-void AWeaponBase::SetViewModelAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDetail)
+void AWeaponBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
-	bool bIsVis = true;
-	if (ACharacter* Player = Cast<ACharacter>(GetOwner()))
-	{
-		if (!Player->IsLocallyControlled() || Player->IsBotControlled())
-		{
-			bIsVis = false;
-		}
-	}
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	SetAttachment(AttachmentMeshDetail, VM_Attachment, VM_Receiver, bIsVis, false);
+	DOREPLIFETIME(ThisClass, VM_Receiver);
+	DOREPLIFETIME(ThisClass, WM_Receiver);
+	DOREPLIFETIME(ThisClass, VM_AttachmentMeshDetails);
+	DOREPLIFETIME(ThisClass, WM_AttachmentMeshDetails);
+	DOREPLIFETIME(ThisClass, CamoInfo);
 }
 
-void AWeaponBase::SetWorldModelAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDetail)
+void AWeaponBase::SetViewModelAttachment(const TArray<FDodAttachmentMeshDetail>& AttachmentMeshDetail)
 {
-	bool bIsVis = false;
-	if (ACharacter* Player = Cast<ACharacter>(GetOwner()))
-	{
-		if (!Player->IsLocallyControlled() || Player->IsBotControlled())
-		{
-			bIsVis = true;
-		}
-	}
-
-	SetAttachment(AttachmentMeshDetail, WM_Attachment, WM_Receiver, bIsVis, true);
+	VM_AttachmentMeshDetails = AttachmentMeshDetail;
+	OnRep_VM_AttachmentMeshDetails();
 }
 
-void AWeaponBase::SetCamo(const FCamoInfo& CamoInfo)
+void AWeaponBase::SetWorldModelAttachment(const TArray<FDodAttachmentMeshDetail>& AttachmentMeshDetail)
 {
-	auto SetCamo = [](USkeletalMeshComponent* Skeletal, const FCamoInfo& CamoInfo)
+	WM_AttachmentMeshDetails = AttachmentMeshDetail;
+	OnRep_WM_AttachmentMeshDetails();
+}
+
+void AWeaponBase::SetCamo(const FCamoInfo& InCamoInfo)
+{
+	CamoInfo = InCamoInfo;
+	OnRep_CamoInfo();
+}
+
+void AWeaponBase::SetMeshCamo(USkeletalMeshComponent* InSkeletal)
+{
+	if (InSkeletal && CamoInfo.CamoSlotIndex > 0 && IsValid(CamoInfo.CamoColor))
 	{
-		if (Skeletal)
+		for (int32 MaterialIndex = 0; MaterialIndex < InSkeletal->GetNumMaterials(); ++MaterialIndex)
 		{
-			for (int32 MaterialIndex = 0; MaterialIndex < Skeletal->GetNumMaterials(); ++MaterialIndex)
+			if (UMaterialInstance* MaterialInstance = Cast<UMaterialInstanceConstant>(
+				InSkeletal->GetMaterial(MaterialIndex)))
 			{
-				if (UMaterialInstance* MaterialInstance = Cast<UMaterialInstanceConstant>(Skeletal->GetMaterial(MaterialIndex)))
+				if (UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(
+					MaterialInstance, InSkeletal))
 				{
-					if (UMaterialInstanceDynamic* MaterialInstanceDynamic = UMaterialInstanceDynamic::Create(MaterialInstance, Skeletal))
+					MaterialInstanceDynamic->SetScalarParameterValue(TEXT("CamoSelector"), CamoInfo.CamoSlotIndex);
+					MaterialInstanceDynamic->SetTextureParameterValue(TEXT("CamoColor"), CamoInfo.CamoColor);
+					if (IsValid(CamoInfo.CamoNormal))
 					{
-						MaterialInstanceDynamic->SetScalarParameterValue(TEXT("CamoSelector"), CamoInfo.CamoSlotIndex);
-						MaterialInstanceDynamic->SetTextureParameterValue(TEXT("CamoColor"), CamoInfo.CamoColor);
 						MaterialInstanceDynamic->SetTextureParameterValue(TEXT("CamoNormal"), CamoInfo.CamoNormal);
-						Skeletal->SetMaterial(MaterialIndex, MaterialInstanceDynamic);
 					}
+					InSkeletal->SetMaterial(MaterialIndex, MaterialInstanceDynamic);
 				}
 			}
 		}
-	};
-
-	for (USkeletalMeshComponent* VM_Skeletal : VM_Attachment)
-	{
-		SetCamo(VM_Skeletal, CamoInfo);
-	}
-	for (USkeletalMeshComponent* WM_Skeletal : VM_Attachment)
-	{
-		SetCamo(WM_Skeletal, CamoInfo);
 	}
 }
 
 void AWeaponBase::SetAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDetail,
-                                TArray<TObjectPtr<USkeletalMeshComponent>>& AttachmentArray,
-                                USkeletalMeshComponent* Receiver,
-                                bool bIsVis,
-                                bool bIsCastShadow)
+                                TArray<USkeletalMeshComponent*>& AttachmentArray,
+                                USkeletalMeshComponent* Receiver)
 {
 	USkeletalMesh* Mesh = AttachmentMeshDetail.ModelToSpawn.LoadSynchronous();
 	int32 SocketIndex = AttachmentMeshDetail.SocketIndex;
@@ -125,32 +111,123 @@ void AWeaponBase::SetAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDe
 
 	if (AttachmentArray.IsValidIndex(SocketIndex))
 	{
-		USkeletalMeshComponent* MeshComponent = AttachmentArray[SocketIndex];
-		if (!MeshComponent)
+		if (!AttachmentArray[SocketIndex])
 		{
 			FString ComponentName = FString::Printf(TEXT("%s_%i"), *Receiver->GetName(), SocketIndex);
 			AttachmentArray[SocketIndex] =
 				NewObject<USkeletalMeshComponent>(this, USkeletalMeshComponent::StaticClass(), *ComponentName);
 			AttachmentArray[SocketIndex]->RegisterComponent();
+			AttachmentArray[SocketIndex]->SetIsReplicated(false);
 		}
-
 		if (AttachmentArray[SocketIndex])
 		{
 			AttachmentArray[SocketIndex]->SetSkeletalMesh(Mesh);
+			SetMeshCamo(AttachmentArray[SocketIndex]);
+
+			FAttachmentTransformRules AttachmentTransformRules{
+				EAttachmentRule::KeepRelative,
+				EAttachmentRule::KeepRelative,
+				EAttachmentRule::KeepRelative,
+				false
+			};
+
+			AttachmentArray[SocketIndex]->AttachToComponent(Receiver, AttachmentTransformRules, AttachSocket);
+			AttachmentArray[SocketIndex]->SetRelativeTransform(AttachTransform);
 		}
+	}
+}
 
-		FAttachmentTransformRules AttachmentTransformRules{
-			EAttachmentRule::KeepRelative,
-			EAttachmentRule::KeepRelative,
-			EAttachmentRule::KeepRelative,
-			false
-		};
+void AWeaponBase::SetFirstPersonVis()
+{
+	if (ADodCharacter* DodCharacter = Cast<ADodCharacter>(GetOwner()))
+	{
+		if (DodCharacter->IsLocallyControlled())
+		{
+			ChangeToFirstPerson();
+		}
+		else
+		{
+			ChangeToThirdPerson();
+		}
+	}
+}
 
-		AttachmentArray[SocketIndex]->AttachToComponent(Receiver, AttachmentTransformRules, AttachSocket);
-		AttachmentArray[SocketIndex]->SetRelativeTransform(AttachTransform);
+void AWeaponBase::ChangeToFirstPerson()
+{
+	for (USkeletalMeshComponent* VM_Skeletal : VM_Attachment)
+	{
+		if (VM_Skeletal)
+		{
+			VM_Skeletal->SetVisibility(true);
+			VM_Skeletal->SetCastShadow(false);
+			VM_Skeletal->SetCastHiddenShadow(false);
+		}
+	}
+	for (USkeletalMeshComponent* WM_Skeletal : WM_Attachment)
+	{
+		if (WM_Skeletal)
+		{
+			WM_Skeletal->SetVisibility(false);
+			WM_Skeletal->SetCastShadow(true);
+			WM_Skeletal->SetCastHiddenShadow(true);
+		}
+	}
+}
 
-		AttachmentArray[SocketIndex]->SetVisibility(bIsVis);
-		AttachmentArray[SocketIndex]->SetCastShadow(bIsCastShadow);
-		AttachmentArray[SocketIndex]->SetCastHiddenShadow(bIsCastShadow);
+void AWeaponBase::ChangeToThirdPerson()
+{
+	for (USkeletalMeshComponent* VM_Skeletal : VM_Attachment)
+	{
+		if (VM_Skeletal)
+		{
+			VM_Skeletal->SetVisibility(false);
+			VM_Skeletal->SetCastShadow(false);
+			VM_Skeletal->SetCastHiddenShadow(false);
+		}
+	}
+	for (USkeletalMeshComponent* WM_Skeletal : WM_Attachment)
+	{
+		if (WM_Skeletal)
+		{
+			WM_Skeletal->SetVisibility(true);
+			WM_Skeletal->SetCastShadow(true);
+			WM_Skeletal->SetCastHiddenShadow(true);
+		}
+	}
+}
+
+void AWeaponBase::OnRep_VM_AttachmentMeshDetails()
+{
+	for (int32 SocketIndex = 0; SocketIndex < VM_AttachmentMeshDetails.Num(); SocketIndex++)
+	{
+		SetAttachment(VM_AttachmentMeshDetails[SocketIndex], VM_Attachment, VM_Receiver);
+	}
+	SetFirstPersonVis();
+}
+
+void AWeaponBase::OnRep_WM_AttachmentMeshDetails()
+{
+	for (int32 SocketIndex = 0; SocketIndex < WM_AttachmentMeshDetails.Num(); SocketIndex++)
+	{
+		SetAttachment(WM_AttachmentMeshDetails[SocketIndex], WM_Attachment, WM_Receiver);
+	}
+	SetFirstPersonVis();
+}
+
+void AWeaponBase::OnRep_CamoInfo()
+{
+	for (USkeletalMeshComponent* VM_Skeletal : VM_Attachment)
+	{
+		if (VM_Skeletal)
+		{
+			SetMeshCamo(VM_Skeletal);
+		}
+	}
+	for (USkeletalMeshComponent* WM_Skeletal : VM_Attachment)
+	{
+		if (WM_Skeletal)
+		{
+			SetMeshCamo(WM_Skeletal);
+		}
 	}
 }

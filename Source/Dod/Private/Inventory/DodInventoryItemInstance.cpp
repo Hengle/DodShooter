@@ -45,6 +45,7 @@ void UDodInventoryItemInstance::GetLifetimeReplicatedProps(TArray<class FLifetim
 	UObject::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ThisClass, ItemDef);
+	DOREPLIFETIME(ThisClass, StatTags);
 }
 
 void UDodInventoryItemInstance::RegisterReplicationFragments(UE::Net::FFragmentRegistrationContext& Context,

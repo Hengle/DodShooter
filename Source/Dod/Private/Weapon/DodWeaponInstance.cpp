@@ -25,11 +25,15 @@ void UDodWeaponInstance::SetAttachment(const TArray<FDodAttachmentInfo>& Attachm
 {
 	if (AWeaponBase* SpawnedWeapon = Cast<AWeaponBase>(SpawnedActor))
 	{
+		TArray<FDodAttachmentMeshDetail> VM_AttachmentInfos;
+		TArray<FDodAttachmentMeshDetail> WM_AttachmentInfos;
 		for (const FDodAttachmentInfo& AttInfo : AttachmentInfos)
 		{
-			SpawnedWeapon->SetViewModelAttachment(AttInfo.AttachmentToSpawn.ViewModel);
-			SpawnedWeapon->SetWorldModelAttachment(AttInfo.AttachmentToSpawn.WorldModel);
+			VM_AttachmentInfos.Add(AttInfo.AttachmentToSpawn.ViewModel);
+			WM_AttachmentInfos.Add(AttInfo.AttachmentToSpawn.WorldModel);
 		}
+		SpawnedWeapon->SetViewModelAttachment(VM_AttachmentInfos);
+		SpawnedWeapon->SetWorldModelAttachment(WM_AttachmentInfos);
 	}
 }
 

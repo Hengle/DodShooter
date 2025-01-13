@@ -30,6 +30,7 @@ void UDodGameplayAbility_WeaponFire::ActivateAbility(const FGameplayAbilitySpecH
 	{
 		Player->ArmMesh->GetAnimInstance()->Montage_Play(ArmFireMontage.LoadSynchronous());
 	}
+	StartFire();
 
 	GetWorld()->GetTimerManager().SetTimer(EndTimer, FTimerDelegate::CreateLambda([&]
 	{
@@ -111,11 +112,22 @@ void UDodGameplayAbility_WeaponFire::RangedWeaponTargetDataReady(const FGameplay
 	}
 }
 
+void UDodGameplayAbility_WeaponFire::StartFire()
+{
+	/*UDodRangedWeaponInstance* Weapon = GetWeaponInstance();
+	if (IsLocallyControlled())
+	{
+	}*/
+}
+
 void UDodGameplayAbility_WeaponFire::SpawnProjectile(FVector FireLocation)
 {
 }
 
 void UDodGameplayAbility_WeaponFire::Server_SpawnProjectile_Implementation(FVector FireLocation)
 {
-	SpawnProjectile(FireLocation);
+	if (!IsLocallyControlled())
+	{
+		SpawnProjectile(FireLocation);
+	}
 }

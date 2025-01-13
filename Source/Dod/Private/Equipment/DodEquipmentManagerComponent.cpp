@@ -39,8 +39,8 @@ UDodEquipmentInstance* FDodEquipmentList::AddEntry(TSubclassOf<UDodEquipmentDefi
 
 	if (UDodWeaponInstance* WeaponInstance = Cast<UDodWeaponInstance>(Result))
 	{
-		WeaponInstance->SetAttachment(EquipmentCDO->Attachments);
 		WeaponInstance->SetCamo(EquipmentCDO->CamoInfo);
+		WeaponInstance->SetAttachment(EquipmentCDO->Attachments);
 	}
 
 	MarkItemDirty(NewEntry);

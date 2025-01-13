@@ -1,12 +1,16 @@
 ﻿#include "Character/DodShooter.h"
 
+#include "DodGameplayTags.h"
 #include "Camera/DodCameraComponent.h"
+#include "Character/Comp/DodPawnExtensionComponent.h"
+#include "Components/GameFrameworkComponentDelegates.h"
 #include "Equipment/DodEquipmentManagerComponent.h"
 #include "Equipment/DodQuickBarComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Inventory/DodInventoryItemDefinition.h"
 #include "Inventory/DodInventoryManagerComponent.h"
 
+const FName ADodShooter::NAME_ActorFeatureName("Shooter");
 
 ADodShooter::ADodShooter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -47,24 +51,70 @@ void ADodShooter::BeginPlay()
 	GetMesh()->SetCastHiddenShadow(true);
 	ArmMesh->SetCastShadow(false);
 
-	if (HasAuthority())
-	{
-		AddInitialInventory();
-	}
-
-	if (IsLocallyControlled())
-	{
-		ChangeToFirstPerson();
-	}
-	else
-	{
-		ChangeToThirdPerson();
-	}
+	ensure(TryToChangeInitState(DodGameplayTags::InitState_Spawned));
+	CheckDefaultInitialization();
 }
 
 void ADodShooter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
+	CheckDefaultInitialization();
+}
+
+bool ADodShooter::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
+                                     FGameplayTag DesiredState) const
+{
+	if (CurrentState == DodGameplayTags::InitState_DataInitialized &&
+		DesiredState == DodGameplayTags::InitState_GameplayReady)
+	{
+		if (!GetController() || !GetAbilitySystemComponent())
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+void ADodShooter::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
+                                        FGameplayTag DesiredState)
+{
+	if (CurrentState == DodGameplayTags::InitState_DataInitialized &&
+		DesiredState == DodGameplayTags::InitState_GameplayReady)
+	{
+		AddInitialInventory();
+		if (IsLocallyControlled())
+		{
+			ChangeToFirstPerson();
+		}
+		else
+		{
+			ChangeToThirdPerson();
+		}
+	}
+}
+
+void ADodShooter::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
+{
+	if (Params.FeatureName != UDodPawnExtensionComponent::NAME_ActorFeatureName)
+	{
+		if (Params.FeatureState == DodGameplayTags::InitState_DataInitialized)
+		{
+			CheckDefaultInitialization();
+		}
+	}
+}
+
+void ADodShooter::CheckDefaultInitialization()
+{
+	static const TArray<FGameplayTag> StateChain = {
+		DodGameplayTags::InitState_Spawned,
+		DodGameplayTags::InitState_DataAvailable,
+		DodGameplayTags::InitState_DataInitialized,
+		DodGameplayTags::InitState_GameplayReady
+	};
+
+	ContinueInitStateChain(StateChain);
 }
 
 void ADodShooter::AddInitialInventory()
@@ -78,7 +128,8 @@ void ADodShooter::AddInitialInventory()
 		return;
 	}
 
-	UDodInventoryManagerComponent* InventoryManager = GetController()->GetComponentByClass<UDodInventoryManagerComponent>();
+	UDodInventoryManagerComponent* InventoryManager = GetController()->GetComponentByClass<
+		UDodInventoryManagerComponent>();
 	UDodQuickBarComponent* QuickBar = GetController()->GetComponentByClass<UDodQuickBarComponent>();
 	if (!InventoryManager || !QuickBar)
 	{

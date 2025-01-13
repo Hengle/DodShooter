@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "Equipment/DodEquipmentDefinition.h"
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
@@ -15,27 +16,49 @@ class DOD_API AWeaponBase : public AActor
 public:
 	AWeaponBase();
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
-	void SetViewModelAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDetail);
-	void SetWorldModelAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDetail);
+	void SetViewModelAttachment(const TArray<FDodAttachmentMeshDetail>& AttachmentMeshDetail);
 
-	void SetCamo(const FCamoInfo& CamoInfo);
+	void SetWorldModelAttachment(const TArray<FDodAttachmentMeshDetail>& AttachmentMeshDetail);
+
+	void SetCamo(const FCamoInfo& InCamoInfo);
+	void SetMeshCamo(USkeletalMeshComponent* InSkeletal);
+	
 
 	void SetAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDetail,
-	                   TArray<TObjectPtr<USkeletalMeshComponent>>& AttachmentArray,
-	                   USkeletalMeshComponent* Receiver,
-	                   bool bIsVis,
-	                   bool bIsCastShadow);
+	                   TArray<USkeletalMeshComponent*>& AttachmentArray,
+	                   USkeletalMeshComponent* Receiver);
+
+	void SetFirstPersonVis();
+	void ChangeToFirstPerson();
+	void ChangeToThirdPerson();
+
+	UFUNCTION()
+	void OnRep_VM_AttachmentMeshDetails();
+	UFUNCTION()
+	void OnRep_WM_AttachmentMeshDetails();
+	UFUNCTION()
+	void OnRep_CamoInfo();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon")
 	USceneComponent* Root;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon")
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon", Replicated)
 	TObjectPtr<USkeletalMeshComponent> VM_Receiver;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon", Replicated)
 	TObjectPtr<USkeletalMeshComponent> WM_Receiver;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon")
-	TArray<TObjectPtr<USkeletalMeshComponent>> VM_Attachment;
+	TArray<USkeletalMeshComponent*> VM_Attachment;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon")
-	TArray<TObjectPtr<USkeletalMeshComponent>> WM_Attachment;
+	TArray<USkeletalMeshComponent*> WM_Attachment;
+
+	UPROPERTY(ReplicatedUsing=OnRep_VM_AttachmentMeshDetails)
+	TArray<FDodAttachmentMeshDetail> VM_AttachmentMeshDetails;
+	UPROPERTY(ReplicatedUsing=OnRep_WM_AttachmentMeshDetails)
+	TArray<FDodAttachmentMeshDetail> WM_AttachmentMeshDetails;
+
+	UPROPERTY(ReplicatedUsing=OnRep_CamoInfo)
+	FCamoInfo CamoInfo;
 };

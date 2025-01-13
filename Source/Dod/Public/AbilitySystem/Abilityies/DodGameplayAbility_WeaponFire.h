@@ -25,6 +25,8 @@ public:
 protected:
 	virtual void RangedWeaponTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData) override;
 
+	void StartFire();
+
 	void SpawnProjectile(FVector FireLocation);
 
 	UFUNCTION(Server, Reliable)

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "DodOperator.h"
+#include "Components/GameFrameworkInitStateInterface.h"
 #include "DodShooter.generated.h"
 
 class UDodEquipmentManagerComponent;
@@ -9,7 +10,7 @@ class UDodInventoryItemDefinition;
 class UDodOperatorComponent;
 
 UCLASS()
-class DOD_API ADodShooter : public ADodOperator
+class DOD_API ADodShooter : public ADodOperator, public IGameFrameworkInitStateInterface
 {
 	GENERATED_BODY()
 
@@ -21,15 +22,23 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-	//~Begin APawn interface
 	virtual void PossessedBy(AController* NewController) override;
-	//~End of APawn interface
+
+	//~ Begin IGameFrameworkInitStateInterface interface
+	virtual FName GetFeatureName() const override { return NAME_ActorFeatureName; }
+	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
+	                                FGameplayTag DesiredState) const override;
+	virtual void HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
+	                                   FGameplayTag DesiredState) override;
+	virtual void OnActorInitStateChanged(const FActorInitStateChangedParams& Params) override;
+	virtual void CheckDefaultInitialization() override;
+	//~ End of IGameFrameworkInitStateInterface interface
 
 	// 添加库存中的每一个物品，然后激活第一个
 	void AddInitialInventory();
 
 public:
+	static const FName NAME_ActorFeatureName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Character")
 	TObjectPtr<USkeletalMeshComponent> ArmMesh;
 

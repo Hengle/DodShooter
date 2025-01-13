@@ -8,4 +8,7 @@ UCLASS()
 class DOD_API ADodGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	ADodGameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 };
