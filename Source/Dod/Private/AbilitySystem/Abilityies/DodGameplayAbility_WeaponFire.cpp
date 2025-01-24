@@ -4,6 +4,10 @@
 #include "Character/DodCharacter.h"
 #include "Character/DodShooter.h"
 #include "GameplayCueFunctionLibrary.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Weapon/DodProjectile.h"
+#include "Weapon/DodRangedWeaponInstance.h"
+#include "Weapon/WeaponBase.h"
 
 UDodGameplayAbility_WeaponFire::UDodGameplayAbility_WeaponFire(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -114,20 +118,35 @@ void UDodGameplayAbility_WeaponFire::RangedWeaponTargetDataReady(const FGameplay
 
 void UDodGameplayAbility_WeaponFire::StartFire()
 {
-	/*UDodRangedWeaponInstance* Weapon = GetWeaponInstance();
-	if (IsLocallyControlled())
+	/*FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
+		GE_Damage, GetAbilityLevel());*/
+	if (GetOwningActorFromActorInfo()->GetLocalRole() == ROLE_Authority)
 	{
-	}*/
-}
+		ADodCharacter* Character = GetDodCharacterFromActorInfo();
+		UDodRangedWeaponInstance* Weapon = GetWeaponInstance();
+		if (Weapon)
+		{
+			TSubclassOf<ADodProjectile> ProjectileClass = Weapon->ProjectileClass.LoadSynchronous();
+			if (Character)
+			{
+				AWeaponBase* WeaponActor = Cast<AWeaponBase>(Weapon->GetSpawnedActor());
+				FTransform FireTransform = FTransform::Identity;
+				FireTransform.SetLocation(WeaponActor->VM_Receiver->GetComponentLocation());
+				FireTransform.SetRotation(Character->GetControlRotation().Quaternion());
 
-void UDodGameplayAbility_WeaponFire::SpawnProjectile(FVector FireLocation)
-{
-}
+				FActorSpawnParameters SpawnParameters;
+				SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
-void UDodGameplayAbility_WeaponFire::Server_SpawnProjectile_Implementation(FVector FireLocation)
-{
-	if (!IsLocallyControlled())
-	{
-		SpawnProjectile(FireLocation);
+				// TODO: 客户端预测生成子弹
+				ADodProjectile* Projectile = GetWorld()->SpawnActorDeferred<ADodProjectile>(
+					ProjectileClass,
+					FireTransform,
+					GetOwningActorFromActorInfo(),
+					Character,
+					ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+				// Projectile->DamageEffectSpecHandle = DamageEffectSpecHandle;
+				Projectile->FinishSpawning(FireTransform);
+			}
+		}
 	}
 }

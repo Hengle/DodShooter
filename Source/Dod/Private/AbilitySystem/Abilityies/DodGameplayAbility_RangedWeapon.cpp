@@ -2,6 +2,8 @@
 
 #include "AbilitySystemComponent.h"
 #include "AIController.h"
+#include "Character/DodCharacter.h"
+#include "Equipment/DodEquipmentManagerComponent.h"
 #include "Physics/DodCollisionChannels.h"
 #include "Weapon/DodRangedWeaponInstance.h"
 #include "Weapon/DodWeaponStateComponent.h"

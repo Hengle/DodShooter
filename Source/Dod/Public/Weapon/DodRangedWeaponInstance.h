@@ -12,10 +12,14 @@ class DOD_API UDodRangedWeaponInstance : public UDodWeaponInstance
 public:
 	void Tick(float DeltaSeconds);
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Dod|Weapon|Fire")
+	TSoftClassPtr<AActor> ProjectileClass;
+
 	/* 射速(rpm)，每分钟最大连续发射子弹数 */
 	float FireRate{0.f};
-	/* 子弹初速，后续速度由重力加速度和子弹质量等因素决定，子弹速度会不断衰减 */
-	/* 目前未知子弹后续速度计算方法，使用UE默认物理算法 */
+	/* 子弹初速，后续速度由重力加速度和子弹质量等因素决定，子弹速度会不断衰减
+	 * 目前未知子弹后续速度计算方法，使用UE默认物理算法
+	 */
 	float MuzzleVelocity{0.f};
 	/* 每次射击子弹数，大于1的值一般用于霰弹枪 */
 	int32 PelletCount{1};

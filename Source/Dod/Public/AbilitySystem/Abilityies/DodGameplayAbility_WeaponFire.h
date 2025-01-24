@@ -27,11 +27,6 @@ protected:
 
 	void StartFire();
 
-	void SpawnProjectile(FVector FireLocation);
-
-	UFUNCTION(Server, Reliable)
-	void Server_SpawnProjectile(FVector FireLocation);
-
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UAnimMontage> ArmFireMontage;
 	UPROPERTY(EditAnywhere)

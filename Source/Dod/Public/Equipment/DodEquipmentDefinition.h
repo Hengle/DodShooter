@@ -78,6 +78,7 @@ struct FCamoInfo
 	UTexture2D* CamoColor;
 	UPROPERTY(EditAnywhere, Category=Equipment)
 	UTexture2D* CamoNormal;
+	/* 迷彩使用的Mask 0-4分别是不使用和蒙版的RGBA四个通道 */
 	UPROPERTY(EditAnywhere, Category=Equipment)
 	int32 CamoSlotIndex;
 };
