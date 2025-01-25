@@ -5,7 +5,7 @@
 #include "GameFeaturesSubsystem.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "GameMode/DodActionSet.h"
-#include "Kismet/GameplayStatics.h"
+#include "Player/DodPlayerSpawningManagerComponent.h"
 
 ADodGameState::ADodGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -13,6 +13,8 @@ ADodGameState::ADodGameState(const FObjectInitializer& ObjectInitializer)
 	AbilitySystemComponent = CreateDefaultSubobject<UDodAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
+
+	PlayerSpawningManager = CreateDefaultSubobject<UDodPlayerSpawningManagerComponent>(TEXT("PlayerSpawningManager"));
 }
 
 void ADodGameState::BeginPlay()
@@ -20,9 +22,8 @@ void ADodGameState::BeginPlay()
 	Super::BeginPlay();
 
 	FGameFeatureActivatingContext Context;
-
-	const FWorldContext* ExistingWorldContext = GEngine->GetWorldContextFromWorld(GetWorld());
-	if (ExistingWorldContext)
+	
+	if (const FWorldContext* ExistingWorldContext = GEngine->GetWorldContextFromWorld(GetWorld()))
 	{
 		Context.SetRequiredWorldContextHandle(ExistingWorldContext->ContextHandle);
 	}

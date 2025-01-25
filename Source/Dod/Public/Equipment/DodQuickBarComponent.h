@@ -9,7 +9,7 @@ class UDodEquipmentManagerComponent;
 class UDodEquipmentInstance;
 class UDodInventoryItemInstance;
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(Blueprintable, meta=(BlueprintSpawnableComponent))
 class DOD_API UDodQuickBarComponent : public UControllerComponent
 {
 	GENERATED_BODY()
@@ -25,6 +25,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure = false)
 	UDodInventoryItemInstance* GetActiveSlotItem() const;
+
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE UDodEquipmentInstance* GetEquippedItem() { return EquippedItem; };
 
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly)
 	void AddItemToSlot(int32 SlotIndex, UDodInventoryItemInstance* Item);

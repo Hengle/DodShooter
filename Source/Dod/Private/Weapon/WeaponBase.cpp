@@ -6,6 +6,36 @@
 #include "Net/UnrealNetwork.h"
 
 
+FVector AWeaponBase::GetViewModeBoneLocation(FName BoneName, int32 Index) const
+{
+	return VM_Attachment[Index]->GetBoneLocation(BoneName);
+}
+
+FVector AWeaponBase::GetWorldModeBoneLocation(FName BoneName, int32 Index) const
+{
+	return WM_Attachment[Index]->GetBoneLocation(BoneName);
+}
+
+FVector AWeaponBase::GetIKBoneLocation_VM_Right()
+{
+	return GetViewModeBoneLocation(FName("tag_ik_loc_ri"), 0);
+}
+
+FVector AWeaponBase::GetIKBoneLocation_VM_Left()
+{
+	return GetViewModeBoneLocation(FName("tag_ik_loc_le"), 1);
+}
+
+FVector AWeaponBase::GetIKBoneLocation_WM_Right()
+{
+	return GetWorldModeBoneLocation(FName("tag_ik_loc_ri"), 0);
+}
+
+FVector AWeaponBase::GetIKBoneLocation_WM_Left()
+{
+	return GetWorldModeBoneLocation(FName("tag_ik_loc_le"), 1);
+}
+
 AWeaponBase::AWeaponBase()
 {
 	bReplicates = true;

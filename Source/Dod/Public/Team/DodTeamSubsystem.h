@@ -46,6 +46,8 @@ public:
 
 	bool ChangeTeamForActor(AActor* ActorToChange, int32 NewTeamIndex);
 
+	int32 FindTeamFromObject(const UObject* TestObject) const;
+
 private:
 	UPROPERTY()
 	TMap<int32, FDodTeamTrackingInfo> TeamMap;

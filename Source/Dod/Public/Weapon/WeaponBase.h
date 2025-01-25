@@ -14,6 +14,15 @@ class DOD_API AWeaponBase : public AActor
 	GENERATED_BODY()
 
 public:
+	
+	FVector GetViewModeBoneLocation(FName BoneName, int32 Index) const;
+	FVector GetWorldModeBoneLocation(FName BoneName, int32 Index) const;
+
+	FVector GetIKBoneLocation_VM_Right();
+	FVector GetIKBoneLocation_VM_Left();
+	FVector GetIKBoneLocation_WM_Right();
+	FVector GetIKBoneLocation_WM_Left();
+	
 	AWeaponBase();
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;

@@ -3,10 +3,16 @@
 #include "AbilitySystemGlobals.h"
 #include "DodGameplayTags.h"
 #include "KismetAnimationLibrary.h"
+#include "Character/DodShooter.h"
+#include "Equipment/DodEquipmentInstance.h"
+#include "Equipment/DodEquipmentManagerComponent.h"
+#include "Equipment/DodQuickBarComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
+#include "Inventory/DodInventoryManagerComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Weapon/WeaponBase.h"
 
 void UDodAnimInstance::NativeInitializeAnimation()
 {
@@ -39,6 +45,7 @@ void UDodAnimInstance::NativeThreadSafeUpdateAnimation(float DeltaSeconds)
 	UpdateRootYawOffset(DeltaSeconds);
 	UpdateAimingData();
 	UpdateJumpFallData();
+	UpdateIKBoneInfo();
 
 	bIsFirstUpdate = false;
 }
@@ -227,6 +234,11 @@ void UDodAnimInstance::UpdateJumpFallData()
 	{
 		TimeToJumpApex = 0.f;
 	}
+}
+
+void UDodAnimInstance::UpdateIKBoneInfo()
+{
+	ArmIKBlend = !IsAnyMontagePlaying() && bIsReloading;
 }
 
 void UDodAnimInstance::SetRootYawOffset(float InRootYawOffset)

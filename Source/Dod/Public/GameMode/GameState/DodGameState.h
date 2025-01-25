@@ -5,6 +5,7 @@
 #include "ModularGameState.h"
 #include "DodGameState.generated.h"
 
+class UDodPlayerSpawningManagerComponent;
 class UDodAbilitySystemComponent;
 class UDodActionSet;
 
@@ -29,6 +30,9 @@ public:
 	TArray<TObjectPtr<UDodActionSet>> ActionSets;
 
 protected:
+	UPROPERTY(VisibleAnywhere, Category = "Dod|GameState")
+	UDodPlayerSpawningManagerComponent* PlayerSpawningManager;
+	
 	UPROPERTY(VisibleAnywhere, Category = "Dod|GameState")
 	TObjectPtr<UDodAbilitySystemComponent> AbilitySystemComponent;
 };

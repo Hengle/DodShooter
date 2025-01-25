@@ -46,131 +46,135 @@ protected:
 	void UpdateRootYawOffset(float DeltaSeconds);
 	void UpdateAimingData();
 	void UpdateJumpFallData();
+	virtual void UpdateIKBoneInfo();
 
 	void SetRootYawOffset(float InRootYawOffset);
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TurnInPlace")
+	UPROPERTY(BlueprintReadWrite, Category="TurnInPlace")
 	float RootYawOffset{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="LocationData")
+	UPROPERTY(BlueprintReadWrite, Category="LocationData")
 	FVector WorldLocation{FVector::ZeroVector};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="LocationData")
+	UPROPERTY(BlueprintReadWrite, Category="LocationData")
 	float DisplacementSinceLastUpdate{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="LocationData")
+	UPROPERTY(BlueprintReadWrite, Category="LocationData")
 	float DisplacementSpeed{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="RotationData")
+	UPROPERTY(BlueprintReadWrite, Category="RotationData")
 	FRotator WorldRotation{FRotator::ZeroRotator};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="RotationData")
+	UPROPERTY(BlueprintReadWrite, Category="RotationData")
 	float YawDeltaSinceLastUpdate{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="RotationData")
+	UPROPERTY(BlueprintReadWrite, Category="RotationData")
 	float YawDeltaSpeed{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VelocityData")
+	UPROPERTY(BlueprintReadWrite, Category="VelocityData")
 	FVector LocalVelocity2D{FVector::ZeroVector};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VelocityData")
+	UPROPERTY(BlueprintReadWrite, Category="VelocityData")
 	FVector LocalDirection2D{FVector::ZeroVector};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VelocityData")
+	UPROPERTY(BlueprintReadWrite, Category="VelocityData")
 	FVector WorldVelocity{FVector::ZeroVector};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VelocityData")
+	UPROPERTY(BlueprintReadWrite, Category="VelocityData")
 	FVector WorldVelocity2D{FVector::ZeroVector};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VelocityData")
+	UPROPERTY(BlueprintReadWrite, Category="VelocityData")
 	float LocalVelocityDirectionAngle{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VelocityData")
+	UPROPERTY(BlueprintReadWrite, Category="VelocityData")
 	float LocalVelocityDirectionAngleWithOffset{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AccelerationData")
+	UPROPERTY(BlueprintReadWrite, Category="AccelerationData")
 	float TimeSinceFiredWeapon{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AccelerationData")
+	UPROPERTY(BlueprintReadWrite, Category="AccelerationData")
 	FVector WorldAcceleration2D{FVector::ZeroVector};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AccelerationData")
+	UPROPERTY(BlueprintReadWrite, Category="AccelerationData")
 	FVector LocalAcceleration2D{FVector::ZeroVector};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AccelerationData")
+	UPROPERTY(BlueprintReadWrite, Category="AccelerationData")
 	FVector PivotDirection2D{FVector::ZeroVector};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BlendWeightData")
+	UPROPERTY(BlueprintReadWrite, Category="IKBoneInfo")
+    float ArmIKBlend{1.f};
+
+	UPROPERTY(BlueprintReadWrite, Category="BlendWeightData")
 	float UpperBodyDynamicAdditiveWeight{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AimingData")
+	UPROPERTY(BlueprintReadWrite, Category="AimingData")
 	float AimPitch{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AimingData")
+	UPROPERTY(BlueprintReadWrite, Category="AimingData")
 	float AimYaw{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CharacterStateData")
+	UPROPERTY(BlueprintReadWrite, Category="CharacterStateData")
 	float TimeToJumpApex{0.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TurnInPlace")
+	UPROPERTY(BlueprintReadWrite, Category="TurnInPlace")
 	FVector2D RootYawOffsetAngleClamp{-120.f, 100.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TurnInPlace")
+	UPROPERTY(BlueprintReadWrite, Category="TurnInPlace")
 	FVector2D RootYawOffsetAngleClampCrouched{-90.f, 80.f};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TurnInPlace")
+	UPROPERTY(BlueprintReadWrite, Category="TurnInPlace")
 	ERootYawOffsetMode RootYawOffsetMode{ERootYawOffsetMode::BlendOut};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="TurnInPlace")
+	UPROPERTY(BlueprintReadWrite, Category="TurnInPlace")
 	uint8 bEnableRootYawOffset : 1{true};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AccelerationData")
+	UPROPERTY(BlueprintReadWrite, Category="AccelerationData")
 	uint8 bHasAcceleration : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CharacterStateData")
+	UPROPERTY(BlueprintReadWrite, Category="CharacterStateData")
 	uint8 bIsRunningIntoWall : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CharacterStateData")
+	UPROPERTY(BlueprintReadWrite, Category="CharacterStateData")
 	uint8 bIsOnGround : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CharacterStateData")
+	UPROPERTY(BlueprintReadWrite, Category="CharacterStateData")
 	uint8 bIsCrouching : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CharacterStateData")
+	UPROPERTY(BlueprintReadWrite, Category="CharacterStateData")
 	uint8 bCrouchStateChanged : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CharacterStateData")
+	UPROPERTY(BlueprintReadWrite, Category="CharacterStateData")
 	uint8 bWasCrouchingLastUpdate : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CharacterStateData")
+	UPROPERTY(BlueprintReadWrite, Category="CharacterStateData")
 	uint8 bWasAdsLastUpdate : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CharacterStateData")
+	UPROPERTY(BlueprintReadWrite, Category="CharacterStateData")
 	uint8 bAdsStateChanged : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CharacterStateData")
+	UPROPERTY(BlueprintReadWrite, Category="CharacterStateData")
 	uint8 bIsJumping : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CharacterStateData")
+	UPROPERTY(BlueprintReadWrite, Category="CharacterStateData")
 	uint8 bIsFalling : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VelocityData")
+	UPROPERTY(BlueprintReadWrite, Category="VelocityData")
 	uint8 bHasVelocity : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="VelocityData")
+	UPROPERTY(BlueprintReadWrite, Category="VelocityData")
 	uint8 bWasMovingLastUpdate : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="WeaponInfo")
+	UPROPERTY(BlueprintReadWrite, Category="WeaponInfo")
 	uint8 bIsAds : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="WeaponInfo")
+	UPROPERTY(BlueprintReadWrite, Category="WeaponInfo")
 	uint8 bIsFiring : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="WeaponInfo")
+	UPROPERTY(BlueprintReadWrite, Category="WeaponInfo")
 	uint8 bIsReloading : 1{false};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="WeaponInfo")
+	UPROPERTY(BlueprintReadWrite, Category="WeaponInfo")
 	uint8 bIsMelee : 1{false};
 
 private:

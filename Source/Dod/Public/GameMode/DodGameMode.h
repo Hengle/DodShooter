@@ -11,4 +11,7 @@ class DOD_API ADodGameMode : public AGameModeBase
 
 public:
 	ADodGameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	//~ AGameModeBase interface
+	//~ End of AGameModeBase interface
 };

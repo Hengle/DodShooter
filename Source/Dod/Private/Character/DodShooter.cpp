@@ -25,10 +25,6 @@ ADodShooter::ADodShooter(const FObjectInitializer& ObjectInitializer)
 
 void ADodShooter::ChangeToFirstPerson()
 {
-	if (!IsLocallyControlled())
-	{
-		return;
-	}
 	HeadMesh->SetVisibility(false);
 	GetMesh()->SetVisibility(false);
 	ArmMesh->SetVisibility(true);
@@ -50,6 +46,15 @@ void ADodShooter::BeginPlay()
 	GetMesh()->SetCastShadow(true);
 	GetMesh()->SetCastHiddenShadow(true);
 	ArmMesh->SetCastShadow(false);
+
+	if (IsLocallyControlled())
+	{
+		ChangeToFirstPerson();
+	}
+	else
+	{
+		ChangeToThirdPerson();
+	}
 
 	ensure(TryToChangeInitState(DodGameplayTags::InitState_Spawned));
 	CheckDefaultInitialization();
@@ -83,14 +88,6 @@ void ADodShooter::HandleChangeInitState(UGameFrameworkComponentManager* Manager,
 		DesiredState == DodGameplayTags::InitState_GameplayReady)
 	{
 		AddInitialInventory();
-		if (IsLocallyControlled())
-		{
-			ChangeToFirstPerson();
-		}
-		else
-		{
-			ChangeToThirdPerson();
-		}
 	}
 }
 

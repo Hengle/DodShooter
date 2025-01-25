@@ -65,3 +65,35 @@ bool UDodTeamSubsystem::ChangeTeamForActor(AActor* ActorToChange, int32 NewTeamI
 	}*/
 	return false;
 }
+
+int32 UDodTeamSubsystem::FindTeamFromObject(const UObject* TestObject) const
+{
+	/*// See if it's directly a team agent
+	if (const ILyraTeamAgentInterface* ObjectWithTeamInterface = Cast<ILyraTeamAgentInterface>(TestObject))
+	{
+		return GenericTeamIdToInteger(ObjectWithTeamInterface->GetGenericTeamId());
+	}
+
+	if (const AActor* TestActor = Cast<const AActor>(TestObject))
+	{
+		// See if the instigator is a team actor
+		if (const ILyraTeamAgentInterface* InstigatorWithTeamInterface = Cast<ILyraTeamAgentInterface>(TestActor->GetInstigator()))
+		{
+			return GenericTeamIdToInteger(InstigatorWithTeamInterface->GetGenericTeamId());
+		}
+
+		// TeamInfo actors don't actually have the team interface, so they need a special case
+		if (const ALyraTeamInfoBase* TeamInfo = Cast<ALyraTeamInfoBase>(TestActor))
+		{
+			return TeamInfo->GetTeamId();
+		}
+
+		// Fall back to finding the associated player state
+		if (const ALyraPlayerState* LyraPS = FindPlayerStateFromActor(TestActor))
+		{
+			return LyraPS->GetTeamId();
+		}
+	}*/
+
+	return INDEX_NONE;
+}
