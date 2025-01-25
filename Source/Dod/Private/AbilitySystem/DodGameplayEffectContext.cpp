@@ -1,5 +1,10 @@
 ﻿#include "AbilitySystem/DodGameplayEffectContext.h"
 
+#if UE_WITH_IRIS
+#include "Iris/ReplicationState/PropertyNetSerializerInfoRegistry.h"
+#include "Serialization/GameplayEffectContextNetSerializer.h"
+#endif
+
 FDodGameplayEffectContext* FDodGameplayEffectContext::ExtractEffectContext(struct FGameplayEffectContextHandle Handle)
 {
 	FGameplayEffectContext* BaseEffectContext = Handle.Get();
@@ -16,3 +21,21 @@ void FDodGameplayEffectContext::SetAbilitySource(const IDodAbilitySourceInterfac
 {
 	AbilitySourceObject = MakeWeakObjectPtr(Cast<const UObject>(InObject));
 }
+
+bool FDodGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
+{
+	FGameplayEffectContext::NetSerialize(Ar, Map, bOutSuccess);
+
+	return true;
+}
+
+
+#if UE_WITH_IRIS
+namespace UE::Net
+{
+	// Forward to FGameplayEffectContextNetSerializer
+	// Note: If FLyraGameplayEffectContext::NetSerialize() is modified, a custom NetSerializesr must be implemented as the current fallback will no longer be sufficient.
+	UE_NET_IMPLEMENT_FORWARDING_NETSERIALIZER_AND_REGISTRY_DELEGATES(DodGameplayEffectContext,
+	                                                                 FGameplayEffectContextNetSerializer);
+}
+#endif

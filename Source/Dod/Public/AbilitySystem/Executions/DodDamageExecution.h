@@ -10,4 +10,7 @@ class DOD_API UDodDamageExecution : public UGameplayEffectExecutionCalculation
 
 public:
 	UDodDamageExecution();
+
+	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams,
+	                                    FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
 };

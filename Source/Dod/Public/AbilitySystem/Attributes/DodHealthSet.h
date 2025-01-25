@@ -22,8 +22,8 @@ public:
 
 	ATTRIBUTE_ACCESSORS(UDodHealthSet, Health);
 	ATTRIBUTE_ACCESSORS(UDodHealthSet, MaxHealth);
-	ATTRIBUTE_ACCESSORS(UDodHealthSet, Armor);
-	ATTRIBUTE_ACCESSORS(UDodHealthSet, MaxArmor);
+	ATTRIBUTE_ACCESSORS(UDodHealthSet, Healing);
+	ATTRIBUTE_ACCESSORS(UDodHealthSet, Damage);
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
@@ -55,23 +55,12 @@ protected:
 		Meta = (AllowPrivateAccess = true))
 	FGameplayAttributeData MaxHealth{150.f};
 
-	UFUNCTION()
-	void OnRep_Armor(const FGameplayAttributeData& OldValue);
-	UPROPERTY(BlueprintReadOnly, Category = "Dod|Armor", ReplicatedUsing = OnRep_Armor)
-	FGameplayAttributeData Armor{150.f};
-
-	UFUNCTION()
-	void OnRep_MaxArmor(const FGameplayAttributeData& OldValue);
-	UPROPERTY(BlueprintReadOnly, Category = "Dod|Armor", ReplicatedUsing = OnRep_MaxArmor)
-	FGameplayAttributeData MaxArmor{150.f};
+	float MaxHealthBeforeAttributeChange;
+	float HealthBeforeAttributeChange;
 
 	// -------------------------------------------------------------------
 	//	Meta Attribute
 	// -------------------------------------------------------------------
-
-	// +Armor
-	UPROPERTY(BlueprintReadOnly, Category="Dod|Health")
-	FGameplayAttributeData AddArmor;
 
 	// +Health
 	UPROPERTY(BlueprintReadOnly, Category="Dod|Health")

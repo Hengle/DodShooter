@@ -18,6 +18,8 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	void SweepDetection();
+
 	UPROPERTY(BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 
@@ -27,4 +29,7 @@ public:
 	UBoxComponent* ProjectileCollision;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
+
+private:
+	FVector PreviousLocation{FVector::ZeroVector};
 };

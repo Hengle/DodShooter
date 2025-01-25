@@ -118,8 +118,7 @@ void UDodGameplayAbility_WeaponFire::RangedWeaponTargetDataReady(const FGameplay
 
 void UDodGameplayAbility_WeaponFire::StartFire()
 {
-	/*FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(
-		GE_Damage, GetAbilityLevel());*/
+	FGameplayEffectSpecHandle DamageEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GE_Damage, GetAbilityLevel());
 	if (GetOwningActorFromActorInfo()->GetLocalRole() == ROLE_Authority)
 	{
 		ADodCharacter* Character = GetDodCharacterFromActorInfo();
@@ -144,7 +143,7 @@ void UDodGameplayAbility_WeaponFire::StartFire()
 					GetOwningActorFromActorInfo(),
 					Character,
 					ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
-				// Projectile->DamageEffectSpecHandle = DamageEffectSpecHandle;
+				Projectile->DamageEffectSpecHandle = DamageEffectSpecHandle;
 				Projectile->FinishSpawning(FireTransform);
 			}
 		}

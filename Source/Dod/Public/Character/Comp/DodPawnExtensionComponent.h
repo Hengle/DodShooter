@@ -63,8 +63,14 @@ public:
 	void InitializeAbilitySystem(UDodAbilitySystemComponent* InAsc, AActor* InOwner);
 	void UninitializeAbilitySystem();
 
+	void OnAbilitySystemInitialized_RegisterAndCall(FSimpleMulticastDelegate::FDelegate Delegate);
+	void OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate);
+
 protected:
 	virtual void BeginPlay() override;
+
+	FSimpleMulticastDelegate OnAbilitySystemInitialized;
+	FSimpleMulticastDelegate OnAbilitySystemUninitialized;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Pawn")
 	FDodPawnData PawnData;

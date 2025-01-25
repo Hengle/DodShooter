@@ -1,5 +1,5 @@
 ﻿#include "AbilitySystem/Attributes/DodHealthSet.h"
-
+#include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 
 void UDodHealthSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -8,18 +8,52 @@ void UDodHealthSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& 
 
 	DOREPLIFETIME_CONDITION_NOTIFY(UDodHealthSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UDodHealthSet, MaxHealth, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UDodHealthSet, Armor, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UDodHealthSet, MaxArmor, COND_None, REPNOTIFY_Always);
 }
 
 bool UDodHealthSet::PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data)
 {
-	return Super::PreGameplayEffectExecute(Data);
+	if (!Super::PreGameplayEffectExecute(Data))
+	{
+		return false;
+	}
+
+	HealthBeforeAttributeChange = GetHealth();
+	MaxHealthBeforeAttributeChange = GetMaxHealth();
+	return true;
 }
 
 void UDodHealthSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+
+	const FGameplayEffectContextHandle& EffectContext = Data.EffectSpec.GetEffectContext();
+	AActor* Instigator = EffectContext.GetOriginalInstigator();
+	AActor* Causer = EffectContext.GetEffectCauser();
+
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
+	{
+		// Convert into -Health and then clamp
+		SetHealth(FMath::Clamp(GetHealth() - GetDamage(), 0.f, GetMaxHealth()));
+		SetDamage(0.0f);
+	}
+	else if (Data.EvaluatedData.Attribute == GetHealingAttribute())
+	{
+		// Convert into +Health and then clamp
+		SetHealth(FMath::Clamp(GetHealth() + GetHealing(), 0.f, GetMaxHealth()));
+		SetHealing(0.0f);
+	}
+
+	if (GetHealth() != HealthBeforeAttributeChange)
+	{
+		OnHealthChanged.Broadcast(Instigator, Causer, &Data.EffectSpec, Data.EvaluatedData.Magnitude,
+		                          HealthBeforeAttributeChange, GetHealth());
+	}
+
+	if ((GetHealth() <= 0.0f) && !bOutOfHealth)
+	{
+		OnOutOfHealth.Broadcast(Instigator, Causer, &Data.EffectSpec, Data.EvaluatedData.Magnitude,
+		                        HealthBeforeAttributeChange, GetHealth());
+	}
 }
 
 void UDodHealthSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
@@ -96,12 +130,4 @@ void UDodHealthSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
 
 	OnMaxHealthChanged.Broadcast(nullptr, nullptr, nullptr, GetMaxHealth() - OldValue.GetCurrentValue(),
 	                             OldValue.GetCurrentValue(), GetMaxHealth());
-}
-
-void UDodHealthSet::OnRep_Armor(const FGameplayAttributeData& OldValue)
-{
-}
-
-void UDodHealthSet::OnRep_MaxArmor(const FGameplayAttributeData& OldValue)
-{
 }

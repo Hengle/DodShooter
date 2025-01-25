@@ -105,44 +105,7 @@ void UDodGameplayAbility_RangedWeapon::StartRangedWeaponTargeting()
 {
 	check(CurrentActorInfo);
 
-	AActor* AvatarActor = CurrentActorInfo->AvatarActor.Get();
-	check(AvatarActor);
-
-	UAbilitySystemComponent* MyAbilityComponent = CurrentActorInfo->AbilitySystemComponent.Get();
-	check(MyAbilityComponent);
-
-	AController* Controller = GetControllerFromActorInfo();
-	check(Controller);
-	UDodWeaponStateComponent* WeaponStateComponent = Controller->FindComponentByClass<UDodWeaponStateComponent>();
-
-	FScopedPredictionWindow ScopedPrediction(MyAbilityComponent, CurrentActivationInfo.GetActivationPredictionKey());
-
-	TArray<FHitResult> FoundHits;
-	PerformLocalTargeting(FoundHits);
-
-	FGameplayAbilityTargetDataHandle TargetData;
-	TargetData.UniqueId = WeaponStateComponent ? WeaponStateComponent->GetUnconfirmedServerSideHitMarkerCount() : 0;
-
-	if (FoundHits.Num() > 0)
-	{
-		const int32 CartridgeID = FMath::Rand();
-
-		/*for (const FHitResult& FoundHit : FoundHits)
-		{
-			FDodGameplayAbilityTargetData_SingleTargetHit* NewTargetData =
-				new FDodGameplayAbilityTargetData_SingleTargetHit();
-			NewTargetData->HitResult = FoundHit;
-			NewTargetData->CartridgeID = CartridgeID;
-
-			TargetData.Add(NewTargetData);
-		}*/
-	}
-	if (WeaponStateComponent)
-	{
-		WeaponStateComponent->AddUnconfirmedServerSideHitMarkers(TargetData, FoundHits);
-	}
-
-	OnTargetDataReadyCallback(TargetData, FGameplayTag());
+	OnTargetDataReadyCallback(FGameplayAbilityTargetDataHandle(), FGameplayTag());
 }
 
 int32 UDodGameplayAbility_RangedWeapon::FindFirstPawnHitResult(const TArray<FHitResult>& HitResults)

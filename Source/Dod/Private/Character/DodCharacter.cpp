@@ -31,6 +31,10 @@ ADodCharacter::ADodCharacter(const FObjectInitializer& ObjectInitializer)
 	HeadMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Head");
 
 	PawnExtComponent = CreateDefaultSubobject<UDodPawnExtensionComponent>(TEXT("PawnExt"));
+	PawnExtComponent->OnAbilitySystemInitialized_RegisterAndCall(
+		FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemInitialized));
+	PawnExtComponent->OnAbilitySystemUninitialized_Register(
+		FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemUninitialized));
 
 	HealthComponent = CreateDefaultSubobject<UDodHealthComponent>(TEXT("HealthComponent"));
 

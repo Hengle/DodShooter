@@ -29,4 +29,9 @@ public:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Dod|PlayerState")
 	TObjectPtr<UDodAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY()
+	TObjectPtr<const class UDodHealthSet> HealthSet;
+	UPROPERTY()
+	TObjectPtr<const class UDodCombatSet> CombatSet;
 };

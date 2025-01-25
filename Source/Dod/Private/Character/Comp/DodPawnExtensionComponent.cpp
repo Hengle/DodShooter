@@ -138,6 +138,8 @@ void UDodPawnExtensionComponent::InitializeAbilitySystem(UDodAbilitySystemCompon
 			AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
 		}
 	}
+
+	OnAbilitySystemInitialized.Broadcast();
 }
 
 void UDodPawnExtensionComponent::UninitializeAbilitySystem()
@@ -146,8 +148,51 @@ void UDodPawnExtensionComponent::UninitializeAbilitySystem()
 	{
 		return;
 	}
+	
+	if (AbilitySystemComponent->GetAvatarActor() == GetOwner())
+	{
+		FGameplayTagContainer AbilityTypesToIgnore;
+
+		AbilitySystemComponent->CancelAbilities(nullptr, &AbilityTypesToIgnore);
+		AbilitySystemComponent->ClearAbilityInput();
+		AbilitySystemComponent->RemoveAllGameplayCues();
+
+		if (AbilitySystemComponent->GetOwnerActor() != nullptr)
+		{
+			AbilitySystemComponent->SetAvatarActor(nullptr);
+		}
+		else
+		{
+			// If the ASC doesn't have a valid owner, we need to clear *all* actor info, not just the avatar pairing
+			AbilitySystemComponent->ClearActorInfo();
+		}
+
+		OnAbilitySystemUninitialized.Broadcast();
+	}
 
 	AbilitySystemComponent = nullptr;
+}
+
+void UDodPawnExtensionComponent::OnAbilitySystemInitialized_RegisterAndCall(
+	FSimpleMulticastDelegate::FDelegate Delegate)
+{
+	if (!OnAbilitySystemInitialized.IsBoundToObject(Delegate.GetUObject()))
+	{
+		OnAbilitySystemInitialized.Add(Delegate);
+	}
+
+	if (AbilitySystemComponent)
+	{
+		Delegate.Execute();
+	}
+}
+
+void UDodPawnExtensionComponent::OnAbilitySystemUninitialized_Register(FSimpleMulticastDelegate::FDelegate Delegate)
+{
+	if (!OnAbilitySystemUninitialized.IsBoundToObject(Delegate.GetUObject()))
+	{
+		OnAbilitySystemUninitialized.Add(Delegate);
+	}
 }
 
 void UDodPawnExtensionComponent::BeginPlay()
