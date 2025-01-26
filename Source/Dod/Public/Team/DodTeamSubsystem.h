@@ -4,7 +4,10 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "DodTeamSubsystem.generated.h"
 
+class ADodTeamPrivateInfo;
+struct FGameplayTag;
 class ADodTeamInfoBase;
+class ADodTeamPublicInfo;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDodTeamDisplayAssetChangedDelegate, const UDodTeamDisplayAsset*,
                                             DisplayAsset);
@@ -14,10 +17,13 @@ struct FDodTeamTrackingInfo
 {
 	GENERATED_BODY()
 
-	/*UPROPERTY()
-	TObjectPtr<ADodTeamPublicInfo> PublicInfo{nullptr};
+	UPROPERTY()
+	TObjectPtr<ADodTeamPublicInfo> PublicInfo = nullptr;
 
 	UPROPERTY()
+	TObjectPtr<ADodTeamPrivateInfo> PrivateInfo = nullptr;
+
+	/*UPROPERTY()
 	TObjectPtr<UDodTeamDisplayAsset> DisplayAsset{nullptr};*/
 
 	UPROPERTY()
@@ -47,6 +53,16 @@ public:
 	bool ChangeTeamForActor(AActor* ActorToChange, int32 NewTeamIndex);
 
 	int32 FindTeamFromObject(const UObject* TestObject) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure=false, Category=Teams, meta=(ExpandEnumAsExecs=ReturnValue))
+	EDodTeamComparison CompareTeams(const UObject* A, const UObject* B, int32& TeamIdA, int32& TeamIdB) const;
+	EDodTeamComparison CompareTeams(const UObject* A, const UObject* B) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Teams)
+	void AddTeamTagStack(int32 TeamId, FGameplayTag Tag, int32 StackCount);
+	
+	UFUNCTION(BlueprintCallable, Category=Teams)
+	int32 GetTeamTagStackCount(int32 TeamId, FGameplayTag Tag) const;
 
 private:
 	UPROPERTY()

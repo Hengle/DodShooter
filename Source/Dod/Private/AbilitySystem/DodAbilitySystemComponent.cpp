@@ -14,6 +14,56 @@ UDodAbilitySystemComponent::UDodAbilitySystemComponent()
 	InputHeldSpecHandles.Reset();
 }
 
+void UDodAbilitySystemComponent::CancelAbilitiesByFunc(TShouldCancelAbilityFunc ShouldCancelFunc,
+                                                       bool bReplicateCancelAbility)
+{
+	ABILITYLIST_SCOPE_LOCK();
+	for (const FGameplayAbilitySpec& AbilitySpec : ActivatableAbilities.Items)
+	{
+		if (!AbilitySpec.IsActive())
+		{
+			continue;
+		}
+
+		UDodGameplayAbility* DodAbilityCDO = Cast<UDodGameplayAbility>(AbilitySpec.Ability);
+		if (!DodAbilityCDO)
+		{
+			continue;
+		}
+
+		if (DodAbilityCDO->GetInstancingPolicy() != EGameplayAbilityInstancingPolicy::NonInstanced)
+		{
+			// Cancel all the spawned instances, not the CDO.
+			TArray<UGameplayAbility*> Instances = AbilitySpec.GetAbilityInstances();
+			for (UGameplayAbility* AbilityInstance : Instances)
+			{
+				UDodGameplayAbility* DodAbilityInstance = CastChecked<UDodGameplayAbility>(AbilityInstance);
+
+				if (ShouldCancelFunc(DodAbilityInstance, AbilitySpec.Handle))
+				{
+					if (DodAbilityInstance->CanBeCanceled())
+					{
+						DodAbilityInstance->CancelAbility(AbilitySpec.Handle, AbilityActorInfo.Get(),
+						                                   DodAbilityInstance->GetCurrentActivationInfo(),
+						                                   bReplicateCancelAbility);
+					}
+				}
+			}
+		}
+		else
+		{
+			// Cancel the non-instanced ability CDO.
+			if (ShouldCancelFunc(DodAbilityCDO, AbilitySpec.Handle))
+			{
+				// Non-instanced abilities can always be canceled.
+				check(DodAbilityCDO->CanBeCanceled());
+				DodAbilityCDO->CancelAbility(AbilitySpec.Handle, AbilityActorInfo.Get(),
+				                              FGameplayAbilityActivationInfo(), bReplicateCancelAbility);
+			}
+		}
+	}
+}
+
 void UDodAbilitySystemComponent::AbilityInputTagPressed(const FGameplayTag& InputTag)
 {
 	if (InputTag.IsValid())
@@ -215,7 +265,9 @@ void UDodAbilitySystemComponent::GetAbilityTargetData(const FGameplayAbilitySpec
 }
 
 void UDodAbilitySystemComponent::GetAdditionalActivationTagRequirements(const FGameplayTagContainer& AbilityTags,
-	FGameplayTagContainer& OutActivationRequired, FGameplayTagContainer& OutActivationBlocked) const
+                                                                        FGameplayTagContainer& OutActivationRequired,
+                                                                        FGameplayTagContainer& OutActivationBlocked)
+const
 {
 	/*if (TagRelationshipMapping)
 	{

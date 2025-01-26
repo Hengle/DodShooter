@@ -26,6 +26,8 @@ namespace DodGameplayTags
 	                               "3: 该 Actor/组件的可用数据已初始化，但尚未准备好完全进入gameplay");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_GameplayReady, "InitState.GameplayReady", "4: Actor/组件已完全准备好进行激活gameplay");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Death, "GameplayEvent.Death", "Event that fires on death. This event only fires on the server.");
+	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death, "Status.Death", "Target has the death status.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death_Dying, "Status.Death.Dying", "Target has begun the death process.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Status_Death_Dead, "Status.Death.Dead", "Target has finished the death process.");
@@ -37,6 +39,10 @@ namespace DodGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Weapon_MagazineSize, "ShooterGame.Weapon.MagazineSize", "弹匣可容纳的子弹数量");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Weapon_SpareAmmo, "ShooterGame.Weapon.SpareAmmo", "玩家剩余子弹数量");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Weapon_MagazineAmmo, "ShooterGame.Weapon.MagazineAmmo", "弹匣中剩余子弹数量");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Score_Eliminations, "ShooterGame.Score.Eliminations", "");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Score_Assists, "ShooterGame.Score.Assists", "");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Score_Deaths, "ShooterGame.Score.Deaths", "");
 
 	FGameplayTag DodGameplayTags::FindTagByString(const FString& TagString, bool bMatchPartialString)
 	{

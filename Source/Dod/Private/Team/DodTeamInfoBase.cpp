@@ -28,6 +28,7 @@ void ADodTeamInfoBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
+	DOREPLIFETIME(ThisClass, TeamTags);
 	DOREPLIFETIME_CONDITION(ThisClass, TeamId, COND_InitialOnly);
 }
 

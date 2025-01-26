@@ -34,7 +34,7 @@ bool FDodGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* Ma
 namespace UE::Net
 {
 	// Forward to FGameplayEffectContextNetSerializer
-	// Note: If FLyraGameplayEffectContext::NetSerialize() is modified, a custom NetSerializesr must be implemented as the current fallback will no longer be sufficient.
+	// Note: If FDodGameplayEffectContext::NetSerialize() is modified, a custom NetSerializesr must be implemented as the current fallback will no longer be sufficient.
 	UE_NET_IMPLEMENT_FORWARDING_NETSERIALIZER_AND_REGISTRY_DELEGATES(DodGameplayEffectContext,
 	                                                                 FGameplayEffectContextNetSerializer);
 }

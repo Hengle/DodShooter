@@ -1,8 +1,14 @@
 ﻿#include "Character/Comp/DodHealthComponent.h"
 
+#include "DodGameplayTags.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/DodHealthSet.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
+#include "Messages/DodVerbMessage.h"
+#include "Messages/DodVerbMessageHelpers.h"
+#include "GameFramework/PlayerState.h"
 
+UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Dod_Elimination_Message, "Dod.Elimination.Message");
 
 UDodHealthComponent::UDodHealthComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -113,4 +119,43 @@ void UDodHealthComponent::HandleOutOfHealth(AActor* DamageInstigator, AActor* Da
                                             const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude,
                                             float OldValue, float NewValue)
 {
+#if WITH_SERVER_CODE
+	if (AbilitySystemComponent && DamageEffectSpec)
+	{
+		// Send the "GameplayEvent.Death" gameplay event through the owner's ability system.  This can be used to trigger a death gameplay ability.
+		{
+			FGameplayEventData Payload;
+			Payload.EventTag = DodGameplayTags::GameplayEvent_Death;
+			Payload.Instigator = DamageInstigator;
+			Payload.Target = AbilitySystemComponent->GetAvatarActor();
+			Payload.OptionalObject = DamageEffectSpec->Def;
+			Payload.ContextHandle = DamageEffectSpec->GetEffectContext();
+			Payload.InstigatorTags = *DamageEffectSpec->CapturedSourceTags.GetAggregatedTags();
+			Payload.TargetTags = *DamageEffectSpec->CapturedTargetTags.GetAggregatedTags();
+			Payload.EventMagnitude = DamageMagnitude;
+
+			FScopedPredictionWindow NewScopedWindow(AbilitySystemComponent, true);
+			AbilitySystemComponent->HandleGameplayEvent(Payload.EventTag, &Payload);
+		}
+
+		// Send a standardized verb message that other systems can observe
+		{
+			FDodVerbMessage Message;
+			Message.Verb = TAG_Dod_Elimination_Message;
+			Message.Instigator = DamageInstigator;
+			Message.InstigatorTags = *DamageEffectSpec->CapturedSourceTags.GetAggregatedTags();
+			Message.Target =
+				UDodVerbMessageHelpers::GetPlayerStateFromObject(AbilitySystemComponent->GetAvatarActor());
+			Message.TargetTags = *DamageEffectSpec->CapturedTargetTags.GetAggregatedTags();
+			//@TODO: Fill out context tags, and any non-ability-system source/instigator tags
+			//@TODO: Determine if it's an opposing team kill, self-own, team kill, etc...
+
+			UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
+			MessageSystem.BroadcastMessage(Message.Verb, Message);
+		}
+
+		//@TODO: assist messages (could compute from damage dealt elsewhere)?
+	}
+
+#endif // #if WITH_SERVER_CODE
 }

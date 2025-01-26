@@ -13,5 +13,6 @@ public:
 	ADodGameMode(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	//~ AGameModeBase interface
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 	//~ End of AGameModeBase interface
 };

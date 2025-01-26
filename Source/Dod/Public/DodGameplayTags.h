@@ -26,6 +26,8 @@ namespace DodGameplayTags
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InitState_DataInitialized);
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InitState_GameplayReady);
 
+	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_Death);
+	
 	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death);
 	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death_Dying);
 	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Status_Death_Dead);
@@ -37,4 +39,8 @@ namespace DodGameplayTags
 	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShooterGame_Weapon_MagazineSize);
 	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShooterGame_Weapon_SpareAmmo);
 	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShooterGame_Weapon_MagazineAmmo);
+
+	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShooterGame_Score_Eliminations);
+	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShooterGame_Score_Assists);
+	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShooterGame_Score_Deaths);
 } // namespace DodGameplayTags

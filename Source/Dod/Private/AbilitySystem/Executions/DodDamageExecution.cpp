@@ -116,7 +116,7 @@ void UDodDamageExecution::Execute_Implementation(const FGameplayEffectCustomExec
 	// Apply ability source modifiers
 	float PhysicalMaterialAttenuation = 1.0f;
 	float DistanceAttenuation = 1.0f;
-	/*if (const ILyraAbilitySourceInterface* AbilitySource = TypedContext->GetAbilitySource())
+	/*if (const IDodAbilitySourceInterface* AbilitySource = TypedContext->GetAbilitySource())
 	{
 		if (const UPhysicalMaterial* PhysMat = TypedContext->GetPhysicalMaterial())
 		{

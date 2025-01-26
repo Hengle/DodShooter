@@ -1,8 +1,11 @@
 ﻿#include "Team/DodTeamSubsystem.h"
 
+#include "GameplayTagContainer.h"
 #include "GenericTeamAgentInterface.h"
 #include "Player/DodPlayerState.h"
 #include "Team/DodTeamInfoBase.h"
+#include "Team/DodTeamPrivateInfo.h"
+#include "Team/DodTeamPublicInfo.h"
 
 void FDodTeamTrackingInfo::SetTeamInfo(ADodTeamInfoBase* Info)
 {
@@ -69,7 +72,7 @@ bool UDodTeamSubsystem::ChangeTeamForActor(AActor* ActorToChange, int32 NewTeamI
 int32 UDodTeamSubsystem::FindTeamFromObject(const UObject* TestObject) const
 {
 	/*// See if it's directly a team agent
-	if (const ILyraTeamAgentInterface* ObjectWithTeamInterface = Cast<ILyraTeamAgentInterface>(TestObject))
+	if (const IDodTeamAgentInterface* ObjectWithTeamInterface = Cast<IDodTeamAgentInterface>(TestObject))
 	{
 		return GenericTeamIdToInteger(ObjectWithTeamInterface->GetGenericTeamId());
 	}
@@ -77,23 +80,72 @@ int32 UDodTeamSubsystem::FindTeamFromObject(const UObject* TestObject) const
 	if (const AActor* TestActor = Cast<const AActor>(TestObject))
 	{
 		// See if the instigator is a team actor
-		if (const ILyraTeamAgentInterface* InstigatorWithTeamInterface = Cast<ILyraTeamAgentInterface>(TestActor->GetInstigator()))
+		if (const IDodTeamAgentInterface* InstigatorWithTeamInterface = Cast<IDodTeamAgentInterface>(TestActor->GetInstigator()))
 		{
 			return GenericTeamIdToInteger(InstigatorWithTeamInterface->GetGenericTeamId());
 		}
 
 		// TeamInfo actors don't actually have the team interface, so they need a special case
-		if (const ALyraTeamInfoBase* TeamInfo = Cast<ALyraTeamInfoBase>(TestActor))
+		if (const ADodTeamInfoBase* TeamInfo = Cast<ADodTeamInfoBase>(TestActor))
 		{
 			return TeamInfo->GetTeamId();
 		}
 
 		// Fall back to finding the associated player state
-		if (const ALyraPlayerState* LyraPS = FindPlayerStateFromActor(TestActor))
+		if (const ADodPlayerState* DodPS = FindPlayerStateFromActor(TestActor))
 		{
-			return LyraPS->GetTeamId();
+			return DodPS->GetTeamId();
 		}
 	}*/
 
 	return INDEX_NONE;
+}
+
+EDodTeamComparison UDodTeamSubsystem::CompareTeams(const UObject* A, const UObject* B, int32& TeamIdA,
+                                                   int32& TeamIdB) const
+{
+	TeamIdA = FindTeamFromObject(Cast<const AActor>(A));
+	TeamIdB = FindTeamFromObject(Cast<const AActor>(B));
+
+	if (TeamIdA == INDEX_NONE || TeamIdB == INDEX_NONE)
+	{
+		return EDodTeamComparison::InvalidArgument;
+	}
+	return TeamIdA == TeamIdB ? EDodTeamComparison::OnSameTeam : EDodTeamComparison::DifferentTeams;
+}
+
+EDodTeamComparison UDodTeamSubsystem::CompareTeams(const UObject* A, const UObject* B) const
+{
+	int32 TeamIdA;
+	int32 TeamIdB;
+	return CompareTeams(A, B, TeamIdA, TeamIdB);
+}
+
+void UDodTeamSubsystem::AddTeamTagStack(int32 TeamId, FGameplayTag Tag, int32 StackCount)
+{
+	if (FDodTeamTrackingInfo* Entry = TeamMap.Find(TeamId))
+	{
+		if (Entry->PublicInfo)
+		{
+			if (Entry->PublicInfo->HasAuthority())
+			{
+				Entry->PublicInfo->TeamTags.AddStack(Tag, StackCount);
+			}
+		}
+	}
+}
+
+int32 UDodTeamSubsystem::GetTeamTagStackCount(int32 TeamId, FGameplayTag Tag) const
+{
+	if (const FDodTeamTrackingInfo* Entry = TeamMap.Find(TeamId))
+	{
+		const int32 PublicStackCount = (Entry->PublicInfo != nullptr)
+			                               ? Entry->PublicInfo->TeamTags.GetStackCount(Tag)
+			                               : 0;
+		const int32 PrivateStackCount = (Entry->PrivateInfo != nullptr)
+			                                ? Entry->PrivateInfo->TeamTags.GetStackCount(Tag)
+			                                : 0;
+		return PublicStackCount + PrivateStackCount;
+	}
+	return 0;
 }

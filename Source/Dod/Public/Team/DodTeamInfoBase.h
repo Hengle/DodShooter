@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
+#include "System/GameplayTagStack.h"
 #include "DodTeamInfoBase.generated.h"
 
 class UDodTeamSubsystem;
@@ -25,6 +26,10 @@ protected:
 	//~ End of AActor interface
 	virtual void RegisterWithTeamSubsystem(UDodTeamSubsystem* Subsystem);
 	void TryRegisterWithTeamSubsystem();
+
+public:
+	UPROPERTY(Replicated)
+	FGameplayTagStackContainer TeamTags;
 
 private:
 	UFUNCTION()

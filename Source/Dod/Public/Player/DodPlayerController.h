@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "CommonPlayerController.h"
+#include "Team/DodTeamAgentInterface.h"
 #include "DodPlayerController.generated.h"
 
 class ADodPlayerState;
@@ -10,7 +11,7 @@ class UDodQuickBarComponent;
 class UDodInventoryManagerComponent;
 
 UCLASS()
-class DOD_API ADodPlayerController : public ACommonPlayerController
+class DOD_API ADodPlayerController : public ACommonPlayerController, public IDodTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -23,9 +24,26 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dod|PlayerController")
 	UDodAbilitySystemComponent* GetDodAbilitySystemComponent() const;
 
+	//~ Begin AController interface
+	virtual void InitPlayerState() override;
+	virtual void CleanupPlayerState() override;
+	virtual void OnRep_PlayerState() override;
+	//~ End of AController interface
+
 	//~ Begin APlayerController interface
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
 	//~ End of APlayerController interface
+
+	//~ Begin IDodTeamAgentInterface
+	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	virtual FOnDodTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
+	//~ End of IDodTeamAgentInterface
+private:
+	UFUNCTION()
+	void OnPlayerStateChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam);
+	
+	void BroadcastOnPlayerStateChanged();
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Inventory")
@@ -33,4 +51,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Inventory")
 	TObjectPtr<UDodQuickBarComponent> QuickBarComponent;
+
+private:
+	UPROPERTY()
+	FOnDodTeamIndexChangedDelegate OnTeamChangedDelegate;
+	
+	UPROPERTY()
+	TObjectPtr<APlayerState> LastSeenPlayerState;
 };

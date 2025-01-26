@@ -16,6 +16,9 @@ class DOD_API UDodAbilitySystemComponent : public UAbilitySystemComponent
 public:
 	UDodAbilitySystemComponent();
 
+	typedef TFunctionRef<bool(const UDodGameplayAbility* DodAbility, FGameplayAbilitySpecHandle Handle)> TShouldCancelAbilityFunc;
+	void CancelAbilitiesByFunc(TShouldCancelAbilityFunc ShouldCancelFunc, bool bReplicateCancelAbility);
+
 	void AbilityInputTagPressed(const FGameplayTag& InputTag);
 	void AbilityInputTagReleased(const FGameplayTag& InputTag);
 
