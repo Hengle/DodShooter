@@ -7,9 +7,6 @@
 #include "Player/DodPlayerState.h"
 #include "Team/DodTeamSubsystem.h"
 
-UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Dod_Elimination_Message, "Dod.Elimination.Message");
-UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Dod_Assist_Message, "Dod.Assist.Message");
-
 UDodGameScoringBase::UDodGameScoringBase(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -20,9 +17,9 @@ void UDodGameScoringBase::BeginPlay()
 	Super::BeginPlay();
 
 	UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
-	MessageSystem.RegisterListener(TAG_Dod_Elimination_Message, this, &ThisClass::OnReceiveElimination);
+	MessageSystem.RegisterListener(DodGameplayTags::Dod_Elimination_Message, this, &ThisClass::OnReceiveElimination);
 
-	MessageSystem.RegisterListener(TAG_Dod_Assist_Message, this, &ThisClass::OnReceiveAssist);
+	MessageSystem.RegisterListener(DodGameplayTags::Dod_Assist_Message, this, &ThisClass::OnReceiveAssist);
 }
 
 void UDodGameScoringBase::OnEliminationScored()

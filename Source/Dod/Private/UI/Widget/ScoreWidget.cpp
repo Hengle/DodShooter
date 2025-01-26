@@ -48,6 +48,7 @@ void UScoreWidget::CountDown(float Time)
 
 void UScoreWidget::OnTeamChanged(UObject* ObjectChangingTeam, int32 OldTeamID, int32 NewTeamID)
 {
+	CurrentTeamIndex = NewTeamID;
 	if (CurrentTeamIndex != INDEX_NONE)
 	{
 		EnemyTeamIndex = CurrentTeamIndex == 0 ? 0 : CurrentTeamIndex == 1 ? 2 : 1;
@@ -79,7 +80,8 @@ void UScoreWidget::UpdateAllyTeamScore()
 		return;
 	}
 	int32 OutCurrentScore, OutTargetScore;
-	AllyScore->SetCurrentValue(TeamDeathScoring->GetTeamScore(CurrentTeamIndex, OutCurrentScore, OutTargetScore));
+	TeamDeathScoring->GetTeamScore(CurrentTeamIndex, OutCurrentScore, OutTargetScore);
+	AllyScore->SetCurrentValue(OutCurrentScore);
 }
 
 void UScoreWidget::UpdateEnemyTeamScore()
@@ -89,7 +91,8 @@ void UScoreWidget::UpdateEnemyTeamScore()
 		return;
 	}
 	int32 OutCurrentScore, OutTargetScore;
-	EnemyScore->SetCurrentValue(TeamDeathScoring->GetTeamScore(EnemyTeamIndex, OutCurrentScore, OutTargetScore));
+	TeamDeathScoring->GetTeamScore(EnemyTeamIndex, OutCurrentScore, OutTargetScore);
+	EnemyScore->SetCurrentValue(OutCurrentScore);
 }
 
 void UScoreWidget::EvaluateSoundRoundEnding()

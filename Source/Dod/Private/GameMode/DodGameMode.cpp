@@ -19,3 +19,10 @@ void ADodGameMode::InitGame(const FString& MapName, const FString& Options, FStr
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 }
+
+void ADodGameMode::GenericPlayerInitialization(AController* C)
+{
+	Super::GenericPlayerInitialization(C);
+
+	OnGameModePlayerInitialized.Broadcast(this, C);
+}

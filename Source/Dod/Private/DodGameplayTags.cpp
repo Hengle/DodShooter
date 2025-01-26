@@ -44,6 +44,9 @@ namespace DodGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Score_Assists, "ShooterGame.Score.Assists", "");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(ShooterGame_Score_Deaths, "ShooterGame.Score.Deaths", "");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Dod_Elimination_Message, "Dod.Elimination.Message", "");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Dod_Assist_Message, "Dod.Assist.Message", "");
+
 	FGameplayTag DodGameplayTags::FindTagByString(const FString& TagString, bool bMatchPartialString)
 	{
 		const UGameplayTagsManager& Manager = UGameplayTagsManager::Get();

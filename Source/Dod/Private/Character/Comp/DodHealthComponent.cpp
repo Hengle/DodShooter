@@ -8,8 +8,6 @@
 #include "Messages/DodVerbMessageHelpers.h"
 #include "GameFramework/PlayerState.h"
 
-UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Dod_Elimination_Message, "Dod.Elimination.Message");
-
 UDodHealthComponent::UDodHealthComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -141,7 +139,7 @@ void UDodHealthComponent::HandleOutOfHealth(AActor* DamageInstigator, AActor* Da
 		// Send a standardized verb message that other systems can observe
 		{
 			FDodVerbMessage Message;
-			Message.Verb = TAG_Dod_Elimination_Message;
+			Message.Verb = DodGameplayTags::Dod_Elimination_Message;
 			Message.Instigator = DamageInstigator;
 			Message.InstigatorTags = *DamageEffectSpec->CapturedSourceTags.GetAggregatedTags();
 			Message.Target =

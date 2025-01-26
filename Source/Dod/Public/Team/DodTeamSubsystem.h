@@ -4,6 +4,8 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "DodTeamSubsystem.generated.h"
 
+class ADodPlayerState;
+class UDodTeamDisplayAsset;
 class ADodTeamPrivateInfo;
 struct FGameplayTag;
 class ADodTeamInfoBase;
@@ -23,8 +25,8 @@ struct FDodTeamTrackingInfo
 	UPROPERTY()
 	TObjectPtr<ADodTeamPrivateInfo> PrivateInfo = nullptr;
 
-	/*UPROPERTY()
-	TObjectPtr<UDodTeamDisplayAsset> DisplayAsset{nullptr};*/
+	UPROPERTY()
+	TObjectPtr<UDodTeamDisplayAsset> DisplayAsset{nullptr};
 
 	UPROPERTY()
 	FOnDodTeamDisplayAssetChangedDelegate OnTeamDisplayAssetChanged;
@@ -53,6 +55,8 @@ public:
 	bool ChangeTeamForActor(AActor* ActorToChange, int32 NewTeamIndex);
 
 	int32 FindTeamFromObject(const UObject* TestObject) const;
+
+	const ADodPlayerState* FindPlayerStateFromActor(const AActor* PossibleTeamActor) const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false, Category=Teams, meta=(ExpandEnumAsExecs=ReturnValue))
 	EDodTeamComparison CompareTeams(const UObject* A, const UObject* B, int32& TeamIdA, int32& TeamIdB) const;

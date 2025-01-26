@@ -9,10 +9,44 @@
 
 void FDodTeamTrackingInfo::SetTeamInfo(ADodTeamInfoBase* Info)
 {
+	if (ADodTeamPublicInfo* NewPublicInfo = Cast<ADodTeamPublicInfo>(Info))
+	{
+		ensure((PublicInfo == nullptr) || (PublicInfo == NewPublicInfo));
+		PublicInfo = NewPublicInfo;
+
+		UDodTeamDisplayAsset* OldDisplayAsset = DisplayAsset;
+		DisplayAsset = NewPublicInfo->GetTeamDisplayAsset();
+
+		if (OldDisplayAsset != DisplayAsset)
+		{
+			OnTeamDisplayAssetChanged.Broadcast(DisplayAsset);
+		}
+	}
+	else if (ADodTeamPrivateInfo* NewPrivateInfo = Cast<ADodTeamPrivateInfo>(Info))
+	{
+		ensure((PrivateInfo == nullptr) || (PrivateInfo == NewPrivateInfo));
+		PrivateInfo = NewPrivateInfo;
+	}
+	else
+	{
+		checkf(false, TEXT("Expected a public or private team info but got %s"), *GetPathNameSafe(Info))
+	}
 }
 
 void FDodTeamTrackingInfo::RemoveTeamInfo(ADodTeamInfoBase* Info)
 {
+	if (PublicInfo == Info)
+	{
+		PublicInfo = nullptr;
+	}
+	else if (PrivateInfo == Info)
+	{
+		PrivateInfo = nullptr;
+	}
+	else
+	{
+		ensureMsgf(false, TEXT("Expected a previously registered team info but got %s"), *GetPathNameSafe(Info));
+	}
 }
 
 bool UDodTeamSubsystem::RegisterTeamInfo(ADodTeamInfoBase* TeamInfo)
@@ -55,7 +89,7 @@ bool UDodTeamSubsystem::UnregisterTeamInfo(ADodTeamInfoBase* TeamInfo)
 
 bool UDodTeamSubsystem::ChangeTeamForActor(AActor* ActorToChange, int32 NewTeamIndex)
 {
-	/*const FGenericTeamId NewTeamID = IntegerToGenericTeamId(NewTeamIndex);
+	const FGenericTeamId NewTeamID = IntegerToGenericTeamId(NewTeamIndex);
 	if (ADodPlayerState* DodPS = const_cast<ADodPlayerState*>(FindPlayerStateFromActor(ActorToChange)))
 	{
 		DodPS->SetGenericTeamId(NewTeamID);
@@ -65,13 +99,13 @@ bool UDodTeamSubsystem::ChangeTeamForActor(AActor* ActorToChange, int32 NewTeamI
 	{
 		TeamActor->SetGenericTeamId(NewTeamID);
 		return true;
-	}*/
+	}
 	return false;
 }
 
 int32 UDodTeamSubsystem::FindTeamFromObject(const UObject* TestObject) const
 {
-	/*// See if it's directly a team agent
+	// See if it's directly a team agent
 	if (const IDodTeamAgentInterface* ObjectWithTeamInterface = Cast<IDodTeamAgentInterface>(TestObject))
 	{
 		return GenericTeamIdToInteger(ObjectWithTeamInterface->GetGenericTeamId());
@@ -80,7 +114,8 @@ int32 UDodTeamSubsystem::FindTeamFromObject(const UObject* TestObject) const
 	if (const AActor* TestActor = Cast<const AActor>(TestObject))
 	{
 		// See if the instigator is a team actor
-		if (const IDodTeamAgentInterface* InstigatorWithTeamInterface = Cast<IDodTeamAgentInterface>(TestActor->GetInstigator()))
+		if (const IDodTeamAgentInterface* InstigatorWithTeamInterface = Cast<IDodTeamAgentInterface>(
+			TestActor->GetInstigator()))
 		{
 			return GenericTeamIdToInteger(InstigatorWithTeamInterface->GetGenericTeamId());
 		}
@@ -96,9 +131,37 @@ int32 UDodTeamSubsystem::FindTeamFromObject(const UObject* TestObject) const
 		{
 			return DodPS->GetTeamId();
 		}
-	}*/
+	}
 
 	return INDEX_NONE;
+}
+
+const ADodPlayerState* UDodTeamSubsystem::FindPlayerStateFromActor(const AActor* PossibleTeamActor) const
+{
+	if (PossibleTeamActor != nullptr)
+	{
+		if (const APawn* Pawn = Cast<const APawn>(PossibleTeamActor))
+		{
+			//@TODO: Consider an interface instead or have team actors register with the subsystem and have it maintain a map? (or LWC style)
+			if (ADodPlayerState* LyraPS = Pawn->GetPlayerState<ADodPlayerState>())
+			{
+				return LyraPS;
+			}
+		}
+		else if (const AController* PC = Cast<const AController>(PossibleTeamActor))
+		{
+			if (ADodPlayerState* LyraPS = Cast<ADodPlayerState>(PC->PlayerState))
+			{
+				return LyraPS;
+			}
+		}
+		else if (const ADodPlayerState* LyraPS = Cast<const ADodPlayerState>(PossibleTeamActor))
+		{
+			return LyraPS;
+		}
+	}
+
+	return nullptr;
 }
 
 EDodTeamComparison UDodTeamSubsystem::CompareTeams(const UObject* A, const UObject* B, int32& TeamIdA,

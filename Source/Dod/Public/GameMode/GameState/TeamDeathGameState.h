@@ -4,6 +4,7 @@
 #include "DodGameState.h"
 #include "TeamDeathGameState.generated.h"
 
+class UDodTeamCreationComponent;
 class UTeamDeathMatchScoring;
 
 UCLASS()
@@ -16,4 +17,7 @@ public:
 protected:
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UTeamDeathMatchScoring> TeamDeathMatchScoring;
+
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UDodTeamCreationComponent> TeamCreation;
 };

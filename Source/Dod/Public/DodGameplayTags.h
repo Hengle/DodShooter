@@ -43,4 +43,7 @@ namespace DodGameplayTags
 	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShooterGame_Score_Eliminations);
 	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShooterGame_Score_Assists);
 	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(ShooterGame_Score_Deaths);
+
+	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dod_Elimination_Message);
+	DOD_API	UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dod_Assist_Message);
 } // namespace DodGameplayTags

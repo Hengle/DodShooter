@@ -38,6 +38,12 @@ public:
 	virtual FOnDodTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
 	//~ End of IDodTeamAgentInterface interface
 
+	UFUNCTION(BlueprintCallable)
+	int32 GetTeamId() const
+	{
+		return GenericTeamIdToInteger(MyTeamID);
+	}
+
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Teams)
 	void AddStatTagStack(FGameplayTag Tag, int32 StackCount);
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Teams)
@@ -66,7 +72,7 @@ protected:
 private:
 	UPROPERTY()
 	FOnDodTeamIndexChangedDelegate OnTeamChangedDelegate;
-	
+
 	UPROPERTY(ReplicatedUsing=OnRep_MyTeamID)
 	FGenericTeamId MyTeamID;
 
