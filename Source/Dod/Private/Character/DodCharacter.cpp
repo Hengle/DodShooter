@@ -7,6 +7,7 @@
 #include "Character/Comp/DodHealthComponent.h"
 #include "Character/Comp/DodPawnExtensionComponent.h"
 #include "Character/Comp/DodStaminaComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 ADodCharacter::ADodCharacter(const FObjectInitializer& ObjectInitializer)
@@ -37,6 +38,8 @@ ADodCharacter::ADodCharacter(const FObjectInitializer& ObjectInitializer)
 		FSimpleMulticastDelegate::FDelegate::CreateUObject(this, &ThisClass::OnAbilitySystemUninitialized));
 
 	HealthComponent = CreateDefaultSubobject<UDodHealthComponent>(TEXT("HealthComponent"));
+	HealthComponent->OnDeathStarted.AddDynamic(this, &ThisClass::OnDeathStarted);
+	HealthComponent->OnDeathStarted.AddDynamic(this, &ThisClass::OnDeathFinished);
 
 	StaminaComponent = CreateDefaultSubobject<UDodStaminaComponent>(TEXT("StaminaComponent"));
 
@@ -119,4 +122,62 @@ void ADodCharacter::InitializeGameplayTags()
 	if (UDodAbilitySystemComponent* ASC = GetDodAbilitySystemComponent())
 	{
 	}
+}
+
+void ADodCharacter::FellOutOfWorld(const class UDamageType& dmgType)
+{
+	HealthComponent->DamageSelfDestruct(/*bFellOutOfWorld=*/ true);
+}
+
+void ADodCharacter::OnDeathStarted(AActor* OwningActor)
+{
+	DisableMovementAndCollision();
+}
+
+void ADodCharacter::OnDeathFinished(AActor* OwningActor)
+{
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::DestroyDueToDeath);
+}
+
+void ADodCharacter::DisableMovementAndCollision()
+{
+	if (Controller)
+	{
+		Controller->SetIgnoreMoveInput(true);
+	}
+
+	UCapsuleComponent* CapsuleComp = GetCapsuleComponent();
+	check(CapsuleComp);
+	CapsuleComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	CapsuleComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+
+	UCharacterMovementComponent* MoveComp = GetCharacterMovement();
+	MoveComp->StopMovementImmediately();
+	MoveComp->DisableMovement();
+}
+
+void ADodCharacter::DestroyDueToDeath()
+{
+	K2_OnDeathFinished();
+
+	UninitAndDestroy();
+}
+
+void ADodCharacter::UninitAndDestroy()
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		DetachFromControllerPendingDestroy();
+		SetLifeSpan(0.1f);
+	}
+
+	if (UDodAbilitySystemComponent* ASC = GetDodAbilitySystemComponent())
+	{
+		if (ASC->GetAvatarActor() == this)
+		{
+			PawnExtComponent->UninitializeAbilitySystem();
+		}
+	}
+
+	SetActorHiddenInGame(true);
 }

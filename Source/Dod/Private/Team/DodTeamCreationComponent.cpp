@@ -44,9 +44,9 @@ void UDodTeamCreationComponent::ServerAssignPlayersToTeams()
 	AGameStateBase* GameState = GetGameStateChecked<AGameStateBase>();
 	for (APlayerState* PS : GameState->PlayerArray)
 	{
-		if (ADodPlayerState* LyraPS = Cast<ADodPlayerState>(PS))
+		if (ADodPlayerState* DodPS = Cast<ADodPlayerState>(PS))
 		{
-			ServerChooseTeamForPlayer(LyraPS);
+			ServerChooseTeamForPlayer(DodPS);
 		}
 	}
 
@@ -74,9 +74,9 @@ void UDodTeamCreationComponent::OnPlayerInitialized(AGameModeBase* GameMode, ACo
 {
 	check(NewPlayer);
 	check(NewPlayer->PlayerState);
-	if (ADodPlayerState* LyraPS = Cast<ADodPlayerState>(NewPlayer->PlayerState))
+	if (ADodPlayerState* DodPS = Cast<ADodPlayerState>(NewPlayer->PlayerState))
 	{
-		ServerChooseTeamForPlayer(LyraPS);
+		ServerChooseTeamForPlayer(DodPS);
 	}
 }
 
@@ -121,11 +121,11 @@ int32 UDodTeamCreationComponent::GetLeastPopulatedTeamID() const
 		AGameStateBase* GameState = GetGameStateChecked<AGameStateBase>();
 		for (APlayerState* PS : GameState->PlayerArray)
 		{
-			if (ADodPlayerState* LyraPS = Cast<ADodPlayerState>(PS))
+			if (ADodPlayerState* DodPS = Cast<ADodPlayerState>(PS))
 			{
-				const int32 PlayerTeamID = LyraPS->GetTeamId();
+				const int32 PlayerTeamID = DodPS->GetTeamId();
 
-				if ((PlayerTeamID != INDEX_NONE) && !LyraPS->IsInactive())
+				if ((PlayerTeamID != INDEX_NONE) && !DodPS->IsInactive())
 				// do not count unassigned or disconnected players
 				{
 					check(TeamMemberCounts.Contains(PlayerTeamID))

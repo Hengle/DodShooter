@@ -39,6 +39,9 @@ public:
 	UDodGameplayAbility(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UFUNCTION(BlueprintCallable, Category = "Dod|Ability")
+	UDodAbilitySystemComponent* GetDodAbilitySystemComponentFromActorInfo() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Dod|Ability")
 	ADodPlayerController* GetDodPlayerControllerFromActorInfo();
 
 	UFUNCTION(BlueprintCallable, Category = "Dod|Ability")
@@ -50,6 +53,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dod|Ability")
 	UDodOperatorComponent* GetDodOperatorComponentFromActorInfo() const;
 
+	EDodAbilityActivationGroup GetActivationGroup() const { return ActivationGroup; }
+
 	UFUNCTION(BlueprintCallable, Category = "Dod|Ability")
 	UDodEquipmentInstance* GetAssociatedEquipment() const;
 
@@ -59,6 +64,14 @@ public:
 	EDodAbilityActivationPolicy GetActivationPolicy() const { return ActivationPolicy; }
 
 	void TryActivateAbilityOnSpawn(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) const;
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Dod|Ability",
+		Meta = (ExpandBoolAsExecs = "ReturnValue"))
+	bool CanChangeActivationGroup(EDodAbilityActivationGroup NewGroup) const;
+	
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Dod|Ability",
+		Meta = (ExpandBoolAsExecs = "ReturnValue"))
+	bool ChangeActivationGroup(EDodAbilityActivationGroup NewGroup);
 
 protected:
 	//~ Begin UGameplayAbility interface

@@ -25,8 +25,14 @@ public:
 	void ProcessAbilityInput(float DeltaTime, bool bGamePaused);
 	void ClearAbilityInput();
 
+
+	void AddAbilityToActivationGroup(EDodAbilityActivationGroup Group, UDodGameplayAbility* LyraAbility);
+	void RemoveAbilityFromActivationGroup(EDodAbilityActivationGroup Group, UDodGameplayAbility* LyraAbility);
+	void CancelActivationGroupAbilities(EDodAbilityActivationGroup Group, UDodGameplayAbility* IgnoreLyraAbility, bool bReplicateCancelAbility);
+
 	//~ Begin UAbilitySystemComponent interface
 	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
+	virtual void NotifyAbilityActivated(const FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability) override;
 	//~ End of UAbilitySystemComponent interface
 
 	bool IsActivationGroupBlocked(EDodAbilityActivationGroup Group) const;

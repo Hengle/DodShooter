@@ -7,6 +7,9 @@
 #include "Messages/DodVerbMessage.h"
 #include "Messages/DodVerbMessageHelpers.h"
 #include "GameFramework/PlayerState.h"
+#include "Net/UnrealNetwork.h"
+#include "System/DodAssetManager.h"
+#include "System/DodGameData.h"
 
 UDodHealthComponent::UDodHealthComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -15,6 +18,13 @@ UDodHealthComponent::UDodHealthComponent(const FObjectInitializer& ObjectInitial
 	PrimaryComponentTick.bCanEverTick = false;
 
 	SetIsReplicatedByDefault(true);
+}
+
+void UDodHealthComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UDodHealthComponent, DeathState);
 }
 
 void UDodHealthComponent::InitializeWithAbilitySystem(UDodAbilitySystemComponent* InASC)
@@ -89,6 +99,84 @@ float UDodHealthComponent::GetHealthNormalized() const
 	return 0.0f;
 }
 
+void UDodHealthComponent::StartDeath()
+{
+	if (DeathState != EDodDeathState::NotDead)
+	{
+		return;
+	}
+
+	DeathState = EDodDeathState::DeathStarted;
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->SetLooseGameplayTagCount(DodGameplayTags::Status_Death_Dying, 1);
+	}
+
+	AActor* Owner = GetOwner();
+	check(Owner);
+
+	OnDeathStarted.Broadcast(Owner);
+
+	Owner->ForceNetUpdate();
+}
+
+void UDodHealthComponent::FinishDeath()
+{
+	if (DeathState != EDodDeathState::DeathStarted)
+	{
+		return;
+	}
+
+	DeathState = EDodDeathState::DeathFinished;
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->SetLooseGameplayTagCount(DodGameplayTags::Status_Death_Dead, 1);
+	}
+
+	AActor* Owner = GetOwner();
+	check(Owner);
+
+	OnDeathFinished.Broadcast(Owner);
+
+	Owner->ForceNetUpdate();
+}
+
+void UDodHealthComponent::DamageSelfDestruct(bool bFellOutOfWorld)
+{
+	if (DeathState == EDodDeathState::NotDead && AbilitySystemComponent)
+	{
+		const TSubclassOf<UGameplayEffect> DamageGE = UDodAssetManager::GetSubclass(
+			UDodGameData::Get().DamageGameplayEffect_SetByCaller);
+		if (!DamageGE)
+		{
+			return;
+		}
+
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(
+			DamageGE, 1.0f, AbilitySystemComponent->MakeEffectContext());
+		FGameplayEffectSpec* Spec = SpecHandle.Data.Get();
+
+		if (!Spec)
+		{
+			return;
+		}
+
+		Spec->AddDynamicAssetTag(TAG_Gameplay_DamageSelfDestruct);
+
+		if (bFellOutOfWorld)
+		{
+			Spec->AddDynamicAssetTag(TAG_Gameplay_FellOutOfWorld);
+		}
+
+		const float DamageAmount = GetMaxHealth();
+
+		Spec->SetSetByCallerMagnitude(DodGameplayTags::SetByCaller_Damage, DamageAmount);
+		AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*Spec);
+	}
+}
+
 void UDodHealthComponent::OnUnregister()
 {
 	UninitializeFromAbilitySystem();
@@ -97,6 +185,11 @@ void UDodHealthComponent::OnUnregister()
 
 void UDodHealthComponent::ClearGameplayTags()
 {
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->SetLooseGameplayTagCount(DodGameplayTags::Status_Death_Dying, 0);
+		AbilitySystemComponent->SetLooseGameplayTagCount(DodGameplayTags::Status_Death_Dead, 0);
+	}
 }
 
 void UDodHealthComponent::HandleHealthChanged(AActor* DamageInstigator, AActor* DamageCauser,
@@ -156,4 +249,36 @@ void UDodHealthComponent::HandleOutOfHealth(AActor* DamageInstigator, AActor* Da
 	}
 
 #endif // #if WITH_SERVER_CODE
+}
+
+void UDodHealthComponent::OnRep_DeathState(EDodDeathState OldDeathState)
+{
+	const EDodDeathState NewDeathState = DeathState;
+
+	DeathState = OldDeathState;
+
+	if (OldDeathState > NewDeathState)
+	{
+		return;
+	}
+
+	if (OldDeathState == EDodDeathState::NotDead)
+	{
+		if (NewDeathState == EDodDeathState::DeathStarted)
+		{
+			StartDeath();
+		}
+		else if (NewDeathState == EDodDeathState::DeathFinished)
+		{
+			StartDeath();
+			FinishDeath();
+		}
+	}
+	else if (OldDeathState == EDodDeathState::DeathStarted)
+	{
+		if (NewDeathState == EDodDeathState::DeathFinished)
+		{
+			FinishDeath();
+		}
+	}
 }

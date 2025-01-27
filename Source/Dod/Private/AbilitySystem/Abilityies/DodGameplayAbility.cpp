@@ -3,6 +3,7 @@
 #include "AbilitySystemComponent.h"
 #include "DodAbilityCost.h"
 #include "DodGameplayTags.h"
+#include "AbilitySystemLog.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "Character/DodCharacter.h"
 #include "Character/Comp/DodOperatorComponent.h"
@@ -15,6 +16,15 @@
 #include "Inventory/DodInventoryItemInstance.h"
 #include "Physics/PhysicalMaterialWithTags.h"
 
+#define ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(FunctionName, ReturnValue) \
+{																																						\
+if (!ensure(IsInstantiated()))																														\
+{																																					\
+ABILITY_LOG(Error, TEXT("%s: " #FunctionName " cannot be called on a non-instanced ability. Check the instancing policy."), *GetPathName());	\
+return ReturnValue;																																\
+}																																					\
+}
+
 UDodGameplayAbility::UDodGameplayAbility(const FObjectInitializer& ObjectInitializer)
 {
 	ReplicationPolicy = EGameplayAbilityReplicationPolicy::ReplicateNo;
@@ -23,6 +33,11 @@ UDodGameplayAbility::UDodGameplayAbility(const FObjectInitializer& ObjectInitial
 	NetSecurityPolicy = EGameplayAbilityNetSecurityPolicy::ClientOrServer;
 
 	ActivationPolicy = EDodAbilityActivationPolicy::OnInputTriggered;
+}
+
+UDodAbilitySystemComponent* UDodGameplayAbility::GetDodAbilitySystemComponentFromActorInfo() const
+{
+	return (CurrentActorInfo ? Cast<UDodAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get()) : nullptr);
 }
 
 ADodPlayerController* UDodGameplayAbility::GetDodPlayerControllerFromActorInfo()
@@ -412,6 +427,57 @@ void UDodGameplayAbility::TryActivateAbilityOnSpawn(const FGameplayAbilityActorI
 			}
 		}
 	}
+}
+
+bool UDodGameplayAbility::CanChangeActivationGroup(EDodAbilityActivationGroup NewGroup) const
+{
+	if (!IsInstantiated() || !IsActive())
+	{
+		return false;
+	}
+
+	if (ActivationGroup == NewGroup)
+	{
+		return true;
+	}
+
+	UDodAbilitySystemComponent* ASC = GetDodAbilitySystemComponentFromActorInfo();
+	check(ASC);
+
+	if (ActivationGroup != EDodAbilityActivationGroup::Exclusive_Blocking && ASC->IsActivationGroupBlocked(NewGroup))
+	{
+		return false;
+	}
+
+	if (NewGroup == EDodAbilityActivationGroup::Exclusive_Replaceable && !CanBeCanceled())
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool UDodGameplayAbility::ChangeActivationGroup(EDodAbilityActivationGroup NewGroup)
+{
+	ENSURE_ABILITY_IS_INSTANTIATED_OR_RETURN(ChangeActivationGroup, false);
+
+	if (!CanChangeActivationGroup(NewGroup))
+	{
+		return false;
+	}
+
+	if (ActivationGroup != NewGroup)
+	{
+		UDodAbilitySystemComponent* ASC = GetDodAbilitySystemComponentFromActorInfo();
+		check(ASC);
+
+		ASC->RemoveAbilityFromActivationGroup(ActivationGroup, this);
+		ASC->AddAbilityToActivationGroup(NewGroup, this);
+
+		ActivationGroup = NewGroup;
+	}
+
+	return true;
 }
 
 void UDodGameplayAbility::OnPawnAvatarSet()

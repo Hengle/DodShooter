@@ -1,6 +1,7 @@
 ﻿#include "AbilitySystem/DodAbilitySystemComponent.h"
 
 #include "DodGlobalAbilitySystem.h"
+#include "DodLogChannels.h"
 #include "AbilitySystem/Abilityies/DodGameplayAbility.h"
 #include "Animation/DodAnimInstance.h"
 #include "NativeGameplayTags.h"
@@ -44,8 +45,8 @@ void UDodAbilitySystemComponent::CancelAbilitiesByFunc(TShouldCancelAbilityFunc 
 					if (DodAbilityInstance->CanBeCanceled())
 					{
 						DodAbilityInstance->CancelAbility(AbilitySpec.Handle, AbilityActorInfo.Get(),
-						                                   DodAbilityInstance->GetCurrentActivationInfo(),
-						                                   bReplicateCancelAbility);
+						                                  DodAbilityInstance->GetCurrentActivationInfo(),
+						                                  bReplicateCancelAbility);
 					}
 				}
 			}
@@ -58,7 +59,7 @@ void UDodAbilitySystemComponent::CancelAbilitiesByFunc(TShouldCancelAbilityFunc 
 				// Non-instanced abilities can always be canceled.
 				check(DodAbilityCDO->CanBeCanceled());
 				DodAbilityCDO->CancelAbility(AbilitySpec.Handle, AbilityActorInfo.Get(),
-				                              FGameplayAbilityActivationInfo(), bReplicateCancelAbility);
+				                             FGameplayAbilityActivationInfo(), bReplicateCancelAbility);
 			}
 		}
 	}
@@ -176,6 +177,72 @@ void UDodAbilitySystemComponent::ClearAbilityInput()
 	InputPressedSpecHandles.Reset();
 	InputReleasedSpecHandles.Reset();
 	InputHeldSpecHandles.Reset();
+}
+
+void UDodAbilitySystemComponent::NotifyAbilityActivated(const FGameplayAbilitySpecHandle Handle,
+	UGameplayAbility* Ability)
+{
+	Super::NotifyAbilityActivated(Handle, Ability);
+
+	if (UDodGameplayAbility* DodAbility = Cast<UDodGameplayAbility>(Ability))
+	{
+		AddAbilityToActivationGroup(DodAbility->GetActivationGroup(), DodAbility);
+	}
+}
+
+void UDodAbilitySystemComponent::AddAbilityToActivationGroup(EDodAbilityActivationGroup Group,
+                                                             UDodGameplayAbility* DodAbility)
+{
+	check(DodAbility);
+	check(ActivationGroupCounts[(uint8)Group] < INT32_MAX);
+
+	ActivationGroupCounts[(uint8)Group]++;
+
+	const bool bReplicateCancelAbility = false;
+
+	switch (Group)
+	{
+	case EDodAbilityActivationGroup::Independent:
+		break;
+	case EDodAbilityActivationGroup::Exclusive_Replaceable:
+	case EDodAbilityActivationGroup::Exclusive_Blocking:
+		CancelActivationGroupAbilities(EDodAbilityActivationGroup::Exclusive_Replaceable, DodAbility,
+		                               bReplicateCancelAbility);
+		break;
+
+	default:
+		checkf(false, TEXT("AddAbilityToActivationGroup: Invalid ActivationGroup [%d]\n"), (uint8)Group);
+		break;
+	}
+
+	const int32 ExclusiveCount = ActivationGroupCounts[(uint8)EDodAbilityActivationGroup::Exclusive_Replaceable] +
+		ActivationGroupCounts[(uint8)EDodAbilityActivationGroup::Exclusive_Blocking];
+	if (!ensure(ExclusiveCount <= 1))
+	{
+		UE_LOG(LogDod, Error, TEXT("AddAbilityToActivationGroup: Multiple exclusive abilities are running."));
+	}
+}
+
+void UDodAbilitySystemComponent::RemoveAbilityFromActivationGroup(EDodAbilityActivationGroup Group,
+                                                                  UDodGameplayAbility* DodAbility)
+{
+	check(DodAbility);
+	check(ActivationGroupCounts[(uint8)Group] > 0);
+
+	ActivationGroupCounts[(uint8)Group]--;
+}
+
+void UDodAbilitySystemComponent::CancelActivationGroupAbilities(EDodAbilityActivationGroup Group,
+                                                                UDodGameplayAbility* IgnoreDodAbility,
+                                                                bool bReplicateCancelAbility)
+{
+	auto ShouldCancelFunc = [this, Group, IgnoreDodAbility](const UDodGameplayAbility* DodAbility,
+	                                                         FGameplayAbilitySpecHandle Handle)
+	{
+		return DodAbility->GetActivationGroup() == Group && DodAbility != IgnoreDodAbility;
+	};
+
+	CancelAbilitiesByFunc(ShouldCancelFunc, bReplicateCancelAbility);
 }
 
 void UDodAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)

@@ -143,21 +143,21 @@ const ADodPlayerState* UDodTeamSubsystem::FindPlayerStateFromActor(const AActor*
 		if (const APawn* Pawn = Cast<const APawn>(PossibleTeamActor))
 		{
 			//@TODO: Consider an interface instead or have team actors register with the subsystem and have it maintain a map? (or LWC style)
-			if (ADodPlayerState* LyraPS = Pawn->GetPlayerState<ADodPlayerState>())
+			if (ADodPlayerState* DodPS = Pawn->GetPlayerState<ADodPlayerState>())
 			{
-				return LyraPS;
+				return DodPS;
 			}
 		}
 		else if (const AController* PC = Cast<const AController>(PossibleTeamActor))
 		{
-			if (ADodPlayerState* LyraPS = Cast<ADodPlayerState>(PC->PlayerState))
+			if (ADodPlayerState* DodPS = Cast<ADodPlayerState>(PC->PlayerState))
 			{
-				return LyraPS;
+				return DodPS;
 			}
 		}
-		else if (const ADodPlayerState* LyraPS = Cast<const ADodPlayerState>(PossibleTeamActor))
+		else if (const ADodPlayerState* DodPS = Cast<const ADodPlayerState>(PossibleTeamActor))
 		{
-			return LyraPS;
+			return DodPS;
 		}
 	}
 

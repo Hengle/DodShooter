@@ -9,8 +9,18 @@ struct FGameplayEffectSpec;
 class UDodAbilitySystemComponent;
 class UDodHealthSet;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDodHealth_DeathEvent, AActor*, OwningActor);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FDodHealth_AttributeChanged, UDodHealthComponent*, HealthComponent,
                                               float, OldValue, float, NewValue, AActor*, Instigator);
+
+UENUM(BlueprintType)
+enum class EDodDeathState : uint8
+{
+	NotDead = 0,
+	DeathStarted,
+	DeathFinished
+};
 
 /**
  * UDodHealthComponent
@@ -24,6 +34,7 @@ class DOD_API UDodHealthComponent : public UGameFrameworkComponent
 
 public:
 	UDodHealthComponent(const FObjectInitializer& ObjectInitializer);
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintPure, Category = "Dod|Health")
 	static UDodHealthComponent* FindHealthComponent(const AActor* Actor)
@@ -47,6 +58,18 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dod|Health")
 	float GetHealthNormalized() const;
 
+	UFUNCTION(BlueprintCallable, Category = "Dod|Health")
+	EDodDeathState GetDeathState() const { return DeathState; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure = false, Category = "Dod|Health",
+		Meta = (ExpandBoolAsExecs = "ReturnValue"))
+	bool IsDeadOrDying() const { return DeathState > EDodDeathState::NotDead; }
+
+	virtual void StartDeath();
+	virtual void FinishDeath();
+
+	virtual void DamageSelfDestruct(bool bFellOutOfWorld = false);
+
 protected:
 	virtual void OnUnregister() override;
 
@@ -62,6 +85,10 @@ protected:
 	                               const FGameplayEffectSpec* DamageEffectSpec, float DamageMagnitude, float OldValue,
 	                               float NewValue);
 
+protected:
+	UFUNCTION()
+	virtual void OnRep_DeathState(EDodDeathState OldDeathState);
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FDodHealth_AttributeChanged OnHealthChanged;
@@ -69,10 +96,19 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FDodHealth_AttributeChanged OnMaxHealthChanged;
 
+	UPROPERTY(BlueprintAssignable)
+	FDodHealth_DeathEvent OnDeathStarted;
+
+	UPROPERTY(BlueprintAssignable)
+	FDodHealth_DeathEvent OnDeathFinished;
+
 protected:
 	UPROPERTY()
 	TObjectPtr<UDodAbilitySystemComponent> AbilitySystemComponent{nullptr};
 
 	UPROPERTY()
 	TObjectPtr<const UDodHealthSet> HealthSet{nullptr};
+
+	UPROPERTY(ReplicatedUsing = OnRep_DeathState)
+	EDodDeathState DeathState { EDodDeathState::NotDead };
 };

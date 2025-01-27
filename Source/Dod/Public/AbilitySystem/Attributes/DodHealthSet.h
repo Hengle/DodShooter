@@ -2,8 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "NativeGameplayTags.h"
 #include "AbilitySystem/Attributes/DodAttributeSet.h"
 #include "DodHealthSet.generated.h"
+
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Gameplay_DamageSelfDestruct);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Gameplay_FellOutOfWorld);
 
 /**
  * UDodHealthSet

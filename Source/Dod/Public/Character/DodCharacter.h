@@ -43,6 +43,20 @@ protected:
 
 	void InitializeGameplayTags();
 
+	virtual void FellOutOfWorld(const class UDamageType& dmgType) override;
+
+	UFUNCTION()
+	virtual void OnDeathStarted(AActor* OwningActor);
+	UFUNCTION()
+	virtual void OnDeathFinished(AActor* OwningActor);
+
+	void DisableMovementAndCollision();
+	void DestroyDueToDeath();
+	void UninitAndDestroy();
+
+	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnDeathFinished"))
+	void K2_OnDeathFinished();
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Character")
 	TObjectPtr<USkeletalMeshComponent> HeadMesh;
