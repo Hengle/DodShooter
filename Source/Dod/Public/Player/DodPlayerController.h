@@ -25,6 +25,7 @@ public:
 	UDodAbilitySystemComponent* GetDodAbilitySystemComponent() const;
 
 	//~ Begin AController interface
+	virtual void OnUnPossess() override;
 	virtual void InitPlayerState() override;
 	virtual void CleanupPlayerState() override;
 	virtual void OnRep_PlayerState() override;

@@ -39,7 +39,7 @@ ADodCharacter::ADodCharacter(const FObjectInitializer& ObjectInitializer)
 
 	HealthComponent = CreateDefaultSubobject<UDodHealthComponent>(TEXT("HealthComponent"));
 	HealthComponent->OnDeathStarted.AddDynamic(this, &ThisClass::OnDeathStarted);
-	HealthComponent->OnDeathStarted.AddDynamic(this, &ThisClass::OnDeathFinished);
+	HealthComponent->OnDeathFinished.AddDynamic(this, &ThisClass::OnDeathFinished);
 
 	StaminaComponent = CreateDefaultSubobject<UDodStaminaComponent>(TEXT("StaminaComponent"));
 

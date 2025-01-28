@@ -1,5 +1,6 @@
 ﻿#include "Player/DodPlayerController.h"
 
+#include "AbilitySystemGlobals.h"
 #include "GenericTeamAgentInterface.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "Equipment/DodQuickBarComponent.h"
@@ -23,6 +24,21 @@ UDodAbilitySystemComponent* ADodPlayerController::GetDodAbilitySystemComponent()
 {
 	const ADodPlayerState* PS = GetDodPlayerState();
 	return PS ? PS->GetDodAbilitySystemComponent() : nullptr;
+}
+
+void ADodPlayerController::OnUnPossess()
+{
+	if (APawn* PawnBeingUnpossessed = GetPawn())
+	{
+		if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(PlayerState))
+		{
+			if (ASC->GetAvatarActor() == PawnBeingUnpossessed)
+			{
+				ASC->SetAvatarActor(nullptr);
+			}
+		}
+	}
+	Super::OnUnPossess();
 }
 
 void ADodPlayerController::InitPlayerState()

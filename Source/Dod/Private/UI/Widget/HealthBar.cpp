@@ -17,7 +17,7 @@ void UHealthBar::OnPossessedPawnChanged(APawn* OldPawn, APawn* NewPawn)
 {
 	if (UDodHealthComponent* OldHealth = UDodHealthComponent::FindHealthComponent(OldPawn))
 	{
-		OldHealth->OnHealthChanged.Clear();
+		OldHealth->OnHealthChanged.RemoveDynamic(this, &ThisClass::HealthChanged);
 	}
 	if (UDodHealthComponent* NewHealth = UDodHealthComponent::FindHealthComponent(NewPawn))
 	{

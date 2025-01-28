@@ -7,6 +7,7 @@
 #include "Team/DodTeamAgentInterface.h"
 #include "DodPlayerState.generated.h"
 
+class UDodAbilitySet;
 struct FGameplayTag;
 class UDodAbilitySystemComponent;
 
@@ -63,6 +64,9 @@ private:
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Dod|PlayerState")
 	TObjectPtr<UDodAbilitySystemComponent> AbilitySystemComponent;
+
+	UPROPERTY(EditAnywhere, Category="Attributes", meta=(AssetBundles="Client,Server"))
+	TArray<TSoftObjectPtr<const UDodAbilitySet>> GrantedAbilitySets;
 
 	UPROPERTY()
 	TObjectPtr<const class UDodHealthSet> HealthSet;

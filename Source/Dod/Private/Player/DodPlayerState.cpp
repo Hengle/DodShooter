@@ -1,5 +1,6 @@
 ﻿#include "Player/DodPlayerState.h"
 
+#include "AbilitySystem/DodAbilitySet.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/DodCombatSet.h"
 #include "AbilitySystem/Attributes/DodHealthSet.h"
@@ -52,6 +53,16 @@ void ADodPlayerState::PostInitializeComponents()
 
 	check(AbilitySystemComponent);
 	AbilitySystemComponent->InitAbilityActorInfo(this, GetPawn());
+
+	TArray<FDodAbilitySet_GrantedHandles> AbilitySetHandles;
+
+	for (const TSoftObjectPtr<const UDodAbilitySet>& SetPtr : GrantedAbilitySets)
+	{
+		if (const UDodAbilitySet* Set = SetPtr.LoadSynchronous())
+		{
+			Set->GiveToAbilitySystem(AbilitySystemComponent, &AbilitySetHandles.AddDefaulted_GetRef());
+		}
+	}
 }
 
 void ADodPlayerState::SetGenericTeamId(const FGenericTeamId& InTeamID)

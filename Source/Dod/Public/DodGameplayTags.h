@@ -12,6 +12,11 @@ namespace DodGameplayTags
 
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Behavior_SurvivesDeath);
 
+	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Respawn_Completed_Message);
+	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Respawn_Duration_Message);
+	
+	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Ability_Type_StatusChange_Death);
+
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Move);
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Look_Mouse);
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InputTag_Look_Stick);
@@ -29,6 +34,8 @@ namespace DodGameplayTags
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(InitState_GameplayReady);
 
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_Death);
+	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_Reset);
+	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(GameplayEvent_RequestReset);
 
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Damage);
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(SetByCaller_Heal);

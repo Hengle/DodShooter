@@ -73,6 +73,8 @@ public:
 		Meta = (ExpandBoolAsExecs = "ReturnValue"))
 	bool ChangeActivationGroup(EDodAbilityActivationGroup NewGroup);
 
+	void EndCurrentAbility(bool bReplicateEndAbility, bool bWasCancelled);
+
 protected:
 	//~ Begin UGameplayAbility interface
 	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,

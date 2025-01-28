@@ -11,6 +11,11 @@ namespace DodGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Behavior_SurvivesDeath, "Ability.Behavior.SurvivesDeath",
 								   "An ability with this type tag should not be canceled due to death.");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Respawn_Completed_Message, "Ability.Respawn.Completed.Message", "");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Respawn_Duration_Message, "Ability.Respawn.Duration.Message", "");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Ability_Type_StatusChange_Death, "Ability.Type.StatusChange.Death", "");
 	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Move, "InputTag.Move", "Move input.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Look_Mouse, "InputTag.Look.Mouse", "Look (mouse) input.");
@@ -30,7 +35,9 @@ namespace DodGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_GameplayReady, "InitState.GameplayReady", "4: Actor/组件已完全准备好进行激活gameplay");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Death, "GameplayEvent.Death", "Event that fires on death. This event only fires on the server.");
-
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_Reset, "GameplayEvent.Reset", "Event that fires once a player reset is executed.");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(GameplayEvent_RequestReset, "GameplayEvent.RequestReset", "Event to request a player's pawn to be instantly replaced with a new one at a valid spawn location.");
+	
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_Damage, "SetByCaller.Damage", "SetByCaller tag used by damage gameplay effects.");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(SetByCaller_Heal, "SetByCaller.Heal", "SetByCaller tag used by healing gameplay effects.");
 	

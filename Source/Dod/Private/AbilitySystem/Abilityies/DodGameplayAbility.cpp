@@ -37,7 +37,9 @@ UDodGameplayAbility::UDodGameplayAbility(const FObjectInitializer& ObjectInitial
 
 UDodAbilitySystemComponent* UDodGameplayAbility::GetDodAbilitySystemComponentFromActorInfo() const
 {
-	return (CurrentActorInfo ? Cast<UDodAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get()) : nullptr);
+	return (CurrentActorInfo
+		        ? Cast<UDodAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get())
+		        : nullptr);
 }
 
 ADodPlayerController* UDodGameplayAbility::GetDodPlayerControllerFromActorInfo()
@@ -478,6 +480,11 @@ bool UDodGameplayAbility::ChangeActivationGroup(EDodAbilityActivationGroup NewGr
 	}
 
 	return true;
+}
+
+void UDodGameplayAbility::EndCurrentAbility(bool bReplicateEndAbility, bool bWasCancelled)
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 void UDodGameplayAbility::OnPawnAvatarSet()

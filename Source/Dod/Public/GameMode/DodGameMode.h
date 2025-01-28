@@ -16,8 +16,12 @@ public:
 
 	//~ AGameModeBase interface
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+	virtual APawn* SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer, const FTransform& SpawnTransform) override;
 	virtual void GenericPlayerInitialization(AController* C) override;
 	//~ End of AGameModeBase interface
+
+	UFUNCTION(BlueprintCallable)
+	void RequestPlayerRestartNextFrame(AController* Controller, bool bForceReset = false);
 
 	FOnDodGameModePlayerInitialized OnGameModePlayerInitialized;
 };
