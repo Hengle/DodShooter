@@ -24,6 +24,14 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 
+	//~ Begin ADodCharacter interface
+	virtual void OnDeathFinished(AActor* OwningActor) override;
+	//~ End of ADodCharacter interface
+
+	//~ Begin Pawn interface
+	virtual void Reset() override;
+	//~ End of Pawn interface
+
 	//~ Begin IGameFrameworkInitStateInterface interface
 	virtual FName GetFeatureName() const override { return NAME_ActorFeatureName; }
 	virtual bool CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
@@ -36,6 +44,11 @@ protected:
 
 	// 添加库存中的每一个物品，然后激活第一个
 	void AddInitialInventory();
+
+	void ClearInventory();
+
+	UFUNCTION()
+	void ShowPawnAgainNextFrame(const FActorInitStateChangedParams& Params);
 
 public:
 	static const FName NAME_ActorFeatureName;

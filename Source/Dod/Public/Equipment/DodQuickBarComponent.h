@@ -21,6 +21,12 @@ public:
 	void SetActiveSlotIndex(int32 NewIndex);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false)
+	TArray<UDodInventoryItemInstance*> GetSlots() const
+	{
+		return Slots;
+	}
+
+	UFUNCTION(BlueprintCallable, BlueprintPure=false)
 	int32 GetActiveSlotIndex() const { return ActiveSlotIndex; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure = false)
@@ -33,6 +39,9 @@ public:
 	void AddItemToSlot(int32 SlotIndex, UDodInventoryItemInstance* Item);
 
 	bool IsValidSlotIndex(int32 SlotIndex);
+
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly)
+	UDodInventoryItemInstance* RemoveItemFromSlot(int32 SlotIndex);
 
 protected:
 	virtual void BeginPlay() override;

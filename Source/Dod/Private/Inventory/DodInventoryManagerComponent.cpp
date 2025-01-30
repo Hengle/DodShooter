@@ -5,6 +5,20 @@
 #include "Inventory/DodInventoryItemInstance.h"
 #include "Net/UnrealNetwork.h"
 
+TArray<UDodInventoryItemInstance*> FDodInventoryList::GetAllItems() const
+{
+	TArray<UDodInventoryItemInstance*> Results;
+	Results.Reserve(Entries.Num());
+	for (const FDodInventoryEntry& Entry : Entries)
+	{
+		if (Entry.Instance != nullptr)
+		{
+			Results.Add(Entry.Instance);
+		}
+	}
+	return Results;
+}
+
 UDodInventoryItemInstance* FDodInventoryList::AddEntry(TSubclassOf<UDodInventoryItemDefinition> ItemDef,
                                                        int32 StackCount)
 {
@@ -31,6 +45,19 @@ UDodInventoryItemInstance* FDodInventoryList::AddEntry(TSubclassOf<UDodInventory
 	MarkItemDirty(NewEntry);
 
 	return Result;
+}
+
+void FDodInventoryList::RemoveEntry(UDodInventoryItemInstance* Instance)
+{
+	for (auto EntryIt = Entries.CreateIterator(); EntryIt; ++EntryIt)
+	{
+		FDodInventoryEntry& Entry = *EntryIt;
+		if (Entry.Instance == Instance)
+		{
+			EntryIt.RemoveCurrent();
+			MarkArrayDirty();
+		}
+	}
 }
 
 void FDodInventoryList::PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize)
@@ -88,6 +115,21 @@ UDodInventoryItemInstance* UDodInventoryManagerComponent::AddItemDefinition(
 		}
 	}
 	return Result;
+}
+
+void UDodInventoryManagerComponent::RemoveItemInstance(UDodInventoryItemInstance* ItemInstance)
+{
+	InventoryList.RemoveEntry(ItemInstance);
+
+	if (ItemInstance && IsUsingRegisteredSubObjectList())
+	{
+		RemoveReplicatedSubObject(ItemInstance);
+	}
+}
+
+TArray<UDodInventoryItemInstance*> UDodInventoryManagerComponent::GetAllItems() const
+{
+	return InventoryList.GetAllItems();
 }
 
 bool UDodInventoryManagerComponent::ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,

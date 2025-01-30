@@ -15,7 +15,7 @@ void UWeaponAmmoBar::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	if (GetQuickBar())
 	{
 		UDodInventoryItemInstance* NewInventoryItem = GetQuickBar()->GetActiveSlotItem();
-		if (NewInventoryItem != InventoryItem)
+		if (NewInventoryItem && NewInventoryItem != InventoryItem)
 		{
 			InventoryItem = NewInventoryItem;
 			// 获取图标

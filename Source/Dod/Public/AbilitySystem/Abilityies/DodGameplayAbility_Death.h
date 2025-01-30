@@ -27,5 +27,5 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Death")
-	bool bAutoStartDeath;
+	bool bAutoStartDeath{true};
 };

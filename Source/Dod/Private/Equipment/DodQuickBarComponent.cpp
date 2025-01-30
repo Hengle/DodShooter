@@ -56,6 +56,30 @@ bool UDodQuickBarComponent::IsValidSlotIndex(int32 SlotIndex)
 	return Slots.IsValidIndex(SlotIndex);
 }
 
+UDodInventoryItemInstance* UDodQuickBarComponent::RemoveItemFromSlot(int32 SlotIndex)
+{
+	UDodInventoryItemInstance* Result = nullptr;
+
+	if (ActiveSlotIndex == SlotIndex)
+	{
+		UnequipItemInSlot();
+		ActiveSlotIndex = -1;
+	}
+
+	if (Slots.IsValidIndex(SlotIndex))
+	{
+		Result = Slots[SlotIndex];
+
+		if (Result != nullptr)
+		{
+			Slots[SlotIndex] = nullptr;
+			OnRep_Slots();
+		}
+	}
+
+	return Result;
+}
+
 void UDodQuickBarComponent::BeginPlay()
 {
 	Super::BeginPlay();

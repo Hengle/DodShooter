@@ -4,6 +4,7 @@
 #include "Camera/DodCameraComponent.h"
 #include "Character/Comp/DodPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentDelegates.h"
+#include "Components/GameFrameworkComponentManager.h"
 #include "Equipment/DodEquipmentManagerComponent.h"
 #include "Equipment/DodQuickBarComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -47,6 +48,26 @@ void ADodShooter::BeginPlay()
 	GetMesh()->SetCastHiddenShadow(true);
 	ArmMesh->SetCastShadow(false);
 
+	ensure(TryToChangeInitState(DodGameplayTags::InitState_Spawned));
+	CheckDefaultInitialization();
+
+	SetActorHiddenInGame(true);
+
+	FActorInitStateChangedBPDelegate Delegate;
+	Delegate.BindUFunction(this, FName("ShowPawnAgainNextFrame"));
+
+	PawnExtComponent->RegisterAndCallForInitStateChange(DodGameplayTags::InitState_GameplayReady,
+	                                                    Delegate,
+	                                                    true
+	);
+}
+
+void ADodShooter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	CheckDefaultInitialization();
+
 	if (IsLocallyControlled())
 	{
 		ChangeToFirstPerson();
@@ -55,16 +76,18 @@ void ADodShooter::BeginPlay()
 	{
 		ChangeToThirdPerson();
 	}
-
-	ensure(TryToChangeInitState(DodGameplayTags::InitState_Spawned));
-	CheckDefaultInitialization();
 }
 
-void ADodShooter::PossessedBy(AController* NewController)
+void ADodShooter::OnDeathFinished(AActor* OwningActor)
 {
-	Super::PossessedBy(NewController);
+	Super::OnDeathFinished(OwningActor);
+	ClearInventory();
+}
 
-	CheckDefaultInitialization();
+void ADodShooter::Reset()
+{
+	Super::Reset();
+	ClearInventory();
 }
 
 bool ADodShooter::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
@@ -146,4 +169,39 @@ void ADodShooter::AddInitialInventory()
 	{
 		QuickBar->SetActiveSlotIndex(0);
 	}
+}
+
+void ADodShooter::ClearInventory()
+{
+	if (HasAuthority())
+	{
+		UDodInventoryManagerComponent* InventoryManager =
+			GetController()->GetComponentByClass<UDodInventoryManagerComponent>();
+		UDodQuickBarComponent* QuickBar =
+			GetController()->GetComponentByClass<UDodQuickBarComponent>();
+		if (QuickBar)
+		{
+			const TArray<UDodInventoryItemInstance*>& Slots = QuickBar->GetSlots();
+			for (int32 Idx = 0; Idx < Slots.Num(); ++Idx)
+			{
+				QuickBar->RemoveItemFromSlot(Idx);
+			}
+		}
+		if (InventoryManager)
+		{
+			const TArray<UDodInventoryItemInstance*>& Items = InventoryManager->GetAllItems();
+			for (UDodInventoryItemInstance* Item : Items)
+			{
+				InventoryManager->RemoveItemInstance(Item);
+			}
+		}
+	}
+}
+
+void ADodShooter::ShowPawnAgainNextFrame(const FActorInitStateChangedParams& Params)
+{
+	GetWorld()->GetTimerManager().SetTimerForNextTick([&]()
+	{
+		SetActorHiddenInGame(false);
+	});
 }

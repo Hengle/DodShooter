@@ -42,8 +42,12 @@ struct FDodInventoryList : public FFastArraySerializer
 	{
 	}
 
+	TArray<UDodInventoryItemInstance*> GetAllItems() const;
+
 	UDodInventoryItemInstance* AddEntry(TSubclassOf<UDodInventoryItemDefinition> ItemClass, int32 StackCount);
 
+	void RemoveEntry(UDodInventoryItemInstance* Instance);
+	
 	//~FFastArraySerializer contract
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
 	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
@@ -85,6 +89,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
 	UDodInventoryItemInstance* AddItemDefinition(TSubclassOf<UDodInventoryItemDefinition> ItemDef,
 	                                             int32 StackCount = 1);
+	
+	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)
+	void RemoveItemInstance(UDodInventoryItemInstance* ItemInstance);
+	
+	UFUNCTION(BlueprintCallable, Category=Inventory, BlueprintPure=false)
+	TArray<UDodInventoryItemInstance*> GetAllItems() const;
 
 protected:
 	//~ Begin UObject interface
