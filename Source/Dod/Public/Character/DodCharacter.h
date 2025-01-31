@@ -51,7 +51,7 @@ protected:
 	virtual void OnDeathFinished(AActor* OwningActor);
 
 	void DisableMovementAndCollision();
-	void DestroyDueToDeath();
+	virtual void DestroyDueToDeath();
 	void UninitAndDestroy();
 
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnDeathFinished"))

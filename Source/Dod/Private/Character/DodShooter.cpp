@@ -38,6 +38,18 @@ void ADodShooter::ChangeToThirdPerson()
 	ArmMesh->SetVisibility(false);
 }
 
+void ADodShooter::ChooseViewPerson()
+{
+	if (IsLocallyControlled())
+	{
+		ChangeToFirstPerson();
+	}
+	else
+	{
+		ChangeToThirdPerson();
+	}
+}
+
 void ADodShooter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -67,21 +79,13 @@ void ADodShooter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	CheckDefaultInitialization();
-
-	if (IsLocallyControlled())
-	{
-		ChangeToFirstPerson();
-	}
-	else
-	{
-		ChangeToThirdPerson();
-	}
+	ChooseViewPerson();
 }
 
-void ADodShooter::OnDeathFinished(AActor* OwningActor)
+void ADodShooter::DestroyDueToDeath()
 {
-	Super::OnDeathFinished(OwningActor);
 	ClearInventory();
+	Super::DestroyDueToDeath();
 }
 
 void ADodShooter::Reset()
@@ -111,6 +115,7 @@ void ADodShooter::HandleChangeInitState(UGameFrameworkComponentManager* Manager,
 		DesiredState == DodGameplayTags::InitState_GameplayReady)
 	{
 		AddInitialInventory();
+		ChooseViewPerson();
 	}
 }
 
@@ -173,7 +178,7 @@ void ADodShooter::AddInitialInventory()
 
 void ADodShooter::ClearInventory()
 {
-	if (HasAuthority())
+	if (HasAuthority() && GetController())
 	{
 		UDodInventoryManagerComponent* InventoryManager =
 			GetController()->GetComponentByClass<UDodInventoryManagerComponent>();

@@ -155,19 +155,22 @@ void UDodGameplayAbility_AutoSpawn::AvatarEndPlay()
 
 void UDodGameplayAbility_AutoSpawn::ContinueEndPlay()
 {
-	bShouldFinishRestart = false;
-	UAbilitySystemComponent* ASC =
-		UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(ControllerToReset->PlayerState);
-	if (ASC)
+	if (HasAuthority(&CurrentActivationInfo))
 	{
-		EndDeathAbilities(ASC);
-		GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, this, &ThisClass::SpawnPlayer, .1f, false);
+		bShouldFinishRestart = false;
+		UAbilitySystemComponent* ASC =
+			UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(ControllerToReset->PlayerState);
+		if (ASC)
+		{
+			EndDeathAbilities(ASC);
+		}
+
+		SpawnPlayer();
 	}
 }
 
 void UDodGameplayAbility_AutoSpawn::SpawnPlayer()
 {
-	GWorld->GetTimerManager().ClearTimer(RespawnTimerHandle);
 	ADodGameMode* DodGM = Cast<ADodGameMode>(GetWorld()->GetAuthGameMode());
 	if (DodGM)
 	{

@@ -38,6 +38,9 @@ void ADodPlayerController::OnUnPossess()
 			}
 		}
 	}
+
+	UnEquip();
+
 	Super::OnUnPossess();
 }
 
@@ -88,6 +91,26 @@ FOnDodTeamIndexChangedDelegate* ADodPlayerController::GetOnTeamIndexChangedDeleg
 	return &OnTeamChangedDelegate;
 }
 
+void ADodPlayerController::UnEquip()
+{
+	if (QuickBarComponent)
+	{
+		const TArray<UDodInventoryItemInstance*>& Slots = QuickBarComponent->GetSlots();
+		for (int32 Idx = 0; Idx < Slots.Num(); ++Idx)
+		{
+			QuickBarComponent->RemoveItemFromSlot(Idx);
+		}
+	}
+	if (InventoryComponent)
+	{
+		const TArray<UDodInventoryItemInstance*>& Items = InventoryComponent->GetAllItems();
+		for (UDodInventoryItemInstance* Item : Items)
+		{
+			InventoryComponent->RemoveItemInstance(Item);
+		}
+	}
+}
+
 void ADodPlayerController::OnPlayerStateChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam)
 {
 	ConditionalBroadcastTeamChanged(this, IntegerToGenericTeamId(OldTeam), IntegerToGenericTeamId(NewTeam));
@@ -112,7 +135,8 @@ void ADodPlayerController::BroadcastOnPlayerStateChanged()
 		if (IDodTeamAgentInterface* PlayerStateTeamInterface = Cast<IDodTeamAgentInterface>(PlayerState))
 		{
 			NewTeamID = PlayerStateTeamInterface->GetGenericTeamId();
-			PlayerStateTeamInterface->GetTeamChangedDelegateChecked().AddDynamic(this, &ThisClass::OnPlayerStateChangedTeam);
+			PlayerStateTeamInterface->GetTeamChangedDelegateChecked().AddDynamic(
+				this, &ThisClass::OnPlayerStateChangedTeam);
 		}
 	}
 

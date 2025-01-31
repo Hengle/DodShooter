@@ -19,13 +19,14 @@ public:
 
 	void ChangeToFirstPerson();
 	void ChangeToThirdPerson();
+	void ChooseViewPerson();
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 
 	//~ Begin ADodCharacter interface
-	virtual void OnDeathFinished(AActor* OwningActor) override;
+	virtual void DestroyDueToDeath() override;
 	//~ End of ADodCharacter interface
 
 	//~ Begin Pawn interface

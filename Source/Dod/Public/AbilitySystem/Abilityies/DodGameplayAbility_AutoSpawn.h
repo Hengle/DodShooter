@@ -44,6 +44,7 @@ protected:
 
 	void AvatarEndPlay();
 	void ContinueEndPlay();
+	UFUNCTION()
 	void SpawnPlayer();
 
 	AActor* GetOwningPlayerState();
@@ -66,7 +67,6 @@ protected:
 	float RespawnDelayDuration{3.f};
 
 private:
-	FTimerHandle RespawnTimerHandle;
 	FTimerHandle DeathTimerHandle;
 
 	FUIExtensionHandle Extension;

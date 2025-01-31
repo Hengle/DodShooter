@@ -40,6 +40,8 @@ public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual FOnDodTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
 	//~ End of IDodTeamAgentInterface
+
+	void UnEquip();
 private:
 	UFUNCTION()
 	void OnPlayerStateChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam);
