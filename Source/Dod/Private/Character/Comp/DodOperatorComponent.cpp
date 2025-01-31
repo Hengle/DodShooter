@@ -328,7 +328,7 @@ void UDodOperatorComponent::Input_Crouch(const FInputActionValue& InputActionVal
 {
 	if (ADodCharacter* Character = GetPawn<ADodCharacter>())
 	{
-		// Character->ToggleCrouch();
+		Character->ToggleCrouch();
 	}
 }
 

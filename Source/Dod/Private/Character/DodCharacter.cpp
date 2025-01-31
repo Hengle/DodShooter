@@ -1,5 +1,6 @@
 ﻿#include "Character/DodCharacter.h"
 
+#include "DodGameplayTags.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Camera/DodCameraComponent.h"
@@ -63,9 +64,42 @@ UAbilitySystemComponent* ADodCharacter::GetAbilitySystemComponent() const
 	return PawnExtComponent->GetDodAbilitySystemComponent();
 }
 
+void ADodCharacter::ToggleCrouch()
+{
+	const UDodCharacterMovementComp* LyraMoveComp = CastChecked<UDodCharacterMovementComp>(GetCharacterMovement());
+
+	if (bIsCrouched || LyraMoveComp->bWantsToCrouch)
+	{
+		UnCrouch();
+	}
+	else if (LyraMoveComp->IsMovingOnGround())
+	{
+		Crouch();
+	}
+}
+
 void ADodCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ADodCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
+{
+	if (UDodAbilitySystemComponent* ASC = GetDodAbilitySystemComponent())
+	{
+		ASC->SetLooseGameplayTagCount(DodGameplayTags::Status_Crouching, 1);
+	}
+	Super::OnStartCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
+}
+
+void ADodCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
+{
+	if (UDodAbilitySystemComponent* ASC = GetDodAbilitySystemComponent())
+	{
+		ASC->SetLooseGameplayTagCount(DodGameplayTags::Status_Crouching, 0);
+	}
+
+	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
 }
 
 void ADodCharacter::OnAbilitySystemInitialized()
