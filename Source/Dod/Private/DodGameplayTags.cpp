@@ -60,6 +60,11 @@ namespace DodGameplayTags
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Dod_Elimination_Message, "Dod.Elimination.Message", "");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Dod_Assist_Message, "Dod.Assist.Message", "");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Dod_AddNotification_KillFeed, "Dod.AddNotification.KillFeed", "");
+	
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Gameplay_Message_ADS, "Gameplay.Message.ADS", "");
+
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Gameplay_Zone_WeakSpot, "Gameplay.Zone.WeakSpot", "");
 
 	FGameplayTag DodGameplayTags::FindTagByString(const FString& TagString, bool bMatchPartialString)
 	{

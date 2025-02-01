@@ -20,6 +20,9 @@ public:
 
 	void SweepDetection();
 
+	UFUNCTION(Client, Reliable)
+	void Client_ShowHitMarker(int32 UniqueId, const FHitResult& HitResult);
+
 	UPROPERTY(BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 

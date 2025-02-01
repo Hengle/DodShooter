@@ -56,6 +56,9 @@ public:
 
 	int32 FindTeamFromObject(const UObject* TestObject) const;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure=false, Category=Teams, meta=(Keywords="Get"))
+	void FindTeamFromActor(const UObject* TestActor, bool& bIsPartOfTeam, int32& TeamId) const;
+	
 	const ADodPlayerState* FindPlayerStateFromActor(const AActor* PossibleTeamActor) const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure=false, Category=Teams, meta=(ExpandEnumAsExecs=ReturnValue))

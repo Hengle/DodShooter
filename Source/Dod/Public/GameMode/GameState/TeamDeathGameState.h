@@ -4,6 +4,7 @@
 #include "DodGameState.h"
 #include "TeamDeathGameState.generated.h"
 
+class UEliminationFeedRelay;
 class UDodTeamCreationComponent;
 class UTeamDeathMatchScoring;
 
@@ -20,4 +21,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UDodTeamCreationComponent> TeamCreation;
+
+	UPROPERTY(BlueprintReadWrite)
+	TObjectPtr<UEliminationFeedRelay> MessageProcessor;
 };

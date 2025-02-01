@@ -66,13 +66,13 @@ UAbilitySystemComponent* ADodCharacter::GetAbilitySystemComponent() const
 
 void ADodCharacter::ToggleCrouch()
 {
-	const UDodCharacterMovementComp* LyraMoveComp = CastChecked<UDodCharacterMovementComp>(GetCharacterMovement());
+	const UDodCharacterMovementComp* DodMoveComp = CastChecked<UDodCharacterMovementComp>(GetCharacterMovement());
 
-	if (bIsCrouched || LyraMoveComp->bWantsToCrouch)
+	if (bIsCrouched || DodMoveComp->bWantsToCrouch)
 	{
 		UnCrouch();
 	}
-	else if (LyraMoveComp->IsMovingOnGround())
+	else if (DodMoveComp->IsMovingOnGround())
 	{
 		Crouch();
 	}

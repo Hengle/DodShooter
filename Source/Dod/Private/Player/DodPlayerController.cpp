@@ -7,12 +7,14 @@
 #include "Inventory/DodInventoryManagerComponent.h"
 #include "Player/DodPlayerState.h"
 #include "Team/DodTeamAgentInterface.h"
+#include "Weapon/DodWeaponStateComponent.h"
 
 ADodPlayerController::ADodPlayerController(const FObjectInitializer& FObjectInitializer)
 	: Super(FObjectInitializer)
 {
 	InventoryComponent = CreateDefaultSubobject<UDodInventoryManagerComponent>(TEXT("InventoryComponent"));
 	QuickBarComponent = CreateDefaultSubobject<UDodQuickBarComponent>(TEXT("QuickBarComponent"));
+	WeaponStateComponent = CreateDefaultSubobject<UDodWeaponStateComponent>(TEXT("WeaponStateComponent"));
 }
 
 ADodPlayerState* ADodPlayerController::GetDodPlayerState() const

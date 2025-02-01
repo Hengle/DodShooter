@@ -26,9 +26,9 @@ public:
 	void ClearAbilityInput();
 
 
-	void AddAbilityToActivationGroup(EDodAbilityActivationGroup Group, UDodGameplayAbility* LyraAbility);
-	void RemoveAbilityFromActivationGroup(EDodAbilityActivationGroup Group, UDodGameplayAbility* LyraAbility);
-	void CancelActivationGroupAbilities(EDodAbilityActivationGroup Group, UDodGameplayAbility* IgnoreLyraAbility, bool bReplicateCancelAbility);
+	void AddAbilityToActivationGroup(EDodAbilityActivationGroup Group, UDodGameplayAbility* DodAbility);
+	void RemoveAbilityFromActivationGroup(EDodAbilityActivationGroup Group, UDodGameplayAbility* DodAbility);
+	void CancelActivationGroupAbilities(EDodAbilityActivationGroup Group, UDodGameplayAbility* IgnoreDodAbility, bool bReplicateCancelAbility);
 
 	//~ Begin UAbilitySystemComponent interface
 	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;

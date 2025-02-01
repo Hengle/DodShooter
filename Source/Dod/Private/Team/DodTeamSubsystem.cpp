@@ -136,6 +136,12 @@ int32 UDodTeamSubsystem::FindTeamFromObject(const UObject* TestObject) const
 	return INDEX_NONE;
 }
 
+void UDodTeamSubsystem::FindTeamFromActor(const UObject* TestActor, bool& bIsPartOfTeam, int32& TeamId) const
+{
+	TeamId = FindTeamFromObject(TestActor);
+	bIsPartOfTeam = TeamId != INDEX_NONE;
+}
+
 const ADodPlayerState* UDodTeamSubsystem::FindPlayerStateFromActor(const AActor* PossibleTeamActor) const
 {
 	if (PossibleTeamActor != nullptr)

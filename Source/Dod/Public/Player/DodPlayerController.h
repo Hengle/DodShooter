@@ -5,6 +5,7 @@
 #include "Team/DodTeamAgentInterface.h"
 #include "DodPlayerController.generated.h"
 
+class UDodWeaponStateComponent;
 class ADodPlayerState;
 class UDodAbilitySystemComponent;
 class UDodQuickBarComponent;
@@ -54,6 +55,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Inventory")
 	TObjectPtr<UDodQuickBarComponent> QuickBarComponent;
+
+	UPROPERTY()
+	TObjectPtr<UDodWeaponStateComponent> WeaponStateComponent;
 
 private:
 	UPROPERTY()

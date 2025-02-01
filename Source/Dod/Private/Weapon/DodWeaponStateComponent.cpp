@@ -7,6 +7,7 @@
 #include "Physics/PhysicalMaterialWithTags.h"
 #include "Weapon/DodRangedWeaponInstance.h"
 #include "NativeGameplayTags.h"
+#include "Player/DodLocalPlayer.h"
 #include "Team/DodTeamSubsystem.h"
 
 UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_Gameplay_Zone, "Gameplay.Zone");
@@ -50,8 +51,7 @@ void UDodWeaponStateComponent::AddUnconfirmedServerSideHitMarkers(const FGamepla
 		for (const FHitResult& Hit : FoundHits)
 		{
 			FVector2D HitScreenLocation;
-			if (UGameplayStatics::ProjectWorldToScreen(OwnerPC, Hit.Location, /*out*/ HitScreenLocation,
-			                                           /*bPlayerViewportRelative=*/ false))
+			if (UGameplayStatics::ProjectWorldToScreen(OwnerPC, Hit.Location, HitScreenLocation, false))
 			{
 				FDodScreenSpaceHitLocation& Entry = NewUnconfirmedHitMarker.Markers.AddDefaulted_GetRef();
 				Entry.Location = HitScreenLocation;

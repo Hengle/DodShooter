@@ -59,4 +59,9 @@ namespace DodGameplayTags
 
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dod_Elimination_Message);
 	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dod_Assist_Message);
+	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dod_AddNotification_KillFeed);
+
+	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Gameplay_Message_ADS);
+
+	DOD_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(Gameplay_Zone_WeakSpot);
 } // namespace DodGameplayTags

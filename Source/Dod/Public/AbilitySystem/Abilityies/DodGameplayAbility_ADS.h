@@ -23,4 +23,7 @@ public:
 
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                           const FGameplayAbilityActivationInfo ActivationInfo) override;
+
+	UFUNCTION(BlueprintCallable)
+	void BroadcastToUI(bool bInOn);
 };

@@ -72,6 +72,8 @@ void ADodShooter::BeginPlay()
 	                                                    Delegate,
 	                                                    true
 	);
+
+	ChooseViewPerson();
 }
 
 void ADodShooter::PossessedBy(AController* NewController)

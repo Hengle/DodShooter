@@ -1,5 +1,10 @@
 ﻿#include "AbilitySystem/Abilityies/DodGameplayAbility_ADS.h"
 
+#include "DodGameplayTags.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
+#include "Messages/UIMessaging.h"
+#include "Player/DodPlayerController.h"
+
 bool UDodGameplayAbility_ADS::CanActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                  const FGameplayAbilityActorInfo* ActorInfo,
                                                  const FGameplayTagContainer* SourceTags,
@@ -21,6 +26,7 @@ void UDodGameplayAbility_ADS::ActivateAbility(const FGameplayAbilitySpecHandle H
 	if (IsLocallyControlled())
 	{
 		// UI设置
+		BroadcastToUI(true);
 		// 播放ADS音效
 	}
 }
@@ -34,7 +40,7 @@ void UDodGameplayAbility_ADS::EndAbility(const FGameplayAbilitySpecHandle Handle
 	// TODO 恢复相机
 	if (IsLocallyControlled())
 	{
-		// 恢复UI
+		BroadcastToUI(false);
 		// 播放音效
 	}
 	// TODO 设置速度
@@ -48,4 +54,12 @@ void UDodGameplayAbility_ADS::InputReleased(const FGameplayAbilitySpecHandle Han
 	Super::InputReleased(Handle, ActorInfo, ActivationInfo);
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
+}
+
+void UDodGameplayAbility_ADS::BroadcastToUI(bool bInOn)
+{
+	FUIMessaging MessageUI;
+	MessageUI.bOn = bInOn;
+	MessageUI.Controller = Cast<APlayerController>(GetDodPlayerControllerFromActorInfo());
+	UGameplayMessageSubsystem::Get(GetWorld()).BroadcastMessage(DodGameplayTags::Gameplay_Message_ADS, MessageUI);
 }

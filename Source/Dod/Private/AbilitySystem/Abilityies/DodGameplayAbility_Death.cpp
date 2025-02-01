@@ -31,13 +31,13 @@ void UDodGameplayAbility_Death::ActivateAbility(const FGameplayAbilitySpecHandle
 {
 	check(ActorInfo);
 
-	UDodAbilitySystemComponent* LyraASC = CastChecked<UDodAbilitySystemComponent>(
+	UDodAbilitySystemComponent* DodASC = CastChecked<UDodAbilitySystemComponent>(
 		ActorInfo->AbilitySystemComponent.Get());
 
 	FGameplayTagContainer AbilityTypesToIgnore;
 	AbilityTypesToIgnore.AddTag(DodGameplayTags::Ability_Behavior_SurvivesDeath);
 
-	LyraASC->CancelAbilities(nullptr, &AbilityTypesToIgnore, this);
+	DodASC->CancelAbilities(nullptr, &AbilityTypesToIgnore, this);
 
 	SetCanBeCanceled(false);
 
@@ -45,7 +45,7 @@ void UDodGameplayAbility_Death::ActivateAbility(const FGameplayAbilitySpecHandle
 	{
 		UE_LOG(LogDod, Error,
 		       TEXT(
-			       "ULyraGameplayAbility_Death::ActivateAbility: Ability [%s] failed to change activation group to blocking."
+			       "UDodGameplayAbility_Death::ActivateAbility: Ability [%s] failed to change activation group to blocking."
 		       ), *GetName());
 	}
 

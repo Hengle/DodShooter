@@ -59,6 +59,7 @@ struct FDodEquipmentList : public FFastArraySerializer
 		return FFastArraySerializer::FastArrayDeltaSerialize<FDodAppliedEquipmentEntry, FDodEquipmentList>(
 			Entries, DeltaParms, *this);
 	}
+
 	//~ End of FFastArraySerializer
 
 private:
@@ -113,6 +114,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	TArray<UDodEquipmentInstance*> GetEquipmentInstancesOfType(TSubclassOf<UDodEquipmentInstance> InstanceType) const;
 
+	template <typename T>
+	T* GetFirstInstanceOfType();
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -120,3 +124,9 @@ private:
 	UPROPERTY(Replicated)
 	FDodEquipmentList EquipmentList;
 };
+
+template <typename T>
+T* UDodEquipmentManagerComponent::GetFirstInstanceOfType()
+{
+	return (T*)GetFirstInstanceOfType(T::StaticClass());
+}
