@@ -20,6 +20,8 @@ public:
 	virtual void GenericPlayerInitialization(AController* C) override;
 	//~ End of AGameModeBase interface
 
+	virtual bool ControllerCanRestart(AController* Controller);
+
 	UFUNCTION(BlueprintCallable)
 	void RequestPlayerRestartNextFrame(AController* Controller, bool bForceReset = false);
 

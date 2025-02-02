@@ -12,4 +12,6 @@ class DOD_API UDodPlayerSpawningManagerComponent : public UGameStateComponent
 
 public:
 	UDodPlayerSpawningManagerComponent(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
+
+	bool ControllerCanRestart(AController* Player);
 };
