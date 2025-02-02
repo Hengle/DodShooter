@@ -100,7 +100,7 @@ void UDodGameplayAbility_WeaponFire::StartFire()
 					ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 				Projectile->DamageEffectSpecHandle = DamageEffectSpecHandle;
 				Projectile->FinishSpawning(FireTransform);
-				
+
 				float InitialSpeed = 60000.f;
 				Projectile->InitializeProjectile(InitialSpeed);
 			}

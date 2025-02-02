@@ -63,4 +63,6 @@ protected:
 
 	FVector GetWeaponTargetingSourceLocation() const;
 	void OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& InData, FGameplayTag ApplicationTag);
+private:
+	FDelegateHandle OnTargetDataReadyCallbackDelegateHandle;
 };

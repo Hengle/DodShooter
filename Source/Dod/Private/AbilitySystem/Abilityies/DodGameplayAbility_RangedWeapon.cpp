@@ -36,6 +36,10 @@ void UDodGameplayAbility_RangedWeapon::ActivateAbility(const FGameplayAbilitySpe
 	UAbilitySystemComponent* MyAbilityComponent = CurrentActorInfo->AbilitySystemComponent.Get();
 	check(MyAbilityComponent);
 
+	OnTargetDataReadyCallbackDelegateHandle = MyAbilityComponent->AbilityTargetDataSetDelegate(
+		CurrentSpecHandle, CurrentActivationInfo.GetActivationPredictionKey()).AddUObject(
+		this, &ThisClass::OnTargetDataReadyCallback);
+
 	UDodRangedWeaponInstance* WeaponData = GetWeaponInstance();
 	check(WeaponData);
 	WeaponData->UpdateFiringTime();
@@ -59,6 +63,12 @@ void UDodGameplayAbility_RangedWeapon::EndAbility(const FGameplayAbilitySpecHand
 
 		UAbilitySystemComponent* MyAbilityComponent = CurrentActorInfo->AbilitySystemComponent.Get();
 		check(MyAbilityComponent);
+
+		MyAbilityComponent->AbilityTargetDataSetDelegate(CurrentSpecHandle,
+		                                                 CurrentActivationInfo.GetActivationPredictionKey()).Remove(
+			OnTargetDataReadyCallbackDelegateHandle);
+		MyAbilityComponent->ConsumeClientReplicatedTargetData(CurrentSpecHandle,
+		                                                      CurrentActivationInfo.GetActivationPredictionKey());
 
 		Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 	}
@@ -106,6 +116,16 @@ void UDodGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGameplay
 	UAbilitySystemComponent* MyAbilityComponent = CurrentActorInfo->AbilitySystemComponent.Get();
 	check(MyAbilityComponent);
 
+	FGameplayAbilityTargetDataHandle LocalTargetDataHandle(
+		MoveTemp(const_cast<FGameplayAbilityTargetDataHandle&>(InData)));
+	const bool bShouldNotifyServer = CurrentActorInfo->IsLocallyControlled() && !CurrentActorInfo->IsNetAuthority();
+	if (bShouldNotifyServer)
+	{
+		MyAbilityComponent->CallServerSetReplicatedTargetData(CurrentSpecHandle,
+		                                                      CurrentActivationInfo.GetActivationPredictionKey(),
+		                                                      LocalTargetDataHandle, ApplicationTag,
+		                                                      MyAbilityComponent->ScopedPredictionKey);
+	}
 
 	// See if we still have ammo
 	if (CommitAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo))
