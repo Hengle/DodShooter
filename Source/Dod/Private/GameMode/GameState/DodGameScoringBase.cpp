@@ -16,10 +16,14 @@ void UDodGameScoringBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
-	MessageSystem.RegisterListener(DodGameplayTags::Dod_Elimination_Message, this, &ThisClass::OnReceiveElimination);
+	if (HasAuthority())
+	{
+		UGameplayMessageSubsystem& MessageSystem = UGameplayMessageSubsystem::Get(GetWorld());
+		MessageSystem.RegisterListener(DodGameplayTags::Dod_Elimination_Message, this,
+		                               &ThisClass::OnReceiveElimination);
 
-	MessageSystem.RegisterListener(DodGameplayTags::Dod_Assist_Message, this, &ThisClass::OnReceiveAssist);
+		MessageSystem.RegisterListener(DodGameplayTags::Dod_Assist_Message, this, &ThisClass::OnReceiveAssist);
+	}
 }
 
 void UDodGameScoringBase::OnEliminationScored()

@@ -17,6 +17,13 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void OnDeathStarted(AActor* OwningActor) override;
+
+	void Ragdoll();
+	void HideEquippedWeapons();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dod|Character")
 	TObjectPtr<UDodOperatorComponent> OperatorComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Ragdoll")
+	float RagdollImpulseStrength{500.f};
 };

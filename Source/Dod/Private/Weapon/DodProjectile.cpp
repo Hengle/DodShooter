@@ -4,6 +4,7 @@
 #include "Character/DodCharacter.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Physics/DodCollisionChannels.h"
 #include "Player/DodPlayerState.h"
 #include "Weapon/DodWeaponStateComponent.h"
 
@@ -22,7 +23,7 @@ ADodProjectile::ADodProjectile()
 	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
-	ProjectileMovement->InitialSpeed = 10000.f;
+	ProjectileMovement->InitialSpeed = 60000.f;
 }
 
 void ADodProjectile::Tick(float DeltaTime)
@@ -56,7 +57,7 @@ void ADodProjectile::SweepDetection()
 		PreviousLocation,
 		CurrentLocation,
 		FQuat::Identity,
-		ECC_Camera,
+		Dod_TraceChannel_Weapon,
 		FCollisionShape::MakeBox(ProjectileCollision->GetScaledBoxExtent()),
 		CollisionParams
 	);
