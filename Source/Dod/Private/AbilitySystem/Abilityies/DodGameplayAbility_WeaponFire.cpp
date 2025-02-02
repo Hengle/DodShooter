@@ -28,7 +28,7 @@ void UDodGameplayAbility_WeaponFire::ActivateAbility(const FGameplayAbilitySpecH
 
 	if (IsLocallyControlled())
 	{
-		StartRangedWeaponTargeting();
+		OnTargetDataReadyCallback(FGameplayAbilityTargetDataHandle(), FGameplayTag());
 	}
 	if (ADodShooter* Player = Cast<ADodShooter>(GetDodCharacterFromActorInfo()))
 	{
@@ -69,51 +69,6 @@ void UDodGameplayAbility_WeaponFire::EndAbility(const FGameplayAbilitySpecHandle
 void UDodGameplayAbility_WeaponFire::OnAbilityAdded()
 {
 	Super::OnAbilityAdded();
-
-	/*UAsyncAction_ListenForGameplayMessage* Message = UAsyncAction_ListenForGameplayMessage::ListenForGameplayMessages(
-		GetWorld(),
-		FGameplayTag::RequestGameplayTag(FName("Ability.PlayMontageOnActivateFail.Message")),
-		FDodAbilityMontageFailureMessage::StaticStruct(),
-		EGameplayMessageMatch::ExactMatch);
-	Message->OnMessageReceived.AddDynamic(this, &ThisClass::ReceiveFailMessage);*/
-}
-
-void UDodGameplayAbility_WeaponFire::RangedWeaponTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
-{
-	Super::RangedWeaponTargetDataReady(TargetData);
-
-	K2_ExecuteGameplayCueWithParams(GameplayCueTagFiring, GCNParameter);
-
-	for (TSharedPtr<FGameplayAbilityTargetData> Data : TargetData.Data)
-	{
-		FHitResult CurrentHitResult = *Data->GetHitResult();
-		GCNParameter.Location = (CurrentHitResult.bBlockingHit
-			                         ? CurrentHitResult.ImpactPoint
-			                         : CurrentHitResult.TraceEnd);
-		GCNParameter.Normal = CurrentHitResult.ImpactNormal;
-		GCNParameter.PhysicalMaterial = CurrentHitResult.PhysMaterial;
-		if (CurrentHitResult.bBlockingHit)
-		{
-			K2_ExecuteGameplayCueWithParams(GameplayCueTagFiring,
-			                                UGameplayCueFunctionLibrary::MakeGameplayCueParametersFromHitResult(
-				                                CurrentHitResult));
-		}
-		if (HasAuthority(&CurrentActivationInfo) && IsValid(FieldActorToSpawnOnImpact))
-		{
-			FVector SpawnLocation = FVector(CurrentHitResult.ImpactPoint);
-			GetWorld()->SpawnActor(FieldActorToSpawnOnImpact, &SpawnLocation);
-		}
-	}
-	if (HasAuthority(&CurrentActivationInfo))
-	{
-		/*TArray<FActiveGameplayEffectHandle> Handles =
-			ApplyGameplayEffectToTarget(CurrentSpecHandle,
-			                            CurrentActorInfo,
-			                            CurrentActivationInfo,
-			                            TargetData,
-			                            GE_Damage,
-			                            1);*/
-	}
 }
 
 void UDodGameplayAbility_WeaponFire::StartFire()
@@ -145,6 +100,9 @@ void UDodGameplayAbility_WeaponFire::StartFire()
 					ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 				Projectile->DamageEffectSpecHandle = DamageEffectSpecHandle;
 				Projectile->FinishSpawning(FireTransform);
+				
+				float InitialSpeed = 60000.f;
+				Projectile->InitializeProjectile(InitialSpeed);
 			}
 		}
 	}

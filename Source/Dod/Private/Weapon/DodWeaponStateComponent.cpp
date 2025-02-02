@@ -40,6 +40,14 @@ void UDodWeaponStateComponent::TickComponent(float DeltaTime, enum ELevelTick Ti
 	}
 }
 
+void UDodWeaponStateComponent::Client_ConfirmTargetHit_Implementation(bool bSuccess)
+{
+	if (bSuccess)
+	{
+		ActuallyUpdateDamageInstigatedTime();
+	}
+}
+
 void UDodWeaponStateComponent::AddUnconfirmedServerSideHitMarkers(const FGameplayAbilityTargetDataHandle& InTargetData,
                                                                   const TArray<FHitResult>& FoundHits)
 {
@@ -121,42 +129,4 @@ void UDodWeaponStateComponent::ActuallyUpdateDamageInstigatedTime()
 		LastWeaponDamageScreenLocations.Reset();
 	}
 	LastWeaponDamageInstigatedTime = World->GetTimeSeconds();
-}
-
-void UDodWeaponStateComponent::ClientConfirmTargetData_Implementation(uint16 UniqueId, bool bSuccess,
-                                                                      const TArray<uint8>& HitReplaces)
-{
-	for (int i = 0; i < UnconfirmedServerSideHitMarkers.Num(); i++)
-	{
-		FDodServerSideHitMarkerBatch& Batch = UnconfirmedServerSideHitMarkers[i];
-		if (Batch.UniqueId == UniqueId)
-		{
-			if (bSuccess && (HitReplaces.Num() != Batch.Markers.Num()))
-			{
-				UWorld* World = GetWorld();
-				bool bFoundShowAsSuccessHit = false;
-
-				int32 HitLocationIndex = 0;
-				for (const FDodScreenSpaceHitLocation& Entry : Batch.Markers)
-				{
-					if (!HitReplaces.Contains(HitLocationIndex) && Entry.bShowAsSuccess)
-					{
-						// Only need to do this once
-						if (!bFoundShowAsSuccessHit)
-						{
-							ActuallyUpdateDamageInstigatedTime();
-						}
-
-						bFoundShowAsSuccessHit = true;
-
-						LastWeaponDamageScreenLocations.Add(Entry);
-					}
-					++HitLocationIndex;
-				}
-			}
-
-			UnconfirmedServerSideHitMarkers.RemoveAt(i);
-			break;
-		}
-	}
 }

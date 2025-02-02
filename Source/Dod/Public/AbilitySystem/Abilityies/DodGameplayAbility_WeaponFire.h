@@ -23,8 +23,6 @@ public:
 	//~ End of UDodGameplayAbility interface
 
 protected:
-	virtual void RangedWeaponTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData) override;
-
 	void StartFire();
 
 	UPROPERTY(EditAnywhere)

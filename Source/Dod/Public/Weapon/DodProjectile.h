@@ -16,12 +16,11 @@ class DOD_API ADodProjectile : public AActor
 public:
 	ADodProjectile();
 
+	void InitializeProjectile(float InitialSpeed);
+
 	virtual void Tick(float DeltaTime) override;
 
 	void SweepDetection();
-
-	UFUNCTION(Client, Reliable)
-	void Client_ShowHitMarker(int32 UniqueId, const FHitResult& HitResult);
 
 	UPROPERTY(BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
@@ -32,6 +31,9 @@ public:
 	UBoxComponent* ProjectileCollision;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UProjectileMovementComponent* ProjectileMovement;
+
+protected:
+	void HitItem(const FHitResult& HitResult);
 
 private:
 	FVector PreviousLocation{FVector::ZeroVector};

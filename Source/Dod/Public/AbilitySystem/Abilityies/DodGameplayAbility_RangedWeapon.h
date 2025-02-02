@@ -45,11 +45,6 @@ public:
 	                        bool bWasCancelled) override;
 	//~End of UGameplayAbility interface
 
-	void PerformLocalTargeting(OUT TArray<FHitResult>& OutHits);
-
-	UFUNCTION(BlueprintCallable)
-	void StartRangedWeaponTargeting();
-
 protected:
 	struct FRangedWeaponFiringInput
 	{
@@ -66,24 +61,6 @@ protected:
 
 	static int32 FindFirstPawnHitResult(const TArray<FHitResult>& HitResults);
 
-	FHitResult WeaponTrace(const FVector& StartTrace, const FVector& EndTrace, float SweepRadius, bool bIsSimulated,
-	                       OUT TArray<FHitResult>& OutHitResults) const;
-	FHitResult DoSingleBulletTrace(const FVector& StartTrace, const FVector& EndTrace, float SweepRadius,
-	                               bool bIsSimulated, OUT TArray<FHitResult>& OutHits) const;
-	FVector VRandConeNormalDistribution(const FVector& Dir, const float ConeHalfAngleRad, const float Exponent);
-	void TraceBulletsInCartridge(const FRangedWeaponFiringInput& InputData, OUT TArray<FHitResult>& OutHits);
-	virtual void AddAdditionalTraceIgnoreActors(FCollisionQueryParams& TraceParams) const;
-	virtual ECollisionChannel DetermineTraceChannel(FCollisionQueryParams& TraceParams, bool bIsSimulated) const;
 	FVector GetWeaponTargetingSourceLocation() const;
-	FTransform GetTargetingTransform(APawn* SourcePawn, EDodAbilityTargetingSource Source) const;
 	void OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& InData, FGameplayTag ApplicationTag);
-
-	virtual void RangedWeaponTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData)
-	{
-	};
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnRangedWeaponTargetDataReady(const FGameplayAbilityTargetDataHandle& TargetData);
-
-private:
-	FDelegateHandle OnTargetDataReadyCallbackDelegateHandle;
 };

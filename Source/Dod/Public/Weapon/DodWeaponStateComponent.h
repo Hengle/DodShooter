@@ -46,7 +46,7 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(Client, Reliable)
-	void ClientConfirmTargetData(uint16 UniqueId, bool bSuccess, const TArray<uint8>& HitReplaces);
+	void Client_ConfirmTargetHit(bool bSuccess);
 
 	void AddUnconfirmedServerSideHitMarkers(const FGameplayAbilityTargetDataHandle& InTargetData,
 	                                        const TArray<FHitResult>& FoundHits);

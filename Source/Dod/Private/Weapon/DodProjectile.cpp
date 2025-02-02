@@ -23,7 +23,18 @@ ADodProjectile::ADodProjectile()
 	ProjectileMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovement");
-	ProjectileMovement->InitialSpeed = 60000.f;
+	ProjectileMovement->InitialSpeed = 0.f;
+	ProjectileMovement->bShouldBounce = false;
+}
+
+void ADodProjectile::InitializeProjectile(float InitialSpeed)
+{
+	FVector ShootDirection = GetActorRotation().Quaternion().GetForwardVector().GetSafeNormal();
+	if (ProjectileMovement)
+	{
+		ProjectileMovement->Velocity = ShootDirection * InitialSpeed;
+	}
+	PreviousLocation = GetActorLocation();
 }
 
 void ADodProjectile::Tick(float DeltaTime)
@@ -64,53 +75,50 @@ void ADodProjectile::SweepDetection()
 
 	if (bHit)
 	{
-		if (HasAuthority())
-		{
-			ADodCharacter* HitActor = Cast<ADodCharacter>(HitResult.GetActor());
-			if (HitActor)
-			{
-				if (UAbilitySystemComponent* ASC = HitActor->GetAbilitySystemComponent())
-				{
-					if (DamageEffectSpecHandle.IsValid())
-					{
-						ASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
-						if (ADodCharacter* Character = Cast<ADodCharacter>(GetInstigator()))
-						{
-							if (AController* PC = Character->GetController())
-							{
-								UDodWeaponStateComponent* WSC = PC->FindComponentByClass<UDodWeaponStateComponent>();
-								if (WSC)
-								{
-									int32 UniqueId = WSC->GetUnconfirmedServerSideHitMarkerCount();
-									Client_ShowHitMarker(UniqueId, HitResult);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		Destroy();
+		HitItem(HitResult);
 	}
 
 	PreviousLocation = CurrentLocation;
 }
 
-void ADodProjectile::Client_ShowHitMarker_Implementation(int32 UniqueId, const FHitResult& HitResult)
+void ADodProjectile::HitItem(const FHitResult& HitResult)
 {
-	if (ADodCharacter* Character = Cast<ADodCharacter>(GetInstigator()))
+	if (!HasAuthority())
 	{
-		if (AController* PC = Character->GetController())
+		return;
+	}
+	ADodCharacter* HitActor = Cast<ADodCharacter>(HitResult.GetActor());
+	if (!HitActor)
+	{
+		return;
+	}
+	UAbilitySystemComponent* ASC = HitActor->GetAbilitySystemComponent();
+	if (!ASC || !DamageEffectSpecHandle.IsValid())
+	{
+		return;
+	}
+
+	ASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
+
+	ADodCharacter* InstigatorCharacter = Cast<ADodCharacter>(GetInstigator());
+	if (!InstigatorCharacter)
+	{
+		return;
+	}
+
+	AController* InstigatorController = InstigatorCharacter->GetController();
+	if (!InstigatorController)
+	{
+		return;
+	}
+
+	if (InstigatorController->GetLocalRole() == ROLE_Authority)
+	{
+		if (UDodWeaponStateComponent* WeaponStateComponent =
+			InstigatorController->FindComponentByClass<UDodWeaponStateComponent>())
 		{
-			UDodWeaponStateComponent* WSC = PC->FindComponentByClass<UDodWeaponStateComponent>();
-			if (WSC)
-			{
-				FGameplayAbilityTargetDataHandle TargetData;
-				TargetData.UniqueId = UniqueId;
-				TArray<FHitResult> FoundHits;
-				FoundHits.Add(HitResult);
-				WSC->AddUnconfirmedServerSideHitMarkers(TargetData, FoundHits);
-			}
+			WeaponStateComponent->Client_ConfirmTargetHit(true);
 		}
 	}
+	Destroy();
 }
