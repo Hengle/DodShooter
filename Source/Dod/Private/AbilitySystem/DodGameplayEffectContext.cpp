@@ -22,11 +22,25 @@ void FDodGameplayEffectContext::SetAbilitySource(const IDodAbilitySourceInterfac
 	AbilitySourceObject = MakeWeakObjectPtr(Cast<const UObject>(InObject));
 }
 
+const IDodAbilitySourceInterface* FDodGameplayEffectContext::GetAbilitySource() const
+{
+	return Cast<IDodAbilitySourceInterface>(AbilitySourceObject.Get());
+}
+
 bool FDodGameplayEffectContext::NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess)
 {
 	FGameplayEffectContext::NetSerialize(Ar, Map, bOutSuccess);
 
 	return true;
+}
+
+const UPhysicalMaterial* FDodGameplayEffectContext::GetPhysicalMaterial() const
+{
+	if (const FHitResult* HitResultPtr = GetHitResult())
+	{
+		return HitResultPtr->PhysMaterial.Get();
+	}
+	return nullptr;
 }
 
 

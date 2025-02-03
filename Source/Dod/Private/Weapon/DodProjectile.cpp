@@ -62,6 +62,7 @@ void ADodProjectile::SweepDetection()
 	CollisionParams.AddIgnoredActor(this);
 	CollisionParams.AddIgnoredActor(GetOwner());
 	CollisionParams.AddIgnoredActor(GetInstigator());
+	CollisionParams.bReturnPhysicalMaterial = true;
 
 	bool bHit = GetWorld()->SweepSingleByChannel(
 		HitResult,
@@ -96,6 +97,16 @@ void ADodProjectile::HitItem(const FHitResult& HitResult)
 	if (!ASC || !DamageEffectSpecHandle.IsValid())
 	{
 		return;
+	}
+
+	FGameplayEffectContextHandle EffectContextHandle = DamageEffectSpecHandle.Data->GetContext();
+	if (EffectContextHandle.IsValid())
+	{
+		FGameplayEffectContext* EffectContext = EffectContextHandle.Get();
+		if (EffectContext)
+		{
+			EffectContext->AddHitResult(HitResult);
+		}
 	}
 
 	ASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());

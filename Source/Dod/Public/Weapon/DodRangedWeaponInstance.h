@@ -2,18 +2,28 @@
 
 #include "CoreMinimal.h"
 #include "DodWeaponInstance.h"
+#include "GameplayTagContainer.h"
+#include "AbilitySystem/DodAbilitySourceInterface.h"
 #include "DodRangedWeaponInstance.generated.h"
 
 UCLASS()
-class DOD_API UDodRangedWeaponInstance : public UDodWeaponInstance
+class DOD_API UDodRangedWeaponInstance : public UDodWeaponInstance, public IDodAbilitySourceInterface
 {
 	GENERATED_BODY()
 
 public:
 	void Tick(float DeltaSeconds);
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Dod|Weapon|Fire")
+	virtual float GetPhysicalMaterialAttenuation(const UPhysicalMaterial* PhysicalMaterial,
+	                                             const FGameplayTagContainer* SourceTags = nullptr,
+	                                             const FGameplayTagContainer* TargetTags = nullptr) const override;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="Fire")
 	TSoftClassPtr<AActor> ProjectileClass;
+
+	/* 不同部位伤害倍率，部位伤害 = GE * 倍率 */
+	UPROPERTY(EditAnywhere, Category = "Weapon Config")
+	TMap<FGameplayTag, float> MaterialDamageMultiplier;
 
 	/* 射速(rpm)，每分钟最大连续发射子弹数 */
 	float FireRate{0.f};

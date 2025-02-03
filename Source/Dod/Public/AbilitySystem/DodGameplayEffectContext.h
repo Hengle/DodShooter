@@ -26,6 +26,8 @@ public:
 
 	void SetAbilitySource(const IDodAbilitySourceInterface* InObject, float InSourceLevel);
 
+	const IDodAbilitySourceInterface* GetAbilitySource() const;
+	
 	virtual FGameplayEffectContext* Duplicate() const override
 	{
 		FDodGameplayEffectContext* NewContext = new FDodGameplayEffectContext();
@@ -45,6 +47,8 @@ public:
 
 	virtual bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess) override;
 
+	const UPhysicalMaterial* GetPhysicalMaterial() const;
+	
 protected:
 	UPROPERTY()
 	TWeakObjectPtr<const UObject> AbilitySourceObject;
