@@ -4,6 +4,9 @@
 #include "DodPlayerBotController.h"
 #include "AIController_Shooter.generated.h"
 
+class UDodInventoryManagerComponent;
+class UDodQuickBarComponent;
+class UDodWeaponStateComponent;
 class UBehaviorTree;
 
 UCLASS()
@@ -34,4 +37,13 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "AI")
 	FName EnemyNameKey;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Inventory")
+	TObjectPtr<UDodInventoryManagerComponent> InventoryComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Inventory")
+	TObjectPtr<UDodQuickBarComponent> QuickBarComponent;
+
+	UPROPERTY()
+	TObjectPtr<UDodWeaponStateComponent> WeaponStateComponent;
 };

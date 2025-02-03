@@ -10,6 +10,7 @@ class DOD_API UDodGameplayAbility_ReloadMagazine : public UDodGameplayAbility
 	GENERATED_BODY()
 
 public:
+	UDodGameplayAbility_ReloadMagazine(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 	                             const FGameplayAbilityActivationInfo ActivationInfo,
 	                             const FGameplayEventData* TriggerEventData) override;
@@ -21,9 +22,9 @@ protected:
 	void ReloadAmmoIntoMagazine();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UAnimMontage* BodyReloadMontage;
+	UAnimMontage* BodyReloadMontage{nullptr};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UAnimMontage* ArmReloadMontage;
+	UAnimMontage* ArmReloadMontage{nullptr};
 
 	uint8 bDidBlockFiring : 1{false};
 

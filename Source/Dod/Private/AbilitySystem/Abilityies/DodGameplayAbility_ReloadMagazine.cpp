@@ -7,6 +7,13 @@
 #include "Inventory/DodInventoryItemInstance.h"
 #include "Weapon/DodRangedWeaponInstance.h"
 
+UDodGameplayAbility_ReloadMagazine::UDodGameplayAbility_ReloadMagazine(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Type.Action.Reload")));
+	ActivationOwnedTags.AddTag(DodGameplayTags::Event_Movement_Reload);
+}
+
 void UDodGameplayAbility_ReloadMagazine::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
                                                          const FGameplayAbilityActorInfo* ActorInfo,
                                                          const FGameplayAbilityActivationInfo ActivationInfo,

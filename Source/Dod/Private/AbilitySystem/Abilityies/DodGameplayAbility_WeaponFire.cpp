@@ -1,6 +1,7 @@
 ﻿#include "AbilitySystem/Abilityies/DodGameplayAbility_WeaponFire.h"
 
 #include "AbilitySystemComponent.h"
+#include "DodGameplayTags.h"
 #include "Character/DodCharacter.h"
 #include "Character/DodShooter.h"
 #include "GameplayCueFunctionLibrary.h"
@@ -17,6 +18,10 @@ UDodGameplayAbility_WeaponFire::UDodGameplayAbility_WeaponFire(const FObjectInit
 	TriggerData.TriggerTag = InputTag;
 	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(TriggerData);
+
+	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Type.Action.WeaponFire")));
+	ActivationOwnedTags.AddTag(DodGameplayTags::Event_Movement_WeaponFire);
+	SourceBlockedTags.AddTag(DodGameplayTags::Ability_Weapon_NoFiring);
 }
 
 void UDodGameplayAbility_WeaponFire::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

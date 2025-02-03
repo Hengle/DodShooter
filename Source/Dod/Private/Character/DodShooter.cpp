@@ -40,7 +40,7 @@ void ADodShooter::ChangeToThirdPerson()
 
 void ADodShooter::ChooseViewPerson()
 {
-	if (IsLocallyControlled())
+	if (IsPlayerControlled() && IsLocallyControlled())
 	{
 		ChangeToFirstPerson();
 	}

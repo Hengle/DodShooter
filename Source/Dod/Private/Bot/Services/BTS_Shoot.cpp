@@ -3,6 +3,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "AIController.h"
+#include "BlueprintNodeHelpers.h"
 #include "DodGameplayTags.h"
 #include "GameplayPrediction.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -11,9 +12,14 @@
 #include "Inventory/DodInventoryItemInstance.h"
 #include "Weapon/DodWeaponInstance.h"
 
+UBTS_Shoot::UBTS_Shoot()
+{
+	bCallTickOnSearchStart = true;
+	bTickIntervals = true;
+}
+
 void UBTS_Shoot::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 	if (AIOwner)
 	{
 		if (CurrentWeaponCanShoot(AIOwner->GetPawn(), AIOwner))
@@ -35,6 +41,8 @@ void UBTS_Shoot::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, 
 			Blackboard->SetValue<UBlackboardKeyType_Bool>(OutOfAmmo.SelectedKeyName, true);
 		}
 	}
+
+	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 }
 
 bool UBTS_Shoot::CurrentWeaponCanShoot(APawn* InPawn, AController* InController)
