@@ -43,6 +43,8 @@ public:
 	void ChangeToFirstPerson();
 	void ChangeToThirdPerson();
 
+	void TriggerFireAudio(USoundBase* InSound, AActor* InActor);
+
 	UFUNCTION()
 	void OnRep_VM_AttachmentMeshDetails();
 	UFUNCTION()
@@ -70,4 +72,7 @@ public:
 
 	UPROPERTY(ReplicatedUsing=OnRep_CamoInfo)
 	FCamoInfo CamoInfo;
+private:
+	UPROPERTY()
+	UAudioComponent* AudioComp{nullptr};
 };

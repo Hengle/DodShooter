@@ -1,7 +1,9 @@
 ﻿#include "Weapon/WeaponBase.h"
 
 #include "Character/DodCharacter.h"
+#include "Components/AudioComponent.h"
 #include "Equipment/DodEquipmentDefinition.h"
+#include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Net/UnrealNetwork.h"
 
@@ -223,6 +225,19 @@ void AWeaponBase::ChangeToThirdPerson()
 			WM_Skeletal->SetCastShadow(true);
 			WM_Skeletal->SetCastHiddenShadow(true);
 		}
+	}
+}
+
+void AWeaponBase::TriggerFireAudio(USoundBase* InSound, AActor* InActor)
+{
+	if (!IsValid(AudioComp))
+	{
+		ADodCharacter* Character = Cast<ADodCharacter>(InActor);
+		AudioComp = UGameplayStatics::SpawnSoundAttached(InSound, Character->GetMesh(),TEXT("j_gun"));
+	}
+	if (IsValid(AudioComp))
+	{
+		AudioComp->SetTriggerParameter(TEXT("Fire"));
 	}
 }
 

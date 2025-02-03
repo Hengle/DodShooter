@@ -134,9 +134,15 @@ void UDodGameplayAbility_RangedWeapon::OnTargetDataReadyCallback(const FGameplay
 		check(WeaponData);
 		// 散布
 		// WeaponData->AddSpread();
+
+		OnWeaponFireCompleted();
 	}
 	else
 	{
 		K2_EndAbility();
 	}
+}
+
+void UDodGameplayAbility_RangedWeapon::OnWeaponFireCompleted_Implementation()
+{
 }

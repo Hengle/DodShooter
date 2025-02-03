@@ -102,6 +102,13 @@ void ADodCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAd
 	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
 }
 
+void ADodCharacter::AddControllerRotation(FRotator InRotator)
+{
+	AddControllerPitchInput(InRotator.Pitch);
+	AddControllerRollInput(InRotator.Roll);
+	AddControllerYawInput(InRotator.Yaw);
+}
+
 void ADodCharacter::OnAbilitySystemInitialized()
 {
 	UDodAbilitySystemComponent* ASC = GetDodAbilitySystemComponent();

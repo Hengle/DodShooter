@@ -22,6 +22,8 @@ public:
 	virtual void OnAbilityAdded() override;
 	//~ End of UDodGameplayAbility interface
 
+	virtual void OnWeaponFireCompleted_Implementation() override;
+
 protected:
 	void StartFire();
 

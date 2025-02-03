@@ -63,6 +63,9 @@ protected:
 
 	FVector GetWeaponTargetingSourceLocation() const;
 	void OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& InData, FGameplayTag ApplicationTag);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnWeaponFireCompleted();
 private:
 	FDelegateHandle OnTargetDataReadyCallbackDelegateHandle;
 };

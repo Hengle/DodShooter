@@ -5,7 +5,6 @@
 #include "Character/DodCharacter.h"
 #include "Character/DodShooter.h"
 #include "GameplayCueFunctionLibrary.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Weapon/DodProjectile.h"
 #include "Weapon/DodRangedWeaponInstance.h"
 #include "Weapon/WeaponBase.h"
@@ -38,6 +37,9 @@ void UDodGameplayAbility_WeaponFire::ActivateAbility(const FGameplayAbilitySpecH
 	if (ADodShooter* Player = Cast<ADodShooter>(GetDodCharacterFromActorInfo()))
 	{
 		Player->ArmMesh->GetAnimInstance()->Montage_Play(ArmFireMontage.LoadSynchronous());
+
+		FRotator RecoilRotation = FRotator(-.5, .2, 0);
+		Player->AddControllerRotation(RecoilRotation);
 	}
 	StartFire();
 
@@ -74,6 +76,14 @@ void UDodGameplayAbility_WeaponFire::EndAbility(const FGameplayAbilitySpecHandle
 void UDodGameplayAbility_WeaponFire::OnAbilityAdded()
 {
 	Super::OnAbilityAdded();
+}
+
+void UDodGameplayAbility_WeaponFire::OnWeaponFireCompleted_Implementation()
+{
+	FGameplayCueParameters CueParameters;
+
+	UAbilitySystemComponent* const AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo_Checked();
+	AbilitySystemComponent->ExecuteGameplayCue(GameplayCueTagFiring, CueParameters);
 }
 
 void UDodGameplayAbility_WeaponFire::StartFire()

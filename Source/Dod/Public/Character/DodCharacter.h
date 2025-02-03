@@ -36,6 +36,8 @@ public:
 	virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 	//~ End of ACharacter interface
 
+	void AddControllerRotation(FRotator InRotator);
+
 protected:
 	virtual void OnAbilitySystemInitialized();
 	virtual void OnAbilitySystemUninitialized();
