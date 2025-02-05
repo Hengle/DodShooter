@@ -1,11 +1,11 @@
 ﻿#pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystem/Attributes/DodStaminaSet.h"
 #include "Components/GameFrameworkComponent.h"
 #include "DodStaminaComponent.generated.h"
 
 class UDodAbilitySystemComponent;
-class UDodStaminaSet;
 /**
  * UDodStaminaComponent
  *
@@ -18,6 +18,13 @@ class DOD_API UDodStaminaComponent : public UGameFrameworkComponent
 
 public:
 	UDodStaminaComponent(const FObjectInitializer& ObjectInitializer);
+	virtual void OnUnregister() override;
+
+	UFUNCTION(BlueprintCallable, Category = "Dod|Stamina")
+	void InitializeWithAbilitySystem(UDodAbilitySystemComponent* InASC);
+
+	UFUNCTION(BlueprintCallable, Category = "Dod|Stamina")
+	void UninitializeFromAbilitySystem();
 
 protected:
 	virtual void BeginPlay() override;

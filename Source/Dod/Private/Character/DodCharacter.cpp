@@ -115,6 +115,7 @@ void ADodCharacter::OnAbilitySystemInitialized()
 	check(ASC);
 
 	HealthComponent->InitializeWithAbilitySystem(ASC);
+	StaminaComponent->InitializeWithAbilitySystem(ASC);
 
 	InitializeGameplayTags();
 }
@@ -122,6 +123,7 @@ void ADodCharacter::OnAbilitySystemInitialized()
 void ADodCharacter::OnAbilitySystemUninitialized()
 {
 	HealthComponent->UninitializeFromAbilitySystem();
+	StaminaComponent->UninitializeFromAbilitySystem();
 }
 
 void ADodCharacter::PossessedBy(AController* NewController)

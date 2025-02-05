@@ -28,6 +28,10 @@ namespace DodGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Movement_Reload, "Event.Movement.Reload", "Weapon Reload");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Event_Movement_WeaponFire, "Event.Movement.WeaponFire", "Weapon WeaponFire");
 
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Gait_Walk, "Movement.Gait.Walk", "");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Gait_Sprint, "Movement.Gait.Sprint", "");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Movement_Gait_SuperSprint, "Movement.Gait.SuperSprint", "");
+
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_Spawned, "InitState.Spawned", "1: Actor/组件已初步生成，可以扩展");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_DataAvailable, "InitState.DataAvailable", "2: 所有必需的数据已加载/复制，准备初始化");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InitState_DataInitialized, "InitState.DataInitialized",

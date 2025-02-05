@@ -18,7 +18,7 @@ class DOD_API UDodStaminaSet : public UDodAttributeSet
 public:
 	ATTRIBUTE_ACCESSORS(UDodStaminaSet, Stamina);
 	ATTRIBUTE_ACCESSORS(UDodStaminaSet, MaxStamina);
-	ATTRIBUTE_ACCESSORS(UDodStaminaSet, StaminaRegenRate)
+	ATTRIBUTE_ACCESSORS(UDodStaminaSet, StaminaRegenRate);
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
@@ -34,8 +34,7 @@ protected:
 
 	UFUNCTION()
 	void OnRep_Stamina(const FGameplayAttributeData& OldValue);
-	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Stamina, Category = "Dod|Stamina",
-		Meta = (HideFromModifiers))
+	UPROPERTY(BlueprintReadOnly, ReplicatedUsing = OnRep_Stamina, Category = "Dod|Stamina")
 	FGameplayAttributeData Stamina{100.f};
 
 	UFUNCTION()

@@ -4,6 +4,7 @@
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "AbilitySystem/Attributes/DodCombatSet.h"
 #include "AbilitySystem/Attributes/DodHealthSet.h"
+#include "AbilitySystem/Attributes/DodStaminaSet.h"
 #include "Net/UnrealNetwork.h"
 
 ADodPlayerState::ADodPlayerState(const FObjectInitializer& ObjectInitializer)
@@ -15,6 +16,7 @@ ADodPlayerState::ADodPlayerState(const FObjectInitializer& ObjectInitializer)
 
 	HealthSet = CreateDefaultSubobject<UDodHealthSet>(TEXT("HealthSet"));
 	CombatSet = CreateDefaultSubobject<UDodCombatSet>(TEXT("CombatSet"));
+	StaminaSet = CreateDefaultSubobject<UDodStaminaSet>(TEXT("StaminaSet"));
 
 	NetUpdateFrequency = 100.0f;
 

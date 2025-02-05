@@ -71,6 +71,8 @@ protected:
 	UPROPERTY()
 	TObjectPtr<const class UDodHealthSet> HealthSet;
 	UPROPERTY()
+	TObjectPtr<const class UDodStaminaSet> StaminaSet;
+	UPROPERTY()
 	TObjectPtr<const class UDodCombatSet> CombatSet;
 
 private:
