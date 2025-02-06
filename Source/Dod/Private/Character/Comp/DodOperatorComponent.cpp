@@ -1,5 +1,6 @@
 ﻿#include "Character/Comp/DodOperatorComponent.h"
 
+#include "AbilitySystemGlobals.h"
 #include "DodGameplayTags.h"
 #include "InputActionValue.h"
 #include "Character/DodCharacter.h"
@@ -326,6 +327,23 @@ void UDodOperatorComponent::Input_LookStick(const FInputActionValue& InputAction
 
 void UDodOperatorComponent::Input_Crouch(const FInputActionValue& InputActionValue)
 {
+	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner()))
+	{
+		FGameplayTagContainer SprintTags;
+		SprintTags.AddTag(DodGameplayTags::Movement_Gait_Sprint);
+		SprintTags.AddTag(DodGameplayTags::Movement_Gait_SuperSprint);
+
+		if (ASC->HasAnyMatchingGameplayTags(SprintTags))
+		{
+			FGameplayEventData Payload;
+			Payload.EventTag = DodGameplayTags::GameplayEvent_Slide;
+			Payload.Instigator = GetOwner();
+
+			FScopedPredictionWindow NewScopedWindow(ASC, true);
+			ASC->HandleGameplayEvent(Payload.EventTag, &Payload);
+			return;
+		}
+	}
 	if (ADodCharacter* Character = GetPawn<ADodCharacter>())
 	{
 		Character->ToggleCrouch();
