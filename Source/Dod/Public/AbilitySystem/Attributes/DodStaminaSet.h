@@ -16,6 +16,9 @@ class DOD_API UDodStaminaSet : public UDodAttributeSet
 	GENERATED_BODY()
 
 public:
+	mutable FDodAttributeEvent OnStaminaChanged;
+	mutable FDodAttributeEvent OnMaxStaminaChanged;
+
 	ATTRIBUTE_ACCESSORS(UDodStaminaSet, Stamina);
 	ATTRIBUTE_ACCESSORS(UDodStaminaSet, MaxStamina);
 	ATTRIBUTE_ACCESSORS(UDodStaminaSet, StaminaRegenRate);
@@ -43,8 +46,11 @@ protected:
 	FGameplayAttributeData MaxStamina{100.f};
 
 	UFUNCTION()
-	void OnRep_StaminaRegenRate(const FGameplayAttributeData& OldStaminaRegenRate);
+	void OnRep_StaminaRegenRate(const FGameplayAttributeData& OldValue);
 	// 每秒恢复的体力
 	UPROPERTY(BlueprintReadOnly, Category = "Dod|Stamina", ReplicatedUsing = OnRep_StaminaRegenRate)
 	FGameplayAttributeData StaminaRegenRate;
+
+private:
+	float StaminaBeforeAttributeChange;
 };

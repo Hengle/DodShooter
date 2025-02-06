@@ -1,5 +1,6 @@
 ﻿#include "AbilitySystem/Attributes/DodStaminaSet.h"
 
+#include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 
 void UDodStaminaSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
@@ -12,12 +13,29 @@ void UDodStaminaSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 
 bool UDodStaminaSet::PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data)
 {
-	return Super::PreGameplayEffectExecute(Data);
+	if (!Super::PreGameplayEffectExecute(Data))
+	{
+		return false;
+	}
+	
+	StaminaBeforeAttributeChange = GetStamina();
+	
+	return true;
 }
 
 void UDodStaminaSet::PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+
+	const FGameplayEffectContextHandle& EffectContext = Data.EffectSpec.GetEffectContext();
+	AActor* Instigator = EffectContext.GetOriginalInstigator();
+	AActor* Causer = EffectContext.GetEffectCauser();
+
+	if (GetStamina() != StaminaBeforeAttributeChange)
+	{
+		OnStaminaChanged.Broadcast(Instigator, Causer, &Data.EffectSpec, Data.EvaluatedData.Magnitude,
+								  StaminaBeforeAttributeChange, GetStamina());
+	}
 }
 
 void UDodStaminaSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
@@ -37,12 +55,23 @@ void UDodStaminaSet::PostAttributeChange(const FGameplayAttribute& Attribute, fl
 
 void UDodStaminaSet::OnRep_Stamina(const FGameplayAttributeData& OldValue)
 {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDodStaminaSet, Stamina, OldValue);
+
+	const float CurrentStamina = GetStamina();
+	const float EstimatedMagnitude = CurrentStamina - OldValue.GetCurrentValue();
+
+	OnStaminaChanged.Broadcast(nullptr, nullptr, nullptr, EstimatedMagnitude, OldValue.GetCurrentValue(), CurrentStamina);
 }
 
 void UDodStaminaSet::OnRep_MaxStamina(const FGameplayAttributeData& OldValue)
 {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDodStaminaSet, MaxStamina, OldValue);
+
+	OnMaxStaminaChanged.Broadcast(nullptr, nullptr, nullptr, GetMaxStamina() - OldValue.GetCurrentValue(),
+								 OldValue.GetCurrentValue(), GetMaxStamina());
 }
 
-void UDodStaminaSet::OnRep_StaminaRegenRate(const FGameplayAttributeData& OldStaminaRegenRate)
+void UDodStaminaSet::OnRep_StaminaRegenRate(const FGameplayAttributeData& OldValue)
 {
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UDodStaminaSet, MaxStamina, OldValue);
 }
