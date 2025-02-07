@@ -27,11 +27,11 @@ protected:
 
 	//~ Begin ADodCharacter interface
 	virtual void DestroyDueToDeath() override;
-	//~ End of ADodCharacter interface
+	//~ End ADodCharacter interface
 
 	//~ Begin Pawn interface
 	virtual void Reset() override;
-	//~ End of Pawn interface
+	//~ End Pawn interface
 
 	//~ Begin IGameFrameworkInitStateInterface interface
 	virtual FName GetFeatureName() const override { return NAME_ActorFeatureName; }
@@ -41,7 +41,7 @@ protected:
 	                                   FGameplayTag DesiredState) override;
 	virtual void OnActorInitStateChanged(const FActorInitStateChangedParams& Params) override;
 	virtual void CheckDefaultInitialization() override;
-	//~ End of IGameFrameworkInitStateInterface interface
+	//~ End IGameFrameworkInitStateInterface interface
 
 	// 添加库存中的每一个物品，然后激活第一个
 	void AddInitialInventory();

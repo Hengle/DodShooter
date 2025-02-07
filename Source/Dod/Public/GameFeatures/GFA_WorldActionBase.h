@@ -13,7 +13,7 @@ public:
 	//~ Begin UGameFeatureAction interface
 	virtual void OnGameFeatureActivating(FGameFeatureActivatingContext& Context) override;
 	virtual void OnGameFeatureDeactivating(FGameFeatureDeactivatingContext& Context) override;
-	//~ End of UGameFeatureAction interface
+	//~ End UGameFeatureAction interface
 protected:
 	void HandleGameInstanceStart(UGameInstance* GameInstance, FGameFeatureStateChangeContext ChangeContext);
 

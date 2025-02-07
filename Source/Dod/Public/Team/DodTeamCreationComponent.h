@@ -6,6 +6,7 @@
 #include "Components/GameStateComponent.h"
 #include "DodTeamCreationComponent.generated.h"
 
+class UDodExperienceDefinition;
 class ADodPlayerState;
 class ADodTeamPublicInfo;
 class ADodTeamPrivateInfo;
@@ -21,6 +22,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+	void OnExperienceLoaded(const UDodExperienceDefinition* Experience);
+	
 #if WITH_SERVER_CODE
 	virtual void ServerCreateTeams();
 	virtual void ServerAssignPlayersToTeams();

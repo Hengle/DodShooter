@@ -3,6 +3,7 @@
 #include "AIController.h"
 #include "Character/Comp/DodPawnExtensionComponent.h"
 #include "GameFramework/PlayerState.h"
+#include "GameMode/DodExperienceManagerComponent.h"
 #include "GameMode/DodGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/DodPlayerBotController.h"
@@ -17,6 +18,16 @@ void UDodBotCreationComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AGameStateBase* GameState = GetGameStateChecked<AGameStateBase>();
+	UDodExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<
+		UDodExperienceManagerComponent>();
+	check(ExperienceComponent);
+	ExperienceComponent->CallOrRegister_OnExperienceLoaded_LowPriority(
+		FOnDodExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+}
+
+void UDodBotCreationComponent::OnExperienceLoaded(const UDodExperienceDefinition* Experience)
+{
 #if WITH_SERVER_CODE
 	if (HasAuthority())
 	{

@@ -12,10 +12,10 @@ class DOD_API ADodHUD : public AHUD
 protected:
 	//~UObject interface
 	virtual void PreInitializeComponents() override;
-	//~End of UObject interface
+	//~End UObject interface
 
 	//~AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	//~End of AActor interface
+	//~End AActor interface
 };

@@ -33,7 +33,7 @@ public:
 	//~ Begin UAbilitySystemComponent interface
 	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
 	virtual void NotifyAbilityActivated(const FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability) override;
-	//~ End of UAbilitySystemComponent interface
+	//~ End UAbilitySystemComponent interface
 
 	bool IsActivationGroupBlocked(EDodAbilityActivationGroup Group) const;
 

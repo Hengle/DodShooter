@@ -5,6 +5,13 @@
 #include "System/DodGameData.h"
 #include "DodAssetManager.generated.h"
 
+class UDodPawnData;
+
+struct FDodBundles
+{
+	static const FName Equipped;
+};
+
 UCLASS(Config = Game)
 class DOD_API UDodAssetManager : public UAssetManager
 {
@@ -14,9 +21,13 @@ public:
 	static UDodAssetManager& Get();
 
 	template <typename AssetType>
+	static AssetType* GetAsset(const TSoftObjectPtr<AssetType>& AssetPointer, bool bKeepInMemory = true);
+
+	template <typename AssetType>
 	static TSubclassOf<AssetType> GetSubclass(const TSoftClassPtr<AssetType>& AssetPointer, bool bKeepInMemory = true);
 
 	const UDodGameData& GetGameData();
+	const UDodPawnData* GetDefaultPawnData() const;
 
 protected:
 	template <typename GameDataClass>
@@ -27,7 +38,9 @@ protected:
 
 	void AddLoadedAsset(const UObject* Asset);
 
-	UPrimaryDataAsset* LoadGameDataOfClass(TSubclassOf<UPrimaryDataAsset> DataClass, const TSoftObjectPtr<UPrimaryDataAsset>& DataClassPath, FPrimaryAssetType PrimaryAssetType);
+	UPrimaryDataAsset* LoadGameDataOfClass(TSubclassOf<UPrimaryDataAsset> DataClass,
+	                                       const TSoftObjectPtr<UPrimaryDataAsset>& DataClassPath,
+	                                       FPrimaryAssetType PrimaryAssetType);
 
 	UPROPERTY(Config)
 	TSoftObjectPtr<UDodGameData> DodGameDataPath;
@@ -35,11 +48,40 @@ protected:
 	UPROPERTY(Transient)
 	TMap<TObjectPtr<UClass>, TObjectPtr<UPrimaryDataAsset>> GameDataMap;
 
+	UPROPERTY(Config)
+	TSoftObjectPtr<UDodPawnData> DefaultPawnData;
+
 	UPROPERTY()
 	TSet<TObjectPtr<const UObject>> LoadedAssets;
 
 	FCriticalSection LoadedAssetsCritical;
 };
+
+template <typename AssetType>
+AssetType* UDodAssetManager::GetAsset(const TSoftObjectPtr<AssetType>& AssetPointer, bool bKeepInMemory)
+{
+	AssetType* LoadedAsset = nullptr;
+
+	const FSoftObjectPath& AssetPath = AssetPointer.ToSoftObjectPath();
+
+	if (AssetPath.IsValid())
+	{
+		LoadedAsset = AssetPointer.Get();
+		if (!LoadedAsset)
+		{
+			LoadedAsset = Cast<AssetType>(SynchronousLoadAsset(AssetPath));
+			ensureAlwaysMsgf(LoadedAsset, TEXT("Failed to load asset [%s]"), *AssetPointer.ToString());
+		}
+
+		if (LoadedAsset && bKeepInMemory)
+		{
+			// Added to loaded asset list.
+			Get().AddLoadedAsset(Cast<UObject>(LoadedAsset));
+		}
+	}
+
+	return LoadedAsset;
+}
 
 template <typename AssetType>
 TSubclassOf<AssetType> UDodAssetManager::GetSubclass(const TSoftClassPtr<AssetType>& AssetPointer, bool bKeepInMemory)

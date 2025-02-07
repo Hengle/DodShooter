@@ -29,12 +29,12 @@ public:
 
 	//~ Begin Actor interface
 	virtual void BeginPlay() override;
-	//~ End of Actor interface
+	//~ End Actor interface
 
 	//~ Begin ACharacter interface
 	virtual void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 	virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
-	//~ End of ACharacter interface
+	//~ End ACharacter interface
 
 	void AddControllerRotation(FRotator InRotator);
 

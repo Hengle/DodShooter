@@ -60,7 +60,7 @@ struct FDodEquipmentList : public FFastArraySerializer
 			Entries, DeltaParms, *this);
 	}
 
-	//~ End of FFastArraySerializer
+	//~ End FFastArraySerializer
 
 private:
 	friend class UDodEquipmentManagerComponent;
@@ -100,13 +100,13 @@ public:
 	//~ Begin UObject interface
 	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
 	                                 FReplicationFlags* RepFlags) override;
-	//~ End of UObject interface
+	//~ End UObject interface
 
 	//~ Begin ActorComponent
 	virtual void InitializeComponent() override;
 	virtual void UninitializeComponent() override;
 	virtual void ReadyForReplication() override;
-	//~ End of ActorComponent
+	//~ End ActorComponent
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UDodEquipmentInstance* GetFirstInstanceOfType(TSubclassOf<UDodEquipmentInstance> InstanceType);

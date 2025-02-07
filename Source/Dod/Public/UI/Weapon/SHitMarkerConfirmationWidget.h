@@ -34,7 +34,7 @@ public:
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 	virtual FVector2D ComputeDesiredSize(float) const override;
 	virtual bool ComputeVolatility() const override { return true; }
-	//~End of SWidget interface
+	//~End SWidget interface
 
 private:
 	/** The marker image to draw for individual hit markers. */

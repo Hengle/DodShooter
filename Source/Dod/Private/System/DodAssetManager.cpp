@@ -1,6 +1,8 @@
 ﻿#include "System/DodAssetManager.h"
-
+#include "Character/DodPawnData.h"
 #include "DodLogChannels.h"
+
+const FName FDodBundles::Equipped("Equipped");
 
 UDodAssetManager& UDodAssetManager::Get()
 {
@@ -20,6 +22,11 @@ UDodAssetManager& UDodAssetManager::Get()
 const UDodGameData& UDodAssetManager::GetGameData()
 {
 	return GetOrLoadTypedGameData<UDodGameData>(DodGameDataPath);
+}
+
+const UDodPawnData* UDodAssetManager::GetDefaultPawnData() const
+{
+	return GetAsset(DefaultPawnData);
 }
 
 UObject* UDodAssetManager::SynchronousLoadAsset(const FSoftObjectPath& AssetPath)

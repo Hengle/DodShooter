@@ -2,12 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameplayMessageProcessor.generated.h"
 
-
-struct FGameplayMessageListenerHandle;
-
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(BlueprintType, Blueprintable, meta=(BlueprintSpawnableComponent))
 class DOD_API UGameplayMessageProcessor : public UActorComponent
 {
 	GENERATED_BODY()

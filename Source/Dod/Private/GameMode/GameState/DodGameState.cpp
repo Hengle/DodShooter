@@ -6,17 +6,25 @@
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameMode/DodActionSet.h"
+#include "GameMode/DodExperienceManagerComponent.h"
 #include "Messages/DodVerbMessage.h"
+#include "Net/UnrealNetwork.h"
 #include "Player/DodPlayerSpawningManagerComponent.h"
+
+extern ENGINE_API float GAverageFPS;
 
 ADodGameState::ADodGameState(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
+
 	AbilitySystemComponent = CreateDefaultSubobject<UDodAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Mixed);
 
-	PlayerSpawningManager = CreateDefaultSubobject<UDodPlayerSpawningManagerComponent>(TEXT("PlayerSpawningManager"));
+	ExperienceManagerComponent =
+		CreateDefaultSubobject<UDodExperienceManagerComponent>(TEXT("ExperienceManagerComponent"));
 }
 
 void ADodGameState::BeginPlay()
@@ -59,9 +67,31 @@ void ADodGameState::PostInitializeComponents()
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
 }
 
+void ADodGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, ServerFPS);
+}
+
+void ADodGameState::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		ServerFPS = GAverageFPS;
+	}
+}
+
 UAbilitySystemComponent* ADodGameState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+float ADodGameState::GetServerFPS() const
+{
+	return ServerFPS;
 }
 
 void ADodGameState::MulticastReliableMessageToClients_Implementation(const FDodVerbMessage Message)

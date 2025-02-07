@@ -15,11 +15,11 @@ class DOD_API AMenuGameState : public ADodGameState, public ILoadingProcessInter
 protected:
 	//~ GameState interface
 	virtual void BeginPlay() override;
-	//~ End of GameState interface
+	//~ End GameState interface
 
 	//~ ILoadingProcessInterface interface
-	virtual bool ShouldShowLoadingScreen() const override;
-	//~ End of ILoadingProcessInterface interface
+	virtual bool ShouldShowLoadingScreen(FString& OutReason) const override;
+	//~ End ILoadingProcessInterface interface
 private:
 	void FlowStep_TryJoinRequestedSession(FControlFlowNodeRef SubFlow);
 	void FlowStep_TryShowMainScreen(FControlFlowNodeRef SubFlow);

@@ -24,5 +24,5 @@ public:
 protected:
 	//~ Begin UCameraComponent interface
 	virtual void OnRegister() override;
-	//~ End of UCameraComponent interface
+	//~ End UCameraComponent interface
 };

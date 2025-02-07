@@ -4,11 +4,6 @@
 #include "ControlFlowManager.h"
 #include "PrimaryGameLayout.h"
 
-namespace FrontendTags
-{
-	UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MENU, "UI.Layer.Menu");
-}
-
 void AMenuGameState::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,9 +18,25 @@ void AMenuGameState::BeginPlay()
 	FrontEndFlow = Flow.AsShared();
 }
 
-bool AMenuGameState::ShouldShowLoadingScreen() const
+bool AMenuGameState::ShouldShowLoadingScreen(FString& OutReason) const
 {
-	return bShouldShowLoadingScreen;
+	if (bShouldShowLoadingScreen)
+	{
+		OutReason = TEXT("Frontend Flow Pending...");
+
+		if (FrontEndFlow.IsValid())
+		{
+			const TOptional<FString> StepDebugName = FrontEndFlow->GetCurrentStepDebugName();
+			if (StepDebugName.IsSet())
+			{
+				OutReason = StepDebugName.GetValue();
+			}
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 void AMenuGameState::FlowStep_TryJoinRequestedSession(FControlFlowNodeRef SubFlow)
@@ -37,23 +48,5 @@ void AMenuGameState::FlowStep_TryShowMainScreen(FControlFlowNodeRef SubFlow)
 {
 	if (UPrimaryGameLayout* RootLayout = UPrimaryGameLayout::GetPrimaryGameLayoutForPrimaryPlayer(this))
 	{
-		constexpr bool bSuspendInputUntilComplete = true;
-		RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(
-			FrontendTags::TAG_UI_LAYER_MENU, bSuspendInputUntilComplete, MenuClass,
-			[this, SubFlow](EAsyncWidgetLayerState State, UCommonActivatableWidget* Screen)
-			{
-				switch (State)
-				{
-				case EAsyncWidgetLayerState::AfterPush:
-					bShouldShowLoadingScreen = false;
-					SubFlow->ContinueFlow();
-					return;
-				case EAsyncWidgetLayerState::Canceled:
-					bShouldShowLoadingScreen = false;
-					SubFlow->ContinueFlow();
-					break;
-				default: break;
-				}
-			});
 	}
 }

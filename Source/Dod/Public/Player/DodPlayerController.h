@@ -30,17 +30,17 @@ public:
 	virtual void InitPlayerState() override;
 	virtual void CleanupPlayerState() override;
 	virtual void OnRep_PlayerState() override;
-	//~ End of AController interface
+	//~ End AController interface
 
 	//~ Begin APlayerController interface
 	virtual void PostProcessInput(const float DeltaTime, const bool bGamePaused) override;
-	//~ End of APlayerController interface
+	//~ End APlayerController interface
 
 	//~ Begin IDodTeamAgentInterface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual FOnDodTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
-	//~ End of IDodTeamAgentInterface
+	//~ End IDodTeamAgentInterface
 
 	void UnEquip();
 private:

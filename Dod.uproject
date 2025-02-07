@@ -38,7 +38,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "LoadingScreen",
+			"Name": "CommonUser",
+			"Enabled": true
+		},
+		{
+			"Name": "CommonLoadingScreen",
 			"Enabled": true
 		},
 		{

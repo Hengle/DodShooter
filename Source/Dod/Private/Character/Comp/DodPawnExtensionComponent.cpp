@@ -3,13 +3,22 @@
 #include "DodGameplayTags.h"
 #include "AbilitySystem/DodAbilitySet.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
+#include "Character/DodPawnData.h"
 #include "Components/GameFrameworkComponentManager.h"
+#include "Net/UnrealNetwork.h"
 
 const FName UDodPawnExtensionComponent::NAME_ActorFeatureName("PawnExtension");
 
 UDodPawnExtensionComponent::UDodPawnExtensionComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
+}
+
+void UDodPawnExtensionComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	
+	DOREPLIFETIME(ThisClass, PawnData);
 }
 
 bool UDodPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
@@ -100,6 +109,29 @@ void UDodPawnExtensionComponent::SetupPlayerInputComponent()
 	CheckDefaultInitialization();
 }
 
+void UDodPawnExtensionComponent::SetPawnData(const UDodPawnData* InPawnData)
+{
+	check(InPawnData);
+
+	APawn* Pawn = GetPawnChecked<APawn>();
+
+	if (Pawn->GetLocalRole() != ROLE_Authority)
+	{
+		return;
+	}
+
+	if (PawnData)
+	{
+		return;
+	}
+
+	PawnData = InPawnData;
+
+	Pawn->ForceNetUpdate();
+
+	CheckDefaultInitialization();
+}
+
 void UDodPawnExtensionComponent::InitializeAbilitySystem(UDodAbilitySystemComponent* InAsc, AActor* InOwner)
 {
 	check(InAsc);
@@ -131,7 +163,7 @@ void UDodPawnExtensionComponent::InitializeAbilitySystem(UDodAbilitySystemCompon
 	AbilitySystemComponent = InAsc;
 	AbilitySystemComponent->InitAbilityActorInfo(InOwner, Pawn);
 
-	for (const UDodAbilitySet* AbilitySet : PawnData.AbilitySets)
+	for (const UDodAbilitySet* AbilitySet : PawnData->AbilitySets)
 	{
 		if (AbilitySet)
 		{
@@ -148,7 +180,7 @@ void UDodPawnExtensionComponent::UninitializeAbilitySystem()
 	{
 		return;
 	}
-	
+
 	if (AbilitySystemComponent->GetAvatarActor() == GetOwner())
 	{
 		FGameplayTagContainer AbilityTypesToIgnore;
@@ -202,5 +234,10 @@ void UDodPawnExtensionComponent::BeginPlay()
 	BindOnActorInitStateChanged(NAME_None, FGameplayTag(), false);
 
 	ensure(TryToChangeInitState(DodGameplayTags::InitState_Spawned));
+	CheckDefaultInitialization();
+}
+
+void UDodPawnExtensionComponent::OnRep_PawnData()
+{
 	CheckDefaultInitialization();
 }

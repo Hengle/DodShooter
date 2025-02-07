@@ -23,7 +23,7 @@ public:
 
 	//~ Begin UCommonActivatableWidget interface
 	virtual TOptional<FUIInputConfig> GetDesiredInputConfig() const override;
-	//~ End of UCommonActivatableWidget interface
+	//~ End UCommonActivatableWidget interface
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	EDodWidgetInputMode InputConfig{EDodWidgetInputMode::Default};

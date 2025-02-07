@@ -103,7 +103,7 @@ protected:
 	                                               const FGameplayTagContainer* TargetTags = nullptr,
 	                                               FGameplayTagContainer* OptionalRelevantTags = nullptr)
 	const override;
-	//~ End of UGameplayAbility interface
+	//~ End UGameplayAbility interface
 
 	virtual void OnPawnAvatarSet();
 

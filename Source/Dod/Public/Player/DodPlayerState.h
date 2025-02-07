@@ -7,6 +7,8 @@
 #include "Team/DodTeamAgentInterface.h"
 #include "DodPlayerState.generated.h"
 
+class UDodPawnData;
+class UDodExperienceDefinition;
 class UDodAbilitySet;
 struct FGameplayTag;
 class UDodAbilitySystemComponent;
@@ -29,15 +31,20 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	template <class T>
+	const T* GetPawnData() const { return Cast<T>(PawnData); }
+
+	void SetPawnData(const UDodPawnData* InPawnData);
+
 	//~ Begin AActor interface
 	virtual void PostInitializeComponents() override;
-	//~ End of AActor interface
+	//~ End AActor interface
 
 	//~ Begin IDodTeamAgentInterface interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual FOnDodTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
-	//~ End of IDodTeamAgentInterface interface
+	//~ End IDodTeamAgentInterface interface
 
 	UFUNCTION(BlueprintCallable)
 	int32 GetTeamId() const
@@ -55,11 +62,19 @@ public:
 	bool HasStatTag(FGameplayTag Tag) const;
 
 private:
+	void OnExperienceLoaded(const UDodExperienceDefinition* CurrentExperience);
+
 	UFUNCTION()
 	void OnRep_MyTeamID(FGenericTeamId OldTeamID);
 
 	UFUNCTION()
 	void OnRep_MySquadID();
+
+	UFUNCTION()
+	void OnRep_PawnData();
+
+public:
+	static const FName NAME_DodAbilityReady;
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Dod|PlayerState")
@@ -74,6 +89,9 @@ protected:
 	TObjectPtr<const class UDodStaminaSet> StaminaSet;
 	UPROPERTY()
 	TObjectPtr<const class UDodCombatSet> CombatSet;
+
+	UPROPERTY(ReplicatedUsing = OnRep_PawnData)
+	TObjectPtr<const UDodPawnData> PawnData;
 
 private:
 	UPROPERTY()

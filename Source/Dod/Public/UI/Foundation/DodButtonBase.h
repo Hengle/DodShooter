@@ -16,12 +16,12 @@ public:
 protected:
 	// UUserWidget interface
 	virtual void NativePreConstruct() override;
-	// End of UUserWidget interface
+	// End UUserWidget interface
 
 	// UCommonButtonBase interface
 	virtual void UpdateInputActionWidget() override;
 	virtual void OnInputMethodChanged(ECommonInputType CurrentInputType) override;
-	// End of UCommonButtonBase interface
+	// End UCommonButtonBase interface
 
 	void RefreshButtonText();
 

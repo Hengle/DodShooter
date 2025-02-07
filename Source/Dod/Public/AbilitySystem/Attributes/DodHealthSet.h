@@ -39,7 +39,7 @@ protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
-	//~ End of AttributeSet interface
+	//~ End AttributeSet interface
 
 	void ClampAttribute(const FGameplayAttribute& Attribute, float& NewValue) const;
 	// 最大值修改时，当前值按比例改变

@@ -23,16 +23,16 @@ class UK2Node_AsyncAction_ListenForGameplayMessages : public UK2Node_AsyncAction
 {
 	GENERATED_BODY()
 
-	//~UEdGraphNode interface
+	//~ Begin UEdGraphNode interface
 	virtual void PostReconstructNode() override;
 	virtual void PinDefaultValueChanged(UEdGraphPin* ChangedPin) override;
 	virtual void GetPinHoverText(const UEdGraphPin& Pin, FString& HoverTextOut) const override;
-	//~End of UEdGraphNode interface
+	//~ End UEdGraphNode interface
 	
-	//~UK2Node interface
+	//~ Begin UK2Node interface
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 	virtual void AllocateDefaultPins() override;
-	//~End of UK2Node interface
+	//~ End UK2Node interface
 
 protected:
 	virtual bool HandleDelegates(

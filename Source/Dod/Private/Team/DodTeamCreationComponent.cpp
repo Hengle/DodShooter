@@ -1,5 +1,6 @@
 ﻿#include "Team/DodTeamCreationComponent.h"
 
+#include "GameMode/DodExperienceManagerComponent.h"
 #include "GameMode/DodGameMode.h"
 #include "Player/DodPlayerState.h"
 #include "Team/DodTeamDisplayAsset.h"
@@ -20,6 +21,16 @@ void UDodTeamCreationComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AGameStateBase* GameState = GetGameStateChecked<AGameStateBase>();
+	UDodExperienceManagerComponent* ExperienceComponent = GameState->FindComponentByClass<
+		UDodExperienceManagerComponent>();
+	check(ExperienceComponent);
+	ExperienceComponent->CallOrRegister_OnExperienceLoaded_HighPriority(
+		FOnDodExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+}
+
+void UDodTeamCreationComponent::OnExperienceLoaded(const UDodExperienceDefinition* Experience)
+{
 #if WITH_SERVER_CODE
 	if (HasAuthority())
 	{

@@ -5,24 +5,11 @@
 #include "Components/PawnComponent.h"
 #include "DodPawnExtensionComponent.generated.h"
 
+class UDodPawnData;
 class UDodAbilitySet;
 class UDodAbilitySystemComponent;
 class UDodCameraMode;
 class UDodInputConfig;
-
-USTRUCT(BlueprintType, Meta = (DisplayName = "Dod Pawn Data", ShortTooltip = "Define a Pawn."))
-struct FDodPawnData
-{
-	GENERATED_BODY()
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Abilities")
-	TArray<TObjectPtr<UDodAbilitySet>> AbilitySets;
-
-	/*UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Abilities")
-	TObjectPtr<UDodAbilityTagRelationshipMapping> TagRelationshipMapping;*/
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Input")
-	TObjectPtr<UDodInputConfig> InputConfig;
-};
 
 UCLASS()
 class DOD_API UDodPawnExtensionComponent : public UPawnComponent, public IGameFrameworkInitStateInterface
@@ -31,6 +18,8 @@ class DOD_API UDodPawnExtensionComponent : public UPawnComponent, public IGameFr
 
 public:
 	UDodPawnExtensionComponent(const FObjectInitializer& ObjectInitializer);
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 	static const FName NAME_ActorFeatureName;
 
@@ -42,7 +31,7 @@ public:
 	                                   FGameplayTag DesiredState) override;
 	virtual void OnActorInitStateChanged(const FActorInitStateChangedParams& Params) override;
 	virtual void CheckDefaultInitialization() override;
-	//~ End of IGameFrameworkInitStateInterface interface
+	//~ End IGameFrameworkInitStateInterface interface
 
 	void HandleControllerChanged();
 	void HandlePlayerStateReplicated();
@@ -55,7 +44,10 @@ public:
 		return Actor ? Actor->FindComponentByClass<UDodPawnExtensionComponent>() : nullptr;
 	}
 
-	FORCEINLINE const FDodPawnData& GetPawnData() const { return PawnData; }
+	template <class T>
+	const T* GetPawnData() const { return Cast<T>(PawnData); }
+
+	void SetPawnData(const UDodPawnData* InPawnData);
 
 	UFUNCTION(BlueprintPure, Category = "Dod|Pawn")
 	UDodAbilitySystemComponent* GetDodAbilitySystemComponent() const { return AbilitySystemComponent; }
@@ -69,11 +61,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void OnRep_PawnData();
+
 	FSimpleMulticastDelegate OnAbilitySystemInitialized;
 	FSimpleMulticastDelegate OnAbilitySystemUninitialized;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Dod|Pawn")
-	FDodPawnData PawnData;
+	UPROPERTY(EditInstanceOnly, ReplicatedUsing = OnRep_PawnData, Category = "Dod|Pawn")
+	TObjectPtr<const UDodPawnData> PawnData;
 
 	UPROPERTY(Transient)
 	TObjectPtr<UDodAbilitySystemComponent> AbilitySystemComponent{nullptr};

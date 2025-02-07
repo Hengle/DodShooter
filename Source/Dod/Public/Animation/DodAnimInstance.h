@@ -25,7 +25,7 @@ public:
 	//~ Begin UAnimInstance interface
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeThreadSafeUpdateAnimation(float DeltaSeconds) override;
-	//~ End of UAnimInstance interface
+	//~ End UAnimInstance interface
 	void InitAnimInstance();
 
 	virtual void InitializeWithAbilitySystem(UAbilitySystemComponent* ASC);

@@ -52,7 +52,7 @@ struct FDodInventoryList : public FFastArraySerializer
 	void PreReplicatedRemove(const TArrayView<int32> RemovedIndices, int32 FinalSize);
 	void PostReplicatedAdd(const TArrayView<int32> AddedIndices, int32 FinalSize);
 	void PostReplicatedChange(const TArrayView<int32> ChangedIndices, int32 FinalSize);
-	//~End of FFastArraySerializer contract
+	//~End FFastArraySerializer contract
 
 	bool NetDeltaSerialize(FNetDeltaSerializeInfo& DeltaParms)
 	{
@@ -101,7 +101,7 @@ protected:
 	virtual bool ReplicateSubobjects(class UActorChannel* Channel, class FOutBunch* Bunch,
 	                                 FReplicationFlags* RepFlags) override;
 	virtual void ReadyForReplication() override;
-	//~ End of UObject interface
+	//~ End UObject interface
 	UPROPERTY(Replicated)
 	FDodInventoryList InventoryList;
 };

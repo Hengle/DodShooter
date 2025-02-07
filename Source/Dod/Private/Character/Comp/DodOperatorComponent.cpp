@@ -12,6 +12,7 @@
 #include "UserSettings/EnhancedInputUserSettings.h"
 #include "InputMappingContext.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
+#include "Character/DodPawnData.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/PlayerState.h"
 #include "Player/DodPlayerController.h"
@@ -175,8 +176,8 @@ void UDodOperatorComponent::InitializePlayerInput(UInputComponent* PlayerInputCo
 
 	if (const UDodPawnExtensionComponent* PawnExtComp = UDodPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 	{
-		const FDodPawnData& PawnData = PawnExtComp->GetPawnData();
-		if (const UDodInputConfig* InputConfig = PawnData.InputConfig)
+		const UDodPawnData* PawnData = PawnExtComp->GetPawnData<UDodPawnData>();
+		if (const UDodInputConfig* InputConfig = PawnData->InputConfig)
 		{
 			for (const FInputMappingContextAndPriority& Mapping : DefaultInputMappings)
 			{

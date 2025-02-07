@@ -33,7 +33,7 @@ protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
-	//~ End of AttributeSet interface
+	//~ End AttributeSet interface
 
 	UFUNCTION()
 	void OnRep_Stamina(const FGameplayAttributeData& OldValue);

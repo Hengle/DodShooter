@@ -16,7 +16,7 @@ class DOD_API UDodInventoryItemInstance : public UObject
 public:
 	//~ Begin UObject interface
 	virtual bool IsSupportedForNetworking() const override { return true; }
-	//~ End of UObject interface
+	//~ End UObject interface
 
 	// 添加Tag和数值
 	UFUNCTION(BlueprintCallable, BlueprintAuthorityOnly, Category=Inventory)

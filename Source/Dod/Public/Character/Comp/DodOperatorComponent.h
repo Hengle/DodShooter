@@ -33,7 +33,7 @@ public:
 	                                   FGameplayTag DesiredState) override;
 	virtual void OnActorInitStateChanged(const FActorInitStateChangedParams& Params) override;
 	virtual void CheckDefaultInitialization() override;
-	//~ End of IGameFrameworkInitStateInterface interface
+	//~ End IGameFrameworkInitStateInterface interface
 
 protected:
 	virtual void BeginPlay() override;

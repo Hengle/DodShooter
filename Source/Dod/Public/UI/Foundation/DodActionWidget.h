@@ -15,7 +15,7 @@ class DOD_API UDodActionWidget : public UCommonActionWidget
 public:
 	//~ Begin UCommonActionWidget interface
 	virtual FSlateBrush GetIcon() const override;
-	//~ End of UCommonActionWidget interface
+	//~ End UCommonActionWidget interface
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	const TObjectPtr<UInputAction> AssociatedInputAction;

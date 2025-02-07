@@ -5,6 +5,7 @@
 #include "DodBotCreationComponent.generated.h"
 
 
+class UDodExperienceDefinition;
 class AAIController;
 
 UCLASS(Blueprintable, Abstract)
@@ -18,6 +19,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+private:
+	void OnExperienceLoaded(const UDodExperienceDefinition* Experience);
+	
 public:
 #if WITH_SERVER_CODE
 	FString CreateBotName(int32 PlayerIndex);
