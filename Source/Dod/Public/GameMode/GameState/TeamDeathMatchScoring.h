@@ -4,6 +4,7 @@
 #include "DodGameScoringBase.h"
 #include "TeamDeathMatchScoring.generated.h"
 
+class UDodExperienceDefinition;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerCounted);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCountDownUpdate, float, Time);
@@ -25,6 +26,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	UFUNCTION()
+	void HandleExperienceLoaded(const UDodExperienceDefinition* CurrentExperience);
 
 	//~ Begin UDodGameScoringBase interface
 	virtual void OnEliminationScored() override;

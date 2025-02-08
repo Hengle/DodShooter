@@ -5,11 +5,8 @@
 #include "Team/DodTeamAgentInterface.h"
 #include "DodPlayerController.generated.h"
 
-class UDodWeaponStateComponent;
 class ADodPlayerState;
 class UDodAbilitySystemComponent;
-class UDodQuickBarComponent;
-class UDodInventoryManagerComponent;
 
 UCLASS()
 class DOD_API ADodPlayerController : public ACommonPlayerController, public IDodTeamAgentInterface
@@ -41,23 +38,11 @@ public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual FOnDodTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
 	//~ End IDodTeamAgentInterface
-
-	void UnEquip();
 private:
 	UFUNCTION()
 	void OnPlayerStateChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam);
 	
 	void BroadcastOnPlayerStateChanged();
-
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Inventory")
-	TObjectPtr<UDodInventoryManagerComponent> InventoryComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Inventory")
-	TObjectPtr<UDodQuickBarComponent> QuickBarComponent;
-
-	UPROPERTY()
-	TObjectPtr<UDodWeaponStateComponent> WeaponStateComponent;
 
 private:
 	UPROPERTY()

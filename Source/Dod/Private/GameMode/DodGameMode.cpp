@@ -72,6 +72,19 @@ void ADodGameMode::InitGame(const FString& MapName, const FString& Options, FStr
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::HandleMatchAssignmentIfNotExpectingOne);
 }
 
+UClass* ADodGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
+{
+	if (const UDodPawnData* PawnData = GetPawnDataForController(InController))
+	{
+		if (PawnData->PawnClass)
+		{
+			return PawnData->PawnClass;
+		}
+	}
+
+	return Super::GetDefaultPawnClassForController_Implementation(InController);
+}
+
 APawn* ADodGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* NewPlayer,
                                                                 const FTransform& SpawnTransform)
 {
@@ -84,6 +97,20 @@ APawn* ADodGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* New
 	{
 		if (APawn* SpawnedPawn = GetWorld()->SpawnActor<APawn>(PawnClass, SpawnTransform, SpawnInfo))
 		{
+			if (UDodPawnExtensionComponent* PawnExtComp = UDodPawnExtensionComponent::FindPawnExtensionComponent(
+				SpawnedPawn))
+			{
+				if (const UDodPawnData* PawnData = GetPawnDataForController(NewPlayer))
+				{
+					PawnExtComp->SetPawnData(PawnData);
+				}
+				else
+				{
+					UE_LOG(LogDod, Error, TEXT("Game mode was unable to set PawnData on the spawned pawn [%s]."),
+					       *GetNameSafe(SpawnedPawn));
+				}
+			}
+
 			SpawnedPawn->FinishSpawning(SpawnTransform);
 
 			return SpawnedPawn;
@@ -92,11 +119,83 @@ APawn* ADodGameMode::SpawnDefaultPawnAtTransform_Implementation(AController* New
 	return nullptr;
 }
 
+bool ADodGameMode::ShouldSpawnAtStartSpot(AController* Player)
+{
+	return false;
+}
+
+void ADodGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	if (IsExperienceLoaded())
+	{
+		Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+	}
+}
+
+AActor* ADodGameMode::ChoosePlayerStart_Implementation(AController* Player)
+{
+	if (UDodPlayerSpawningManagerComponent* PlayerSpawningComponent =
+		GameState->FindComponentByClass<UDodPlayerSpawningManagerComponent>())
+	{
+		return PlayerSpawningComponent->ChoosePlayerStart(Player);
+	}
+	return Super::ChoosePlayerStart_Implementation(Player);
+}
+
+void ADodGameMode::FinishRestartPlayer(AController* NewPlayer, const FRotator& StartRotation)
+{
+	if (UDodPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<
+		UDodPlayerSpawningManagerComponent>())
+	{
+		PlayerSpawningComponent->FinishRestartPlayer(NewPlayer, StartRotation);
+	}
+
+	Super::FinishRestartPlayer(NewPlayer, StartRotation);
+}
+
+bool ADodGameMode::PlayerCanRestart_Implementation(APlayerController* Player)
+{
+	return ControllerCanRestart(Player);
+}
+
 void ADodGameMode::GenericPlayerInitialization(AController* C)
 {
 	Super::GenericPlayerInitialization(C);
 
 	OnGameModePlayerInitialized.Broadcast(this, C);
+}
+
+void ADodGameMode::FailedToRestartPlayer(AController* NewPlayer)
+{
+	Super::FailedToRestartPlayer(NewPlayer);
+
+	if (UClass* PawnClass = GetDefaultPawnClassForController(NewPlayer))
+	{
+		if (APlayerController* NewPC = Cast<APlayerController>(NewPlayer))
+		{
+			// If it's a player don't loop forever, maybe something changed and they can no longer restart if so stop trying.
+			if (PlayerCanRestart(NewPC))
+			{
+				RequestPlayerRestartNextFrame(NewPlayer, false);
+			}
+			else
+			{
+				UE_LOG(LogDod, Verbose,
+				       TEXT(
+					       "FailedToRestartPlayer(%s) and PlayerCanRestart returned false, so we're not going to try again."
+				       ), *GetPathNameSafe(NewPlayer));
+			}
+		}
+		else
+		{
+			RequestPlayerRestartNextFrame(NewPlayer, false);
+		}
+	}
+	else
+	{
+		UE_LOG(LogDod, Verbose, TEXT("FailedToRestartPlayer(%s) but there's no pawn class so giving up."),
+		       *GetPathNameSafe(NewPlayer));
+	}
 }
 
 void ADodGameMode::InitGameState()
@@ -108,6 +207,11 @@ void ADodGameMode::InitGameState()
 	check(ExperienceComponent);
 	ExperienceComponent->CallOrRegister_OnExperienceLoaded(
 		FOnDodExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::OnExperienceLoaded));
+}
+
+bool ADodGameMode::UpdatePlayerStartSpot(AController* Player, const FString& Portal, FString& OutErrorMessage)
+{
+	return true;
 }
 
 bool ADodGameMode::ControllerCanRestart(AController* Controller)
@@ -122,14 +226,14 @@ bool ADodGameMode::ControllerCanRestart(AController* Controller)
 	else
 	{
 		// Bot version of Super::PlayerCanRestart_Implementation
-		if ((Controller == nullptr) || Controller->IsPendingKillPending())
+		if (Controller || Controller->IsPendingKillPending())
 		{
 			return false;
 		}
 	}
 
-	if (UDodPlayerSpawningManagerComponent* PlayerSpawningComponent = GameState->FindComponentByClass<
-		UDodPlayerSpawningManagerComponent>())
+	if (UDodPlayerSpawningManagerComponent* PlayerSpawningComponent =
+		GameState->FindComponentByClass<UDodPlayerSpawningManagerComponent>())
 	{
 		return PlayerSpawningComponent->ControllerCanRestart(Controller);
 	}
@@ -139,7 +243,7 @@ bool ADodGameMode::ControllerCanRestart(AController* Controller)
 
 void ADodGameMode::RequestPlayerRestartNextFrame(AController* Controller, bool bForceReset)
 {
-	if (bForceReset && (Controller != nullptr))
+	if (bForceReset && Controller)
 	{
 		Controller->Reset();
 	}

@@ -12,9 +12,6 @@
 ADodPlayerController::ADodPlayerController(const FObjectInitializer& FObjectInitializer)
 	: Super(FObjectInitializer)
 {
-	InventoryComponent = CreateDefaultSubobject<UDodInventoryManagerComponent>(TEXT("InventoryComponent"));
-	QuickBarComponent = CreateDefaultSubobject<UDodQuickBarComponent>(TEXT("QuickBarComponent"));
-	WeaponStateComponent = CreateDefaultSubobject<UDodWeaponStateComponent>(TEXT("WeaponStateComponent"));
 }
 
 ADodPlayerState* ADodPlayerController::GetDodPlayerState() const
@@ -40,8 +37,6 @@ void ADodPlayerController::OnUnPossess()
 			}
 		}
 	}
-
-	UnEquip();
 
 	Super::OnUnPossess();
 }
@@ -91,26 +86,6 @@ FGenericTeamId ADodPlayerController::GetGenericTeamId() const
 FOnDodTeamIndexChangedDelegate* ADodPlayerController::GetOnTeamIndexChangedDelegate()
 {
 	return &OnTeamChangedDelegate;
-}
-
-void ADodPlayerController::UnEquip()
-{
-	if (QuickBarComponent)
-	{
-		const TArray<UDodInventoryItemInstance*>& Slots = QuickBarComponent->GetSlots();
-		for (int32 Idx = 0; Idx < Slots.Num(); ++Idx)
-		{
-			QuickBarComponent->RemoveItemFromSlot(Idx);
-		}
-	}
-	if (InventoryComponent)
-	{
-		const TArray<UDodInventoryItemInstance*>& Items = InventoryComponent->GetAllItems();
-		for (UDodInventoryItemInstance* Item : Items)
-		{
-			InventoryComponent->RemoveItemInstance(Item);
-		}
-	}
 }
 
 void ADodPlayerController::OnPlayerStateChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam)

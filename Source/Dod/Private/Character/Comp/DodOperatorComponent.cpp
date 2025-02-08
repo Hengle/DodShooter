@@ -12,6 +12,7 @@
 #include "UserSettings/EnhancedInputUserSettings.h"
 #include "InputMappingContext.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
+#include "Camera/DodCameraComponent.h"
 #include "Character/DodPawnData.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameFramework/PlayerState.h"
@@ -83,8 +84,8 @@ bool UDodOperatorComponent::CanChangeInitState(UGameFrameworkComponentManager* M
 		return PS && Manager->HasFeatureReachedInitState(Pawn, UDodPawnExtensionComponent::NAME_ActorFeatureName,
 		                                                 DodGameplayTags::InitState_DataInitialized);
 	}
-	else if (CurrentState == DodGameplayTags::InitState_DataInitialized && DesiredState ==
-		DodGameplayTags::InitState_GameplayReady)
+	else if (CurrentState == DodGameplayTags::InitState_DataInitialized &&
+		DesiredState ==DodGameplayTags::InitState_GameplayReady)
 	{
 		return true;
 	}
@@ -105,8 +106,12 @@ void UDodOperatorComponent::HandleChangeInitState(UGameFrameworkComponentManager
 			return;
 		}
 
+		const UDodPawnData* PawnData = nullptr;
+
 		if (UDodPawnExtensionComponent* PawnExtComp = UDodPawnExtensionComponent::FindPawnExtensionComponent(Pawn))
 		{
+			PawnData = PawnExtComp->GetPawnData<UDodPawnData>();
+
 			PawnExtComp->InitializeAbilitySystem(PS->GetDodAbilitySystemComponent(), PS);
 		}
 
@@ -116,6 +121,14 @@ void UDodOperatorComponent::HandleChangeInitState(UGameFrameworkComponentManager
 			{
 				InitializePlayerInput(Pawn->InputComponent);
 			}
+		}
+
+		if (PawnData)
+		{
+			/*if (UDodCameraComponent* CameraComponent = UDodCameraComponent::FindCameraComponent(Pawn))
+			{
+				CameraComponent->DetermineCameraModeDelegate.BindUObject(this, &ThisClass::DetermineCameraMode);
+			}*/
 		}
 	}
 }

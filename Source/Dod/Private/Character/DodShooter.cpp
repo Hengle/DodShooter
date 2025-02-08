@@ -4,14 +4,12 @@
 #include "Camera/DodCameraComponent.h"
 #include "Character/Comp/DodPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentDelegates.h"
-#include "Components/GameFrameworkComponentManager.h"
 #include "Equipment/DodEquipmentManagerComponent.h"
 #include "Equipment/DodQuickBarComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameMode/DodExperienceManagerComponent.h"
 #include "Inventory/DodInventoryItemDefinition.h"
 #include "Inventory/DodInventoryManagerComponent.h"
-
-const FName ADodShooter::NAME_ActorFeatureName("Shooter");
 
 ADodShooter::ADodShooter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -20,8 +18,6 @@ ADodShooter::ADodShooter(const FObjectInitializer& ObjectInitializer)
 	ArmMesh->SetupAttachment(SpringArmComponent);
 
 	CameraComponent->SetupAttachment(ArmMesh, TEXT("tag_camera"));
-
-	EquipmentManager = CreateDefaultSubobject<UDodEquipmentManagerComponent>(TEXT("EquipmentManager"));
 }
 
 void ADodShooter::ChangeToFirstPerson()
@@ -60,9 +56,6 @@ void ADodShooter::BeginPlay()
 	GetMesh()->SetCastHiddenShadow(true);
 	ArmMesh->SetCastShadow(false);
 
-	ensure(TryToChangeInitState(DodGameplayTags::InitState_Spawned));
-	CheckDefaultInitialization();
-
 	SetActorHiddenInGame(true);
 
 	FActorInitStateChangedBPDelegate Delegate;
@@ -72,16 +65,20 @@ void ADodShooter::BeginPlay()
 	                                                    Delegate,
 	                                                    true
 	);
-
-	ChooseViewPerson();
 }
 
 void ADodShooter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	CheckDefaultInitialization();
 	ChooseViewPerson();
+	if (HasAuthority())
+	{
+		UDodExperienceManagerComponent* ExperienceComponent =
+			GetWorld()->GetGameState()->FindComponentByClass<UDodExperienceManagerComponent>();
+		ExperienceComponent->CallOrRegister_OnExperienceLoaded(
+			FOnDodExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::HandleExperienceLoaded));
+	}
 }
 
 void ADodShooter::DestroyDueToDeath()
@@ -96,52 +93,21 @@ void ADodShooter::Reset()
 	ClearInventory();
 }
 
-bool ADodShooter::CanChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
-                                     FGameplayTag DesiredState) const
+void ADodShooter::HandleExperienceLoaded(const UDodExperienceDefinition* CurrentExperience)
 {
-	if (CurrentState == DodGameplayTags::InitState_DataInitialized &&
-		DesiredState == DodGameplayTags::InitState_GameplayReady)
-	{
-		if (!GetController() || !GetAbilitySystemComponent())
-		{
-			return false;
-		}
-	}
-	return true;
+	CheckForAddInitialInventory();
 }
 
-void ADodShooter::HandleChangeInitState(UGameFrameworkComponentManager* Manager, FGameplayTag CurrentState,
-                                        FGameplayTag DesiredState)
+void ADodShooter::CheckForAddInitialInventory()
 {
-	if (CurrentState == DodGameplayTags::InitState_DataInitialized &&
-		DesiredState == DodGameplayTags::InitState_GameplayReady)
+	if (GetController() &&
+		GetController()->GetComponentByClass<UDodInventoryManagerComponent>() &&
+		GetController()->GetComponentByClass<UDodQuickBarComponent>())
 	{
 		AddInitialInventory();
-		ChooseViewPerson();
+		return;
 	}
-}
-
-void ADodShooter::OnActorInitStateChanged(const FActorInitStateChangedParams& Params)
-{
-	if (Params.FeatureName != UDodPawnExtensionComponent::NAME_ActorFeatureName)
-	{
-		if (Params.FeatureState == DodGameplayTags::InitState_DataInitialized)
-		{
-			CheckDefaultInitialization();
-		}
-	}
-}
-
-void ADodShooter::CheckDefaultInitialization()
-{
-	static const TArray<FGameplayTag> StateChain = {
-		DodGameplayTags::InitState_Spawned,
-		DodGameplayTags::InitState_DataAvailable,
-		DodGameplayTags::InitState_DataInitialized,
-		DodGameplayTags::InitState_GameplayReady
-	};
-
-	ContinueInitStateChain(StateChain);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::CheckForAddInitialInventory);
 }
 
 void ADodShooter::AddInitialInventory()

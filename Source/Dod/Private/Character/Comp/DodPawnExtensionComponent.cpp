@@ -36,6 +36,11 @@ bool UDodPawnExtensionComponent::CanChangeInitState(UGameFrameworkComponentManag
 	}
 	if (CurrentState == DodGameplayTags::InitState_Spawned && DesiredState == DodGameplayTags::InitState_DataAvailable)
 	{
+		if (!PawnData)
+		{
+			return false;
+		}
+		
 		const bool bHasAuthority = Pawn->HasAuthority();
 		const bool bIsLocallyControlled = Pawn->IsLocallyControlled();
 
@@ -163,12 +168,9 @@ void UDodPawnExtensionComponent::InitializeAbilitySystem(UDodAbilitySystemCompon
 	AbilitySystemComponent = InAsc;
 	AbilitySystemComponent->InitAbilityActorInfo(InOwner, Pawn);
 
-	for (const UDodAbilitySet* AbilitySet : PawnData->AbilitySets)
+	if (ensure(PawnData))
 	{
-		if (AbilitySet)
-		{
-			AbilitySet->GiveToAbilitySystem(AbilitySystemComponent, nullptr);
-		}
+		// InAsc->SetTagRelationshipMapping(PawnData->TagRelationshipMapping);
 	}
 
 	OnAbilitySystemInitialized.Broadcast();

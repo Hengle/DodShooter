@@ -2,6 +2,7 @@
 
 #include "CommonNumericTextBlock.h"
 #include "GameFramework/GameStateBase.h"
+#include "GameMode/DodExperienceManagerComponent.h"
 #include "GameMode/GameState/TeamDeathMatchScoring.h"
 #include "Kismet/GameplayStatics.h"
 #include "Team/DodTeamAgentInterface.h"
@@ -10,6 +11,21 @@ void UScoreWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	UDodExperienceManagerComponent* ExperienceComponent =
+		GetWorld()->GetGameState()->FindComponentByClass<UDodExperienceManagerComponent>();
+	ExperienceComponent->CallOrRegister_OnExperienceLoaded(
+		FOnDodExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::HandleExperienceLoaded));
+}
+
+void UScoreWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	UpdateScore();
+}
+
+void UScoreWidget::HandleExperienceLoaded(const UDodExperienceDefinition* CurrentExperience)
+{
 	if (AGameStateBase* GameState = UGameplayStatics::GetGameState(GetWorld()))
 	{
 		TeamDeathScoring = GameState->GetComponentByClass<UTeamDeathMatchScoring>();
@@ -27,13 +43,6 @@ void UScoreWidget::NativeConstruct()
 		TeamAgent->GetTeamChangedDelegateChecked().AddDynamic(this, &ThisClass::OnTeamChanged);
 		CurrentTeamIndex = GenericTeamIdToInteger(TeamAgent->GetGenericTeamId());
 	}
-}
-
-void UScoreWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
-{
-	Super::NativeTick(MyGeometry, InDeltaTime);
-
-	UpdateScore();
 }
 
 void UScoreWidget::PlayerCounted()

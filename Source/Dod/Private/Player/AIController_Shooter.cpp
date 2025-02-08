@@ -4,6 +4,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Character/Comp/DodHealthComponent.h"
 #include "Equipment/DodQuickBarComponent.h"
+#include "GameMode/DodExperienceManagerComponent.h"
 #include "Inventory/DodInventoryManagerComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Weapon/DodWeaponStateComponent.h"
@@ -11,16 +12,16 @@
 AAIController_Shooter::AAIController_Shooter()
 {
 	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("AIPerception"));
-
-	InventoryComponent = CreateDefaultSubobject<UDodInventoryManagerComponent>(TEXT("InventoryComponent"));
-	QuickBarComponent = CreateDefaultSubobject<UDodQuickBarComponent>(TEXT("QuickBarComponent"));
-	WeaponStateComponent = CreateDefaultSubobject<UDodWeaponStateComponent>(TEXT("WeaponStateComponent"));
 }
 
 void AAIController_Shooter::BeginPlay()
 {
 	Super::BeginPlay();
-	RunBehaviorTree(BTAsset);
+
+	UDodExperienceManagerComponent* ExperienceComponent =
+	GetWorld()->GetGameState()->FindComponentByClass<UDodExperienceManagerComponent>();
+	ExperienceComponent->CallOrRegister_OnExperienceLoaded(
+		FOnDodExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::HandleExperienceLoaded));
 }
 
 void AAIController_Shooter::OnPossess(APawn* InPawn)
@@ -47,6 +48,11 @@ void AAIController_Shooter::OnUnPossess()
 	OnDeathStarted(GetPawn());
 	GetTeamChangedDelegateChecked().RemoveDynamic(this, &ThisClass::OnWatchedAgentChangedTeam);
 	Super::OnUnPossess();
+}
+
+void AAIController_Shooter::HandleExperienceLoaded(const UDodExperienceDefinition* CurrentExperience)
+{
+	RunBehaviorTree(BTAsset);
 }
 
 void AAIController_Shooter::OnWatchedAgentChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam)

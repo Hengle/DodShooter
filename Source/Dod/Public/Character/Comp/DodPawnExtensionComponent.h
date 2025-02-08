@@ -68,7 +68,7 @@ protected:
 	FSimpleMulticastDelegate OnAbilitySystemUninitialized;
 
 	UPROPERTY(EditInstanceOnly, ReplicatedUsing = OnRep_PawnData, Category = "Dod|Pawn")
-	TObjectPtr<const UDodPawnData> PawnData;
+	TObjectPtr<const UDodPawnData> PawnData{nullptr};
 
 	UPROPERTY(Transient)
 	TObjectPtr<UDodAbilitySystemComponent> AbilitySystemComponent{nullptr};

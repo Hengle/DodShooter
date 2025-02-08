@@ -4,6 +4,7 @@
 #include "UI/DodTaggedWidget.h"
 #include "ScoreWidget.generated.h"
 
+class UDodExperienceDefinition;
 class UTeamDeathMatchScoring;
 class UCommonNumericTextBlock;
 class UCommonTextBlock;
@@ -18,6 +19,9 @@ public:
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 protected:
+	UFUNCTION()
+	void HandleExperienceLoaded(const UDodExperienceDefinition* CurrentExperience);
+	
 	UFUNCTION()
 	void PlayerCounted();
 

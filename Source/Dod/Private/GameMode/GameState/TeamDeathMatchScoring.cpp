@@ -5,6 +5,7 @@
 #include "AbilitySystem/Phases/DodGamePhase_PostGame.h"
 #include "AbilitySystem/Phases/DodGamePhase_Warmup.h"
 #include "Character/DodCharacter.h"
+#include "GameMode/DodExperienceManagerComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Team/DodTeamSubsystem.h"
@@ -40,10 +41,18 @@ void UTeamDeathMatchScoring::BeginPlay()
 
 	if (HasAuthority())
 	{
-		UDodGamePhaseSubsystem* GamePhaseSubsystem = GetWorld()->GetSubsystem<UDodGamePhaseSubsystem>();
-		GamePhaseSubsystem->StartPhase(UDodGamePhase_Warmup::StaticClass());
-		GameStarted();
+		UDodExperienceManagerComponent* ExperienceComponent =
+			GetWorld()->GetGameState()->FindComponentByClass<UDodExperienceManagerComponent>();
+		ExperienceComponent->CallOrRegister_OnExperienceLoaded(
+			FOnDodExperienceLoaded::FDelegate::CreateUObject(this, &ThisClass::HandleExperienceLoaded));
 	}
+}
+
+void UTeamDeathMatchScoring::HandleExperienceLoaded(const UDodExperienceDefinition* CurrentExperience)
+{
+	UDodGamePhaseSubsystem* GamePhaseSubsystem = GetWorld()->GetSubsystem<UDodGamePhaseSubsystem>();
+	GamePhaseSubsystem->StartPhase(UDodGamePhase_Warmup::StaticClass());
+	GameStarted();
 }
 
 void UTeamDeathMatchScoring::OnEliminationScored()

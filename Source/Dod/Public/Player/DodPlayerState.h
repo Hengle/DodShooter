@@ -80,9 +80,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Dod|PlayerState")
 	TObjectPtr<UDodAbilitySystemComponent> AbilitySystemComponent;
 
-	UPROPERTY(EditAnywhere, Category="Attributes", meta=(AssetBundles="Client,Server"))
-	TArray<TSoftObjectPtr<const UDodAbilitySet>> GrantedAbilitySets;
-
 	UPROPERTY()
 	TObjectPtr<const class UDodHealthSet> HealthSet;
 	UPROPERTY()
