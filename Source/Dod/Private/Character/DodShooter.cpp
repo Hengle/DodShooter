@@ -104,7 +104,7 @@ void ADodShooter::CheckForAddInitialInventory()
 		GetController()->GetComponentByClass<UDodInventoryManagerComponent>() &&
 		GetController()->GetComponentByClass<UDodQuickBarComponent>())
 	{
-		AddInitialInventory();
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::AddInitialInventory);
 		return;
 	}
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ThisClass::CheckForAddInitialInventory);

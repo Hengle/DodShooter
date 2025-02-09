@@ -5,15 +5,11 @@
 #include "CommonUserSubsystem.h"
 #include "ControlFlow.h"
 #include "ControlFlowManager.h"
+#include "DodGameplayTags.h"
 #include "NativeGameplayTags.h"
 #include "PrimaryGameLayout.h"
 #include "GameMode/DodExperienceManagerComponent.h"
 #include "Kismet/GameplayStatics.h"
-
-namespace FrontendTags
-{
-	UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MENU, "UI.Layer.Menu");
-}
 
 UDodFrontendStateComponent::UDodFrontendStateComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -227,7 +223,7 @@ void UDodFrontendStateComponent::FlowStep_TryShowMainScreen(FControlFlowNodeRef 
 	{
 		constexpr bool bSuspendInputUntilComplete = true;
 		RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(
-			FrontendTags::TAG_UI_LAYER_MENU, bSuspendInputUntilComplete, MainScreenClass,
+			DodGameplayTags::UI_Layer_Menu, bSuspendInputUntilComplete, MainScreenClass,
 			[this, SubFlow](EAsyncWidgetLayerState State, UCommonActivatableWidget* Screen)
 			{
 				switch (State)

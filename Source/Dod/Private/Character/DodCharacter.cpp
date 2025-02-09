@@ -1,6 +1,7 @@
 ﻿#include "Character/DodCharacter.h"
 
 #include "DodGameplayTags.h"
+#include "GenericTeamAgentInterface.h"
 #include "AbilitySystem/DodAbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Camera/DodCameraComponent.h"
@@ -10,6 +11,8 @@
 #include "Character/Comp/DodStaminaComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Team/DodTeamAgentInterface.h"
 
 ADodCharacter::ADodCharacter(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UDodCharacterMovementComp>(CharacterMovementComponentName))
@@ -83,6 +86,13 @@ void ADodCharacter::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ADodCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ThisClass, MyTeamID)
+}
+
 void ADodCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
 {
 	if (UDodAbilitySystemComponent* ASC = GetDodAbilitySystemComponent())
@@ -100,6 +110,29 @@ void ADodCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAd
 	}
 
 	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
+}
+
+void ADodCharacter::SetGenericTeamId(const FGenericTeamId& NewTeamID)
+{
+	if (GetController() == nullptr)
+	{
+		if (HasAuthority())
+		{
+			const FGenericTeamId OldTeamID = MyTeamID;
+			MyTeamID = NewTeamID;
+			ConditionalBroadcastTeamChanged(this, OldTeamID, MyTeamID);
+		}
+	}
+}
+
+FGenericTeamId ADodCharacter::GetGenericTeamId() const
+{
+	return MyTeamID;
+}
+
+FOnDodTeamIndexChangedDelegate* ADodCharacter::GetOnTeamIndexChangedDelegate()
+{
+	return &OnTeamChangedDelegate;
 }
 
 void ADodCharacter::AddControllerRotation(FRotator InRotator)
@@ -128,9 +161,18 @@ void ADodCharacter::OnAbilitySystemUninitialized()
 
 void ADodCharacter::PossessedBy(AController* NewController)
 {
+	const FGenericTeamId OldTeamID = MyTeamID;
+
 	Super::PossessedBy(NewController);
 
 	PawnExtComponent->HandleControllerChanged();
+
+	if (IDodTeamAgentInterface* ControllerAsTeamProvider = Cast<IDodTeamAgentInterface>(NewController))
+	{
+		MyTeamID = ControllerAsTeamProvider->GetGenericTeamId();
+		ControllerAsTeamProvider->GetTeamChangedDelegateChecked().AddDynamic(this, &ThisClass::OnControllerChangedTeam);
+	}
+	ConditionalBroadcastTeamChanged(this, OldTeamID, MyTeamID);
 }
 
 void ADodCharacter::UnPossessed()
@@ -223,4 +265,16 @@ void ADodCharacter::UninitAndDestroy()
 	}
 
 	SetActorHiddenInGame(true);
+}
+
+void ADodCharacter::OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam)
+{
+	const FGenericTeamId MyOldTeamID = MyTeamID;
+	MyTeamID = IntegerToGenericTeamId(NewTeam);
+	ConditionalBroadcastTeamChanged(this, MyOldTeamID, MyTeamID);
+}
+
+void ADodCharacter::OnRep_MyTeamID(FGenericTeamId OldTeamID)
+{
+	ConditionalBroadcastTeamChanged(this, OldTeamID, MyTeamID);
 }

@@ -2,7 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
+#include "GenericTeamAgentInterface.h"
 #include "ModularCharacter.h"
+#include "Team/DodTeamAgentInterface.h"
 #include "DodCharacter.generated.h"
 
 class UDodAbilitySystemComponent;
@@ -14,7 +16,7 @@ class UDodCameraComponent;
 class UDodHealthComponent;
 
 UCLASS(Blueprintable)
-class DOD_API ADodCharacter : public AModularCharacter, public IAbilitySystemInterface
+class DOD_API ADodCharacter : public AModularCharacter, public IAbilitySystemInterface, public IDodTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -29,12 +31,19 @@ public:
 
 	//~ Begin Actor interface
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	//~ End Actor interface
 
 	//~ Begin ACharacter interface
 	virtual void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 	virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 	//~ End ACharacter interface
+
+	//~ Begin IDodTeamAgentInterface interface
+	virtual void SetGenericTeamId(const FGenericTeamId& NewTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	virtual FOnDodTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
+	//~ End IDodTeamAgentInterface interface
 
 	void AddControllerRotation(FRotator InRotator);
 
@@ -66,6 +75,12 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, meta=(DisplayName="OnDeathFinished"))
 	void K2_OnDeathFinished();
 
+	UFUNCTION()
+	void OnControllerChangedTeam(UObject* TeamAgent, int32 OldTeam, int32 NewTeam);
+
+	UFUNCTION()
+	void OnRep_MyTeamID(FGenericTeamId OldTeamID);
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Character")
 	TObjectPtr<USkeletalMeshComponent> HeadMesh;
@@ -84,4 +99,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dod|Character")
 	TObjectPtr<UDodCameraComponent> CameraComponent;
+
+private:
+	UPROPERTY(ReplicatedUsing = OnRep_MyTeamID)
+	FGenericTeamId MyTeamID;
+
+	UPROPERTY()
+	FOnDodTeamIndexChangedDelegate OnTeamChangedDelegate;
 };

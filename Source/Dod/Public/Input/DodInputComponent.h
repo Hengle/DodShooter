@@ -5,7 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "DodInputComponent.generated.h"
 
-UCLASS()
+UCLASS(Config = Input)
 class DOD_API UDodInputComponent : public UEnhancedInputComponent
 {
 	GENERATED_BODY()
@@ -36,6 +36,8 @@ void UDodInputComponent::BindAbilityActions(const UDodInputConfig* InputConfig, 
                                             PressedFuncType PressedFunc, ReleasedFuncType ReleasedFunc,
                                             TArray<uint32>& BindHandles)
 {
+	check(InputConfig);
+	
 	for (const FDodInputAction& Action : InputConfig->AbilityInputActions)
 	{
 		if (Action.InputAction && Action.InputTag.IsValid())

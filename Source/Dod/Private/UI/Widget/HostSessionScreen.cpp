@@ -1,16 +1,12 @@
 ﻿#include "UI/Widget/HostSessionScreen.h"
 
 #include "CommonUserSubsystem.h"
+#include "DodGameplayTags.h"
 #include "PrimaryGameLayout.h"
 #include "UI/Foundation/DodLoadingScreenSubsystem.h"
 #include "UI/Widget/GamePlayList.h"
 #include "NativeGameplayTags.h"
 #include "GameMode/DodUserFacingExperienceDefinition.h"
-
-namespace FrontendTags
-{
-	UE_DEFINE_GAMEPLAY_TAG_STATIC(TAG_UI_LAYER_MENU, "UI.Layer.Menu");
-}
 
 void UHostSessionScreen::NativeConstruct()
 {
@@ -54,7 +50,7 @@ void UHostSessionScreen::LoginGame()
 	{
 		constexpr bool bSuspendInputUntilComplete = true;
 		RootLayout->PushWidgetToLayerStackAsync<UCommonActivatableWidget>(
-			FrontendTags::TAG_UI_LAYER_MENU, bSuspendInputUntilComplete, NonInteractiveWidget,
+			DodGameplayTags::UI_Layer_Menu, bSuspendInputUntilComplete, NonInteractiveWidget,
 			[this](EAsyncWidgetLayerState State, UCommonActivatableWidget* InWidget)
 			{
 				SpinnerWidget = InWidget;
