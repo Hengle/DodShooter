@@ -7,6 +7,7 @@
 #include "AbilitySystem/Attributes/DodHealthSet.h"
 #include "AbilitySystem/Attributes/DodStaminaSet.h"
 #include "Character/DodPawnData.h"
+#include "Character/Comp/DodPawnExtensionComponent.h"
 #include "Components/GameFrameworkComponentManager.h"
 #include "GameMode/DodExperienceManagerComponent.h"
 #include "GameMode/DodGameMode.h"
@@ -39,6 +40,7 @@ void ADodPlayerState::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>
 	SharedParams.bIsPushBased = true;
 
 	DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, PawnData, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, MyPlayerConnectionType, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, MyTeamID, SharedParams);
 	DOREPLIFETIME_WITH_PARAMS_FAST(ThisClass, MySquadID, SharedParams);
 
@@ -112,6 +114,51 @@ void ADodPlayerState::PostInitializeComponents()
 	}
 }
 
+void ADodPlayerState::ClientInitialize(class AController* C)
+{
+	Super::ClientInitialize(C);
+
+	if (UDodPawnExtensionComponent* PawnExtComp = UDodPawnExtensionComponent::FindPawnExtensionComponent(GetPawn()))
+	{
+		PawnExtComp->CheckDefaultInitialization();
+	}
+}
+
+void ADodPlayerState::OnDeactivated()
+{
+	Super::OnDeactivated();
+
+	bool bDestroyDeactivatedPlayerState = false;
+
+	switch (GetPlayerConnectionType())
+	{
+	case EDodPlayerConnectionType::Player:
+	case EDodPlayerConnectionType::InactivePlayer:
+		bDestroyDeactivatedPlayerState = true;
+		break;
+	default:
+		bDestroyDeactivatedPlayerState = true;
+		break;
+	}
+
+	SetPlayerConnectionType(EDodPlayerConnectionType::InactivePlayer);
+
+	if (bDestroyDeactivatedPlayerState)
+	{
+		Destroy();
+	}
+}
+
+void ADodPlayerState::OnReactivated()
+{
+	Super::OnReactivated();
+
+	if (GetPlayerConnectionType() == EDodPlayerConnectionType::InactivePlayer)
+	{
+		SetPlayerConnectionType(EDodPlayerConnectionType::Player);
+	}
+}
+
 void ADodPlayerState::SetGenericTeamId(const FGenericTeamId& InTeamID)
 {
 	if (HasAuthority())
@@ -132,6 +179,12 @@ FGenericTeamId ADodPlayerState::GetGenericTeamId() const
 FOnDodTeamIndexChangedDelegate* ADodPlayerState::GetOnTeamIndexChangedDelegate()
 {
 	return &OnTeamChangedDelegate;
+}
+
+void ADodPlayerState::SetPlayerConnectionType(EDodPlayerConnectionType NewType)
+{
+	MARK_PROPERTY_DIRTY_FROM_NAME(ThisClass, MyPlayerConnectionType, this);
+	MyPlayerConnectionType = NewType;
 }
 
 void ADodPlayerState::AddStatTagStack(FGameplayTag Tag, int32 StackCount)

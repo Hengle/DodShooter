@@ -60,9 +60,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon", Replicated)
 	TObjectPtr<USkeletalMeshComponent> WM_Receiver;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon", Replicated)
 	TArray<USkeletalMeshComponent*> VM_Attachment;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dod|Weapon", Replicated)
 	TArray<USkeletalMeshComponent*> WM_Attachment;
 
 	UPROPERTY(ReplicatedUsing=OnRep_VM_AttachmentMeshDetails)

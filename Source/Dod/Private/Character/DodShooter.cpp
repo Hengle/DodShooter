@@ -58,6 +58,8 @@ void ADodShooter::BeginPlay()
 
 	SetActorHiddenInGame(true);
 
+	ChooseViewPerson();
+
 	FActorInitStateChangedBPDelegate Delegate;
 	Delegate.BindUFunction(this, FName("ShowPawnAgainNextFrame"));
 
@@ -81,10 +83,28 @@ void ADodShooter::PossessedBy(AController* NewController)
 	}
 }
 
+void ADodShooter::UnPossessed()
+{
+	Super::UnPossessed();
+	ChooseViewPerson();
+}
+
 void ADodShooter::DestroyDueToDeath()
 {
 	ClearInventory();
 	Super::DestroyDueToDeath();
+}
+
+void ADodShooter::OnRep_Controller()
+{
+	Super::OnRep_Controller();
+	ChooseViewPerson();
+}
+
+void ADodShooter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+	ChooseViewPerson();
 }
 
 void ADodShooter::Reset()

@@ -9,6 +9,7 @@ void UDodStaminaSet::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>&
 
 	DOREPLIFETIME_CONDITION_NOTIFY(UDodStaminaSet, Stamina, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UDodStaminaSet, MaxStamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UDodStaminaSet, StaminaRegenRate, COND_None, REPNOTIFY_Always);
 }
 
 bool UDodStaminaSet::PreGameplayEffectExecute(struct FGameplayEffectModCallbackData& Data)

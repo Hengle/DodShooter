@@ -4,7 +4,7 @@
 #include "Engine/DataAsset.h"
 #include "DodTeamDisplayAsset.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType)
 class DOD_API UDodTeamDisplayAsset : public UDataAsset
 {
 	GENERATED_BODY()

@@ -13,6 +13,15 @@ class UDodAbilitySet;
 struct FGameplayTag;
 class UDodAbilitySystemComponent;
 
+UENUM()
+enum class EDodPlayerConnectionType : uint8
+{
+	Player = 0,
+	LiveSpectator,
+	ReplaySpectator,
+	InactivePlayer
+};
+
 UCLASS()
 class DOD_API ADodPlayerState : public AModularPlayerState, public IAbilitySystemInterface,
                                 public IDodTeamAgentInterface
@@ -40,11 +49,20 @@ public:
 	virtual void PostInitializeComponents() override;
 	//~ End AActor interface
 
+	//~ Begin APlayerState interface
+	virtual void ClientInitialize(class AController* C) override;
+	virtual void OnDeactivated() override;
+	virtual void OnReactivated() override;
+	//~ End APlayerState interface
+
 	//~ Begin IDodTeamAgentInterface interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	virtual FOnDodTeamIndexChangedDelegate* GetOnTeamIndexChangedDelegate() override;
 	//~ End IDodTeamAgentInterface interface
+
+	void SetPlayerConnectionType(EDodPlayerConnectionType NewType);
+	EDodPlayerConnectionType GetPlayerConnectionType() const { return MyPlayerConnectionType; }
 
 	UFUNCTION(BlueprintCallable)
 	int32 GetTeamId() const
@@ -102,4 +120,7 @@ private:
 
 	UPROPERTY(Replicated)
 	FGameplayTagStackContainer StatTags;
+
+	UPROPERTY(Replicated)
+	EDodPlayerConnectionType MyPlayerConnectionType{EDodPlayerConnectionType::Player};
 };

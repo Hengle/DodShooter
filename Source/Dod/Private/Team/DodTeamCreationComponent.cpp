@@ -10,9 +10,6 @@
 UDodTeamCreationComponent::UDodTeamCreationComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	TeamsToCreate.Add(1, NewObject<UDodTeamDisplayAsset>());
-	TeamsToCreate.Add(2, NewObject<UDodTeamDisplayAsset>());
-
 	PublicTeamInfoClass = ADodTeamPublicInfo::StaticClass();
 	PrivateTeamInfoClass = ADodTeamPrivateInfo::StaticClass();
 }

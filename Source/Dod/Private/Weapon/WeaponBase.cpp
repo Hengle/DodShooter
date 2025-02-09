@@ -78,6 +78,8 @@ void AWeaponBase::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& Ou
 	DOREPLIFETIME(ThisClass, VM_AttachmentMeshDetails);
 	DOREPLIFETIME(ThisClass, WM_AttachmentMeshDetails);
 	DOREPLIFETIME(ThisClass, CamoInfo);
+	DOREPLIFETIME(ThisClass, VM_Attachment);
+	DOREPLIFETIME(ThisClass, WM_Attachment);
 }
 
 void AWeaponBase::SetViewModelAttachment(const TArray<FDodAttachmentMeshDetail>& AttachmentMeshDetail)
@@ -149,7 +151,7 @@ void AWeaponBase::SetAttachment(const FDodAttachmentMeshDetail& AttachmentMeshDe
 			AttachmentArray[SocketIndex] =
 				NewObject<USkeletalMeshComponent>(this, USkeletalMeshComponent::StaticClass(), *ComponentName);
 			AttachmentArray[SocketIndex]->RegisterComponent();
-			AttachmentArray[SocketIndex]->SetIsReplicated(false);
+			AttachmentArray[SocketIndex]->SetIsReplicated(true);
 		}
 		if (AttachmentArray[SocketIndex])
 		{

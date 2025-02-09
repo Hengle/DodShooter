@@ -117,7 +117,7 @@ void UDodOperatorComponent::HandleChangeInitState(UGameFrameworkComponentManager
 
 		if (GetController<ADodPlayerController>())
 		{
-			if (Pawn->InputComponent != nullptr)
+			if (Pawn->InputComponent)
 			{
 				InitializePlayerInput(Pawn->InputComponent);
 			}
