@@ -18,7 +18,10 @@ UDodGameplayAbility_WeaponFire::UDodGameplayAbility_WeaponFire(const FObjectInit
 	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(TriggerData);
 
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Type.Action.WeaponFire")));
+	FGameplayTagContainer GameplayTags;
+	GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Type.Action.WeaponFire")));
+	SetAssetTags(GameplayTags);	
+
 	ActivationOwnedTags.AddTag(DodGameplayTags::Event_Movement_WeaponFire);
 	SourceBlockedTags.AddTag(DodGameplayTags::Ability_Weapon_NoFiring);
 }
@@ -82,7 +85,7 @@ void UDodGameplayAbility_WeaponFire::OnWeaponFireCompleted_Implementation()
 {
 	FGameplayCueParameters CueParameters;
 
-	UAbilitySystemComponent* const AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo_Checked();
+	UAbilitySystemComponent* const AbilitySystemComponent = GetAbilitySystemComponentFromActorInfo_Ensured();
 	AbilitySystemComponent->ExecuteGameplayCue(GameplayCueTagFiring, CueParameters);
 }
 

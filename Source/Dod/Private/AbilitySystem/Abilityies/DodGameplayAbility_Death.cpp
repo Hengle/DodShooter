@@ -21,7 +21,9 @@ UDodGameplayAbility_Death::UDodGameplayAbility_Death(const FObjectInitializer& O
 		TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 		AbilityTriggers.Add(TriggerData);
 	}
-	AbilityTags.AddTag(DodGameplayTags::Ability_Type_StatusChange_Death);
+	FGameplayTagContainer GameplayTags;
+	GameplayTags.AddTag(DodGameplayTags::Ability_Type_StatusChange_Death);
+	SetAssetTags(GameplayTags);
 }
 
 void UDodGameplayAbility_Death::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

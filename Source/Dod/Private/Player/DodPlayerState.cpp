@@ -26,7 +26,7 @@ ADodPlayerState::ADodPlayerState(const FObjectInitializer& ObjectInitializer)
 	CombatSet = CreateDefaultSubobject<UDodCombatSet>(TEXT("CombatSet"));
 	StaminaSet = CreateDefaultSubobject<UDodStaminaSet>(TEXT("StaminaSet"));
 
-	NetUpdateFrequency = 100.0f;
+	SetNetUpdateFrequency(100.f);
 
 	MyTeamID = FGenericTeamId::NoTeam;
 	MySquadID = INDEX_NONE;

@@ -20,7 +20,9 @@ UDodGameplayAbility_AutoSpawn::UDodGameplayAbility_AutoSpawn(const FObjectInitia
 	ActivationPolicy = EDodAbilityActivationPolicy::OnSpawn;
 	ActivationGroup = EDodAbilityActivationGroup::Independent;
 
-	AbilityTags.AddTag(DodGameplayTags::Ability_Behavior_SurvivesDeath);
+	FGameplayTagContainer GameplayTags;
+	GameplayTags.AddTag(DodGameplayTags::Ability_Behavior_SurvivesDeath);
+	SetAssetTags(GameplayTags);
 }
 
 void UDodGameplayAbility_AutoSpawn::OnAbilityAdded()

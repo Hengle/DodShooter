@@ -309,7 +309,7 @@ bool UDodGameplayAbility::DoesAbilitySatisfyTagRequirements(const UAbilitySystem
 	const FGameplayTag& MissingTag = AbilitySystemGlobals.ActivateFailTagsMissingTag;
 
 	// Check if any of this ability's tags are currently blocked
-	if (AbilitySystemComponent.AreAbilityTagsBlocked(AbilityTags))
+	if (AbilitySystemComponent.AreAbilityTagsBlocked(GetAssetTags()))
 	{
 		bBlocked = true;
 	}
@@ -323,7 +323,7 @@ bool UDodGameplayAbility::DoesAbilitySatisfyTagRequirements(const UAbilitySystem
 
 	if (ASC)
 	{
-		ASC->GetAdditionalActivationTagRequirements(AbilityTags, AllRequiredTags, AllBlockedTags);
+		ASC->GetAdditionalActivationTagRequirements(GetAssetTags(), AllRequiredTags, AllBlockedTags);
 	}
 
 	if (AllBlockedTags.Num() || AllRequiredTags.Num())
@@ -404,7 +404,7 @@ bool UDodGameplayAbility::DoesAbilitySatisfyTagRequirements(const UAbilitySystem
 void UDodGameplayAbility::TryActivateAbilityOnSpawn(const FGameplayAbilityActorInfo* ActorInfo,
                                                     const FGameplayAbilitySpec& Spec) const
 {
-	const bool bIsPredicting = (Spec.ActivationInfo.ActivationMode == EGameplayAbilityActivationMode::Predicting);
+	const bool bIsPredicting = GetCurrentActivationInfo().ActivationMode == EGameplayAbilityActivationMode::Predicting;
 
 	if (ActorInfo && !Spec.IsActive() && !bIsPredicting && (ActivationPolicy == EDodAbilityActivationPolicy::OnSpawn))
 	{

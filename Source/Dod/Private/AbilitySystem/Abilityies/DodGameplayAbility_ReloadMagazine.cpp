@@ -10,7 +10,9 @@
 UDodGameplayAbility_ReloadMagazine::UDodGameplayAbility_ReloadMagazine(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Type.Action.Reload")));
+	FGameplayTagContainer GameplayTags;
+	GameplayTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Type.Action.Reload")));
+	SetAssetTags(GameplayTags);	
 	ActivationOwnedTags.AddTag(DodGameplayTags::Event_Movement_Reload);
 }
 

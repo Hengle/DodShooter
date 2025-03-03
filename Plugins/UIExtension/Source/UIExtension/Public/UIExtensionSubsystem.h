@@ -165,7 +165,7 @@ class UIEXTENSION_API UUIExtensionSubsystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 
-public:
+public:	
 	FUIExtensionPointHandle RegisterExtensionPoint(const FGameplayTag& ExtensionPointTag,
 	                                               EUIExtensionPointMatch ExtensionPointTagMatchType,
 	                                               const TArray<UClass*>& AllowedDataClasses,
